@@ -1,0 +1,12 @@
+[Unit]
+Description=OloRa Network Bluetooth Daemon
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/oloraNT
+StartLimitInterval=1
+#Restart=always
+
+[Install]
+WantedBy=multi-user.target
