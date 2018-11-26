@@ -1,0 +1,78 @@
+.SUFFIXES: .c .o
+CC 			= gcc
+
+ifeq ($(shell arch),x86_64)
+CFLAGS 		= -O2 -c -Werror -Wall -Wstrict-overflow
+LFLAGS		= -O2 -Werror -Wall -Wstrict-overflow
+#CFLAGS 		= -O2 -c -Werror -Walloca -Wstringop-overflow
+#LFLAGS		= -O2 -Werror -Walloca -Wstringop-overflow
+else
+CFLAGS 		= -O2 -c -Werror
+LFLAGS		= -O2 -Werror
+endif
+
+# -Walloca				 (for debug)
+# -Wstringop-overflow 	 (for debug)
+# -> type option detects buffer overflow in calls to string handling functions like memcpy 
+
+INCLUDE 	= -I../include
+LDFLAGS 	= -lbluetooth -lpthread -lrt -lcrypto -lpam -lpam_misc
+PROJECT 	= oloraNT
+
+LIBNAME		= olora
+LIBTARGET 	= olorapkt.so
+SERVICE_FL	= olorablu.service
+
+MAIN = task.o
+SRCS = blue.c hash.c pkt.c sess.c log.c
+OBJS = $(SRCS: .c = .o) 
+LIBSRCS = pkt.c hash.c
+
+.c.o:
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<
+
+all: $(PROJECT) $(LIBTARGET) MVARCH SHELL
+	
+$(PROJECT): $(MAIN) $(OBJS) 
+	$(CC) task.c -o $@ $(OBJS) $(LDFLAGS) $(INCLUDE)
+
+$(LIBTARGET): $(LIBSRCS)
+	$(CC) -shared -Wl,-soname,$(LIBNAME) -o $@ $(LFLAGS) $(INCLUDE) -Wall -Werror -fpic $(LIBSRCS) $(LDFLAGS)
+
+SHELL: test.c $(OBJS)
+	$(CC) test.c -o shell $(OBJS) $(LDFLAGS) -lncurses $(INCLUDE) 
+
+
+MVARCH: $(PROJECT) $(LIBTARGET)
+ifeq ($(shell arch),x86_64)
+	cp $(PROJECT) $(LIBTARGET) ./amd64/
+else
+	cp $(PROJECT) $(LIBTARGET) ./arm/
+endif
+
+
+ifeq ($(PREFIX),)
+PREFIX := /usr/local
+endif
+
+DESTDIR ?=
+DEAMONDIR = /etc/systemd/system/
+
+install: $(PROJECT) $(LIBTARGET)
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m 750 $(PROJECT) $(DESTDIR)$(PREFIX)/bin
+	install -d $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 $(LIBTARGET) $(DESTDIR)$(PREFIX)/lib
+	install -m 750 $(SERVICE_FL) $(DEAMONDIR)
+	sudo systemctl enable olorablu
+	sudo service olorablu start
+
+uninstall:
+	sudo systemctl disable olorablu
+	sudo service olorablu stop
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(PROJECT)
+	rm -f $(DESTDIR)$(PREFIX)/lib/$(LIBTARGET)
+	rm -f $(DEAMONDIR)$(SERVICE_FL)
+
+clean:
+	rm -rf *.o $(PROJECT) $(LIBTARGET) shell
