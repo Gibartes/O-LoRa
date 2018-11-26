@@ -1,0 +1,12 @@
+[Unit]
+Description=OloRa Gate Unit
+After=multi-user.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /usr/local/olora/gate/gate.py
+WorkingDirectory=/usr/local/olora/gate/
+
+[Install]
+WantedBy=multi-user.target
