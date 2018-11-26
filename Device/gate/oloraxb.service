@@ -1,0 +1,12 @@
+[Unit]
+Description=OLoRa XBee Control Unit
+After=multi-user.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /usr/local/olora/Xbee/src/oloraXB.py
+WorkingDirectory=/usr/local/olora/Xbee/
+
+[Install]
+WantedBy=multi-user.target

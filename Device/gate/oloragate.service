@@ -1,5 +1,5 @@
 [Unit]
-Description=OloRa Gate Unit
+Description=OLoRa Gate Unit
 After=multi-user.target
 
 [Service]
