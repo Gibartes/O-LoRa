@@ -1,23 +1,21 @@
 from ctypes import *
-import os,sys,struct,platform,hashlib
+import os,sys,struct,platform
 from collections import OrderedDict
 
 
 if os.geteuid()==0:
     try:
-        LIB_PATH      = "/usr/local/lib/olorapkt.so"
+        LIB_PATH    = "/usr/local/lib/olorapkt.so"
         parser = cdll.LoadLibrary(LIB_PATH)
-        parser = None
     except:
-        if(platform.machine() == 'x86_64'):
-            LIB_PATH = "../src/amd64/olorapkt.so"
-        else:
-            LIB_PATH = "../src/arm/olorapkt.so" 
+        print("[!] You must register oloraNT as system service to use this library with sudo.")
+        print("[!] You should type 'sudo make install' at O-LoRa/Device/bluetooth/src or manually copy lib.")
+        sys.exit(0)
 else:
     if(platform.machine() == 'x86_64'):
-        LIB_PATH = "../src/amd64/olorapkt.so"
+        LIB_PATH    = "{0}/lib/amd64/olorapkt.so".format(os.environ['HOME'])
     else:
-        LIB_PATH = "../src/arm/olorapkt.so"
+        LIB_PATH    = "{0}/lib/arm/olorapkt.so".format(os.environ['HOME'])
 
 class PACKET_HEADER_CONFIG(object):
     MASK_SRC        =   0
@@ -125,7 +123,7 @@ def pkt_get_header_from_packet(packet):
 def pkt_set_header_data(head,mask,data,size):
     pkt_parser.setHeaderOffset(byref(head),mask,0,data,size)
 
-def pkt_get_header_data(head,mask,data,size,end=BIG_ENDIAN):
+def pkt_get_header_data(head,mask,data,size,end=PACKET_HEADER_CONFIG.BIG_ENDIAN):
     data     = c_uint64(data)
     pkt_parser.getHeaderOffset(byref(head),mask,0,byref(data),size)
     return data.value.to_bytes(size,byteorder=end)
@@ -285,7 +283,7 @@ class PACKET:
         self.accessed     = True
 
     # 해더 정보 출력
-    def get_header(self,mask,data,size,end=BIG_ENDIAN):
+    def get_header(self,mask,data,size,end=PACKET_HEADER_CONFIG.BIG_ENDIAN):
         return pkt_get_header_data(self.header,mask,data,size,end)
 
     # 가공되지 않은 해더 정보 출력 ( if you want to convert byte string to int, call unpack() method )

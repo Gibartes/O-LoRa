@@ -187,7 +187,7 @@ static void *watchDog(void *param){
         wakeUpTask();
         setTask(tcb,tcb->sess->slock,TASK_WATCHDOG);
         while(1){
-            usleep(2500);		// HARD waiting : waiting for 2500us(2.5ms)
+            usleep(tout);		// HARD waiting : waiting for system ticks ms(about 0.1ms)
             status = getTask(tcb,tcb->sess->slock);
             // send proper mutex signal when pending per each case.
             if(!(status&TASK_INPUT)){
@@ -567,11 +567,11 @@ static int32_t mainTask(uint8_t channel){
             timeout.tv_nsec = now.tv_usec*10000;
             waitMutexTime(spinner,spinner_cond,timeout,err);
             if(getMask(tcb,tcb->sig,STATUS_EXIT)){
-               logWrite(tcb->Log,tcb->log,"[*] [MS] exit signal...");
+               logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
                pthread_barrier_wait(&barrier);
                goto exit;}
             if(getMask(tcb,tcb->sig,STATUS_KILL)){
-               logWrite(tcb->Log,tcb->log,"[*] [MS] wait signal to sync...");
+               logWrite(tcb->Log,tcb->log,"[*] [MainTask] wait signal to sync...");
                setTask(tcb,tcb->sess->slock,TASK_SPIN);
                pthread_barrier_wait(&hbarrier);
                takeMask(tcb,tcb->sig,STATUS_KILL);

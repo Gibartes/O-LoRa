@@ -45,11 +45,11 @@ SHELL: test.c $(OBJS)
 
 MVARCH: $(PROJECT) $(LIBTARGET)
 ifeq ($(shell arch),x86_64)
-	mkdir -p ./amd64/ 2>/dev/null
-	cp $(PROJECT) $(LIBTARGET) ./amd64/
+	mkdir -p ~/lib/amd64   2>/dev/null
+	cp $(PROJECT) $(LIBTARGET) ~/lib/amd64/
 else
-	mkdir -p ./arm/ 2>/dev/null
-	cp $(PROJECT) $(LIBTARGET) ./arm/
+	mkdir -p ~/lib/arm   2>/dev/null
+	cp $(PROJECT) $(LIBTARGET) ~/lib/arm/
 endif
 
 
@@ -66,12 +66,12 @@ install: $(PROJECT) $(LIBTARGET)
 	install -d $(DESTDIR)$(PREFIX)/lib/
 	install -m 644 $(LIBTARGET) $(DESTDIR)$(PREFIX)/lib
 	install -m 750 $(SERVICE_FL) $(DEAMONDIR)
-	sudo systemctl enable olorablu
-	sudo service olorablu start
+	sudo systemctl enable olorant
+	sudo service olorant start
 
 uninstall:
-	sudo systemctl disable olorablu
-	sudo service olorablu stop
+	sudo systemctl disable olorant
+	sudo service olorant stop
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(PROJECT)
 	rm -f $(DESTDIR)$(PREFIX)/lib/$(LIBTARGET)
 	rm -f $(DEAMONDIR)$(SERVICE_FL)

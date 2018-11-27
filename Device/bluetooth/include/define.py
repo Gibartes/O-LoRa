@@ -28,8 +28,8 @@ class ObjectPipe:
         res = os.write(self.pipe,rcv)
         if close:self.pipe.close()
         return res
-    def recv(self,close=False):
-        res	 = os.read(self.pipe,PACKET_HEADER_CONFIG.PACKET_FULL)
+    def recv(self,size=1008,close=False):
+        res	 = os.read(self.pipe,size)
         if close:self.pipe.close()
         return res
     def close(self):
