@@ -3,7 +3,7 @@
 ## O-LoRa - Device
 ---------------------------------------
 
-O-LoRa device controller project collaborate with Gibartes and MinJae
+O-LoRa device controller project collaborating with Gibartes and MinJae
 
 ---------------------------------------
 
@@ -32,7 +32,7 @@ O-LoRa device controller project collaborate with Gibartes and MinJae
 __ Written by Gibartes __
 ---------------------------------------
 
-This is a software 1:1 bluetooth server to link internal user space area. You can utilize this software for other purposes as well as this off-grid network project if you're planning to compose server or controller with bluetooth protocol.
+This is a software that is 1:1 bluetooth server to link internal user space area. You can utilize this software for other purposes as well as this off-grid network project if you're planning to compose server or controller with bluetooth protocol.
 
 ---------------------------------------
 ### External description about oloraNT
@@ -42,7 +42,7 @@ This is a software 1:1 bluetooth server to link internal user space area. You ca
   * Set flag as FLAG_FIN in the olora packet header
   * It must be zero-fill that source and destination address 
 * Verify integrity of the packet using MD5 digest. 
-* <olorastd.h> offers AES256-cbc and RSA encryption/decryption using openSSL.
+* Both <olorastd.h> and oloapkt.so offer AES256-cbc and RSA encryption/decryption using openSSL.
 * Supports python3 library which is able to handle olora packets with C back-end code.
 ---------------------------------------
 ### How to build oloraNT?

@@ -1,6 +1,6 @@
 # O-LoRa - Device
 *********************************************************************************************************
-O-LoRa device controller project collaborate with Gibartes and MinJae
+O-LoRa device controller project collaborating with Gibartes and MinJae
 *********************************************************************************************************
 
 - Components :
