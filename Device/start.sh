@@ -32,9 +32,6 @@ cd ./gate
 if   [ "$1" = "help" ]; then
 	show_help
 	exit 0
-if   [ "$1" = "help" ]; then
-	show_help
-	exit 0
 elif [ "$1" = "run" ]; then
 	python3 gate.py
 	../bluetooth/src/oloraNT
