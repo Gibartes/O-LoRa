@@ -1,5 +1,4 @@
-from packet import *
-import os,re,sys,time
+import os,sys
 
 class PIPE_LIST(object):
     NT_IN      = "/tmp/.olora.out"

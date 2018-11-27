@@ -1,5 +1,5 @@
 from ctypes import *
-import os,sys,struct,platform
+import os,sys,struct,platform,binascii,six
 from collections import OrderedDict
 
 
@@ -9,7 +9,7 @@ if os.geteuid()==0:
         parser = cdll.LoadLibrary(LIB_PATH)
     except:
         print("[!] You must register oloraNT as system service to use this library with sudo.")
-        print("[!] You should type 'sudo make install' at O-LoRa/Device/bluetooth/src or manually copy lib.")
+        print("[!] You should type 'sudo make install' at O-LoRa/Device/bluetooth/src\n[!] or manually copy lib.")
         sys.exit(0)
 else:
     if(platform.machine() == 'x86_64'):
@@ -180,43 +180,43 @@ class PACKET:
         self.init_header()
         self.init_payload()
 
-    # 해더 초기화
+  # 해더 초기화
     def init_header(self):
         HEADER     = PACKET_HEADER()
         pkt_parser.initPacketHeader(byref(HEADER))
         self.header = HEADER
 
-    # 데이터 영역 초기화
+  # 데이터 영역 초기화
     def init_payload(self):
         self.payload     = c_uint8*self.size
         self.payload     = self.payload(0,)    
         pkt_parser.initArea(self.payload,c_uint32(self.size))
 
-    # 데이터 해쉬값 얻기
+  # 데이터 해쉬값 얻기
     def cal_hash(self,length):
         pkt_parser.hash_md5(self.hash,self.payload,length)
 
-    # 데이터 해쉬값 얻기
+  # 데이터 해쉬값 얻기
     def set_hash(self):
         pkt_parser.setHeaderOffset16(byref(self.header),PACKET_HEADER_CONFIG.MASK_DC,self.hash,16)
 
-    # 데이터 해쉬값 얻기
+  # 데이터 해쉬값 얻기
     def get_hash(self):
         temp       = c_uint8*16
         temp       = temp(0,)
         pkt_parser.getHeaderOffset16(byref(self.header),PACKET_HEADER_CONFIG.MASK_DC,temp,16)
         return temp
         
-    # 현재 패킷 내용 얻기
+  # 현재 패킷 내용 얻기
     def get_packet(self):
         return self.packet
 
-    # 패킷 변경
+  # 패킷 변경
     def set_packet(self,packet):
         self.temp = packet
         self.update()
 
-    # 연속적으로 패킷 데이터 받음
+  # 연속적으로 패킷 데이터 받음
     def put_seq_data(self,data):
         if(self.wcursor>=self.type):
             self.overflow     = 1
@@ -225,12 +225,12 @@ class PACKET:
         self.wcursor+=1
         self.accessed     = True
 
-    # 패킷에 한 바이트의 데이터를 입력
+  # 패킷에 한 바이트의 데이터를 입력
     def put_data(self,index,data):
         self.packet[index] = c_uint8(data)
         self.accessed      = True
 
-    # 연속적으로 패킷 데이터를 출력
+  # 연속적으로 패킷 데이터를 출력
     def get_seq_data(self):
         if(self.rcursor>=self.type):
             self.overflow    = 1
@@ -241,7 +241,7 @@ class PACKET:
             return data
         return None
 
-    # 한 바이트의 패킷 데이터를 출력
+  # 한 바이트의 패킷 데이터를 출력
     def get_data(self,index):
         return self.packet[index]
 
@@ -253,57 +253,57 @@ class PACKET:
     def move_rcursor(self,pos):
         self.rcursor = pos
 
-    # 현재 커서 위치 반환
+  # 현재 커서 위치 반환
     def current(self):
         return (self.wcursor,self.rcursor)
 
-    # 패킷을 해더, 페이로드로 분리
+  # 패킷을 해더, 페이로드로 분리
     def split(self):
         (self.header,self.payload) = pkt_split_packet_header_and_body(self.packet,self.size,self.opt)
 
-    # 해더, 페이로드를 합쳐 하나의 패킷으로 설정, 임시 데이터에 저장함
+  # 해더, 페이로드를 합쳐 하나의 패킷으로 설정, 임시 데이터에 저장함
     def combine(self):
         self.temp = pkt_combine_header_payloads(self.header,self.payload,self.opt,self.type)
         self.accessed     = True
 
-    # 임시 데이터에 저장된 패킷으로 내용 업데이트 ( combine -> update )
+  # 임시 데이터에 저장된 패킷으로 내용 업데이트 ( combine -> update )
     def update(self):
         self.packet       = self.temp
         self.split()
         self.temp         = None
         self.accessed     = False
 
-    # 임시 데이터가 존재하는가? (combine을 실행하고 update 진행했는가?)
+  # 임시 데이터가 존재하는가? (combine을 실행하고 update 진행했는가?)
     def isRevised(self):
         return self.accessed
 
-    # 해더 교환
+  # 해더 교환
     def header_xchg(self,header):
         self.header  = header
         self.accessed     = True
 
-    # 해더 정보 출력
+  # 해더 정보 출력
     def get_header(self,mask,data,size,end=PACKET_HEADER_CONFIG.BIG_ENDIAN):
         return pkt_get_header_data(self.header,mask,data,size,end)
 
-    # 가공되지 않은 해더 정보 출력 ( if you want to convert byte string to int, call unpack() method )
+  # 가공되지 않은 해더 정보 출력 ( if you want to convert byte string to int, call unpack() method )
     def get_header_raw(self,mask,data,size):
         return pkt_get_header_data_raw(self.header,mask,data,size)
 
-    # 해더 설정 변경
+  # 해더 설정 변경
     def set_header(self,mask,data,size):
         pkt_set_header_data(self.header,mask,data,size)
         self.accessed = 1
 
-    # 16진수로 해더 내용 출력
+  # 16진수로 해더 내용 출력
     def print_header(self):
         hex_print(self.header,PACKET.HEADSIZE)
 
-    # 16진수로 Payload 내용 출력     (시스템 엔디안 반영)
+  # 16진수로 Payload 내용 출력     (시스템 엔디안 반영)
     def print_payload(self,size=PACKET_HEADER_CONFIG.XBEE_DATA_LEN):
         hex_print(self.payload,size)
 
-    # 16진수로 Packet 출력           (시스템 엔디안 반영)
+   # 16진수로 Packet 출력           (시스템 엔디안 반영)
     def print(self,size):
         hex_print(self.packet,size)
 
@@ -317,7 +317,7 @@ class PACKET:
         if(opt==0 and self.rcursor >= self.type):return 1
         return 0
 
-    # 커서의 상태가 오버플로우되어 있는 상태인가?
+  # 커서의 상태가 오버플로우되어 있는 상태인가?
     def isOverflow(self):
         if(self.overflow):
             self.overflow = 0
@@ -350,8 +350,16 @@ class PACKET:
                                      data,PACKET_HEADER_STACK.HEADER_PAIR[_val][1])
             _container.append(data)
         self.parseinfo = OrderedDict(zip(PACKET_HEADER_STACK.HEADER_STACK,_container))
-        
-    # 패킷 리셋
+
+  # Return hexify data in parsed packet header
+    def parseHex(self,col):
+        return binascii.hexlify(self.parseinfo[col])
+
+  # Return well-fromated hexify string (It only applies to iterable python object)
+    def printHex(self,string):
+        return ' '.join('%02X' % i for i in six.iterbytes(string))
+
+  # Reset this packet
     def reset(self):
         self.wcursor    = 0
         self.rcursor    = 0
@@ -370,19 +378,19 @@ if __name__ == '__main__':
     retv     = 0
     retv2    = 0
     
-    # 패킷 생성
+  # 패킷 생성
     pkt      = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH)
     data     = c_uint8*PACKET_HEADER_CONFIG.DATA_LENGTH
     pkt.set_packet(data(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,0xFF,0xA0,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63))
 
-    # 해더 바디 분리
+  # 해더 바디 분리
     pkt.split()
     print("HEADER     : ")
     pkt.print_header()
     print("BODY     : ")
     pkt.print_payload(PACKET_HEADER_CONFIG.XBEE_DATA_LEN)
 
-    # 해더 정보 and 해더 수정하기 
+   # 해더 정보 얻기 and 해더 수정하기 
     retv = pkt.get_header(PACKET_HEADER_CONFIG.MASK_DST,retv,8)
     print(retv)
     pkt.set_header(PACKET_HEADER_CONFIG.MASK_SRC,0x001A7DDA7113,8)
@@ -394,16 +402,18 @@ if __name__ == '__main__':
     pkt.cal_hash(PACKET_HEADER_CONFIG.DATA_LENGTH)
     pkt.set_hash()
     
-    # 패킷 갱신하기
+  # 패킷 갱신하기
     print("BEFORE COMBINE and UPDATE : ")
     pkt.print(56)
     pkt.combine()
     pkt.update()
     print("AFTER COMBINE and UPDATE : ")
-    pkt.combine()
-    pkt.update()
     pkt.print(56)
     
-    # 패킷 파싱하기
+  # 패킷 파싱하기
     pkt.parse()
     print(pkt.parseinfo)
+    
+  # 패킷 출력하기   
+    print(pkt.parseHex('DST'))
+    print(pkt.printHex(pkt.parseinfo['DST']))
