@@ -30,12 +30,12 @@ class ControlGate(Process):
         print(colored('[+] [GATE] Waiting for gates open.','yellow',attrs=['bold']))
         self.ntOut.open(os.O_WRONLY)
         self.ntIn.open(os.O_RDONLY)
+        self.readList.append(self.ntIn)        
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
-        #self.xbOut.open(os.O_WRONLY)
-        #self.xbIn.open(os.O_RDONLY)
+        self.xbOut.open(os.O_WRONLY)
+        self.xbIn.open(os.O_RDONLY)
         print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
-        #self.readList.append(self.ntIn)
-        #self.readList.append(self.xbIn)
+        self.readList.append(self.xbIn)
         
     # Debugging Function
     def __echoNT(self):
@@ -87,16 +87,16 @@ class ControlGate(Process):
             self.readList.append(self.ntIn)
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'yellow',attrs=['bold']))
         elif(desc==PRSS_LIST.OLORANT):
-            os.system("python3 ./src/oloraXB.py & ")
+            os.system("python3 ./oloraXB.py & ")
             self.xbOut.open(os.O_WRONLY)
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn)
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'yellow',attrs=['bold']))
                 
     def run(self):
-        self.__echoNT()
-        #while(True):
-        #    self.__selector()
+        #self.__echoNT()
+        while(True):
+            self.__selector()
 
 
 if __name__ == '__main__':

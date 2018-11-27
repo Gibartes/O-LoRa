@@ -5,8 +5,8 @@ After=multi-user.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/python3 /usr/local/olora/Xbee/src/oloraXB.py
-WorkingDirectory=/usr/local/olora/Xbee/
+ExecStart=/usr/bin/python3 /usr/local/olora/xbee/oloraXB.py
+WorkingDirectory=/usr/local/olora/xbee/
 
 [Install]
 WantedBy=multi-user.target
