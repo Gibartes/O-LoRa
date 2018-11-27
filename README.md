@@ -1,6 +1,19 @@
 # O-LoRa
 
+## O-LoRa - Android
+---------------------------------------
+
+O-LoRa Android application collaborating with Myeongeun and MinSu
+
+---------------------------------------
+
+- Components :
+
+
+---------------------------------------
+
 ## O-LoRa - Device
+
 ---------------------------------------
 
 O-LoRa device controller project collaborating with Gibartes and MinJae
