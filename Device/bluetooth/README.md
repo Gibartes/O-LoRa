@@ -1,7 +1,9 @@
 # O-LoRa - Bluetooth - oloraNT
 __ Written by Gibartes __
 ---------------------------------------
+
 Simple bluetooth server to link internal user space area. You can utilize this software for other purposes as well as this off-grid network project if you're planning to compose server or controller with bluetooth protocol.
+
 ---------------------------------------
 ## External description about oloraNT
 * Named pipe for input to userspace	: /tmp/.olora.out
