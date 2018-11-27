@@ -41,8 +41,6 @@ elif [ "$1" = "make" ] && [ "$2" = "install" ] ||  [ "$2" = "uninstall" ]; then
 	cd - > /dev/null
 	cd ./bluetooth/src
 	make clean > /dev/null
-	mkdir amd64 > /dev/null
-	mkdir arm > /dev/null
 	make $2
 	if [ $? -gt 0 ]; then
 		echo "[!] Abort."
