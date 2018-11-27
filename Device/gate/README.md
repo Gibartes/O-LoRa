@@ -13,7 +13,7 @@ __ Written by Gibartes __
     - oloraXB -> Gate : "/tmp/.xbolora.out"
     - oloraXB <- Gate : "/tmp/.xbolora.in"
 
-- Packet Path
+- The Flows of packets
   - 1st 	: oloraNT -> Gate -> oloraXB
   - 2nd 	: oloraNT <- Gate <- oloraXB
 
