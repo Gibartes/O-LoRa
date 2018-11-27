@@ -1,10 +1,10 @@
 #include <olorastd.h>
 #include <sess.h>
 
-#define MAX_TASK_COUNT		3
-#define OUTPUT_TASK 		0
-#define INPUT_TASK 			1
-#define WATCHDOG_TASK 	    2
+#define MAX_TASK_COUNT      3
+#define OUTPUT_TASK         0
+#define INPUT_TASK          1
+#define WATCHDOG_TASK       2
 
 #define TASK_NONE           0
 #define TASK_WATCHDOG       1
@@ -183,13 +183,13 @@ static void *watchDog(void *param){
     /* EXIT : goto phase1 */	
     reset:
 
-        logWrite(tcb->Log,tcb->log,"[*] [WatchDog] Wait signal to sync...");
-        // if pending at a mutex_wait	    
+        logWrite(tcb->Log,tcb->log,"[*] [WatchDog] Wait signal to sync...");    
         wakeUpTask();
         setTask(tcb,tcb->sess->slock,TASK_WATCHDOG);
         while(1){
-            usleep(5000);
+            usleep(2500);		// HARD waiting : waiting for 2500us(2.5ms)
             status = getTask(tcb,tcb->sess->slock);
+            // send proper mutex signal when pending per each case.
             if(!(status&TASK_INPUT)){
                 wakeMutex2(input,input_cond);}
             if(!(status&TASK_OUTPUT)){
@@ -207,7 +207,7 @@ static void *watchDog(void *param){
         
     /* EXIT : TASK EXIT */
     exit:
-        // if pending at a mutex_wait 
+        // send proper mutex signal when pending per each case.
         if(pthread_mutex_destroy(&input)==EBUSY){
             pthread_cond_broadcast(&input_cond);}
         if(pthread_mutex_destroy(&output)==EBUSY){
@@ -219,7 +219,7 @@ static void *watchDog(void *param){
         close(tcb->in);
         close(tcb->out);
         logWrite(tcb->Log,tcb->log,"[*] [WatchDog] exit.");
-        pthread_exit(NULL);	    
+        pthread_exit(NULL);
 }
 
 
@@ -359,7 +359,7 @@ static void *inputTask(void *param){
     }
     
     exit:
-        logWrite(tcb->Log,tcb->log,"[*] [Input] Sync Wait.");		
+        logWrite(tcb->Log,tcb->log,"[*] [Input] Sync Wait.");
         pthread_barrier_wait(&barrier);
         logWrite(tcb->Log,tcb->log,"[*] [Input] exit.");
         pthread_exit(NULL);	
@@ -367,11 +367,11 @@ static void *inputTask(void *param){
 
 static int32_t spin(void *param){
     struct THREAD_CONTROL_BOX *tcb 	= (struct THREAD_CONTROL_BOX *)param;
-    struct PACKET_CHAIN *pkt;
+    struct PACKET_CHAIN *pkt        = NULL;
     int32_t err = 0;
+
     while(1){
         waitMutex2(spinner,spinner_cond);
-        
         do{
             sem_wait(tcb->sess->slock);
             pkt = dequeuePacket(tcb->sess->streamIn);

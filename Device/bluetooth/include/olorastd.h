@@ -81,10 +81,10 @@
     /* PACKET OFFSET */
     #define MASK_SRC              0
     #define MASK_DST              8
-    #define MASK_CM	             16
+    #define MASK_CM              16
     #define MASK_HP              24
     #define MASK_PROTO           25
-    #define MASK_ID	             26
+    #define MASK_ID              26
     #define MASK_FLAGS           28
     #define MASK_FRAG            29
     #define MASK_SEQ             30
@@ -92,13 +92,13 @@
     #define MASK_LEN             36
     #define MASK_TTL             38
     #define MASK_PARAM           39
-    #define MASK_DC	             40
+    #define MASK_DC              40
     #define MASK_DATA            (MASK_DC + MD5_DIGEST_LENGTH)
 
 	/* PACKET STRUCT */
     #define DATA_LENGTH          (MAX_BUFFER_SIZE-MASK_DATA)
     #define XBEE_DATA_LEN        (256-MASK_DATA)
-    #define LOCAL_BACK 	         0xFFFFFFFF
+    #define LOCAL_BACK           0xFFFFFFFF
 
 	/* FLAGS */
     #define FLAG_URGENT          (uint8_t)0b10000000  
@@ -166,14 +166,14 @@
     #define RANDOM_SEED          256
 #endif
 
-#define waitMutex(mutx,cond,err){                   \
-    pthread_mutex_lock(&(mutx));                    \
-    err = pthread_cond_wait(&(cond),&(mutx));       \
+#define waitMutex(mutx,cond,err){                         \
+    pthread_mutex_lock(&(mutx));                          \
+    err = pthread_cond_wait(&(cond),&(mutx));             \
     pthread_mutex_unlock(&(mutx));}
     
-#define waitMutex2(mutx,cond){                      \
-    pthread_mutex_lock(&(mutx));                    \
-    pthread_cond_wait(&(cond),&(mutx));             \
+#define waitMutex2(mutx,cond){                            \
+    pthread_mutex_lock(&(mutx));                          \
+    pthread_cond_wait(&(cond),&(mutx));                   \
     pthread_mutex_unlock(&(mutx));  }
 
 #define waitMutexTime(mutx,cond,tick,err){                \
@@ -181,14 +181,14 @@
     err = pthread_cond_timedwait(&(cond),&(mutx),&(tick));\
     pthread_mutex_unlock(&(mutx));  }
       
-#define wakeMutex(mutx,cond,err){                   \
-    pthread_mutex_lock(&(mutx));                    \
-    err = pthread_cond_signal(&(cond));             \
+#define wakeMutex(mutx,cond,err){                         \
+    pthread_mutex_lock(&(mutx));                          \
+    err = pthread_cond_signal(&(cond));                   \
     pthread_mutex_unlock(&(mutx));}
 
-#define wakeMutex2(mutx,cond){                      \
-    pthread_mutex_lock(&(mutx));                    \
-    pthread_cond_signal(&(cond));                   \
+#define wakeMutex2(mutx,cond){                            \
+    pthread_mutex_lock(&(mutx));                          \
+    pthread_cond_signal(&(cond));                         \
     pthread_mutex_unlock(&(mutx));}
 
 union bcursor_t {
@@ -223,11 +223,11 @@ struct PACKET_LINK_LAYER {
     uint64_t src;                       // (8 byte) Source Address
     uint64_t dst;                       // (8 byte) Destination Address
     uint64_t cm;                        // (8 byte) Channel Mask
-    uint8_t  hp; 	                    // (1 byte) HP
-    uint8_t proto; 	                    // (1 byte) PROTOCOL
+    uint8_t  hp;                        // (1 byte) HP
+    uint8_t  proto;                     // (1 byte) PROTOCOL
     uint16_t id;                        // (2 byte) Network ID
     uint8_t  flags;                     // (1 byte) Packet Flag Info
-    uint8_t frag;                       // (1 byte) Fragmented Packet
+    uint8_t  frag;                      // (1 byte) Fragmented Packet
     uint16_t seq;                       // (4 byte) Packet Sequential Number
 }__attribute__((packed));
 
