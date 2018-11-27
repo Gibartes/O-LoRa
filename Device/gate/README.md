@@ -1,8 +1,10 @@
-# O-LoRa
+## O-LoRa - Gate - oloraGT
 __ Written by Gibartes __
-*********************************************************************************************************
+---------------------------------------
+
  This python code plays a role in safely connecting between bluetooth(oloraNT) and xbee(oloraXB).
-*********************************************************************************************************
+
+---------------------------------------
 - I/O List
   - oloraNT
     - oloraNT -> Gate : "/tmp/.olora.out"
@@ -14,3 +16,5 @@ __ Written by Gibartes __
 - Packet Path
   - 1st 	: oloraNT -> Gate -> oloraXB
   - 2nd 	: oloraNT <- Gate <- oloraXB
+
+---------------------------------------
