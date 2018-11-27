@@ -29,7 +29,7 @@ class ObjectPipe:
         if close:self.pipe.close()
         return res
     def recv(self,close=False):
-        res	 = os.read(self.pipe,1024)
+        res	 = os.read(self.pipe,PACKET_HEADER_CONFIG.PACKET_FULL)
         if close:self.pipe.close()
         return res
     def close(self):

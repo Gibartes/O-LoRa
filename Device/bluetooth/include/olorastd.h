@@ -69,70 +69,70 @@
 #define BUFFER_SIZE 	1008
 /* MESSAGE PROTOCOL STACK OFFSET INFO */
 #ifndef __OLORA_PACKET_HEADER__
-	#define __OLORA_PACKET_HEADER__
+    #define __OLORA_PACKET_HEADER__
     #define likely(x)       __builtin_expect((x),1)
     #define unlikely(x)     __builtin_expect((x),0)
-	#define MAX_BUFFER_SIZE 1008
-	/* I/O Direction in unnamed pipe */
-	#define private		static
-	#define READ		0
-	#define WRITE		1
+    #define MAX_BUFFER_SIZE 1008
+    /* I/O Direction in unnamed pipe */
+    #define private		static
+    #define READ		0
+    #define WRITE		1
 
     /* PACKET OFFSET */
-	#define MASK_SRC 	0
-	#define MASK_DST 	8
-	#define MASK_CM		16
-	#define MASK_HP		24
-	#define MASK_PROTO  25
-	#define MASK_ID	    26
-	#define MASK_FLAGS	28
-	#define MASK_FRAG   29
-	#define MASK_SEQ	30
-	#define MASK_TMS	32
-	#define MASK_LEN	36
-	#define MASK_TTL	38
-	#define MASK_PARAM	39
-	#define MASK_DC	    40
-	#define MASK_DATA	(MASK_DC + MD5_DIGEST_LENGTH)
+    #define MASK_SRC 	0
+    #define MASK_DST 	8
+    #define MASK_CM		16
+    #define MASK_HP		24
+    #define MASK_PROTO  25
+    #define MASK_ID	    26
+    #define MASK_FLAGS	28
+    #define MASK_FRAG   29
+    #define MASK_SEQ	30
+    #define MASK_TMS	32
+    #define MASK_LEN	36
+    #define MASK_TTL	38
+    #define MASK_PARAM	39
+    #define MASK_DC	    40
+    #define MASK_DATA	(MASK_DC + MD5_DIGEST_LENGTH)
 
 	/* PACKET STRUCT */
-	#define DATA_LENGTH         (MAX_BUFFER_SIZE-MASK_DATA)
-	#define XBEE_DATA_LEN       (256-MASK_DATA)
-	#define LOCAL_BACK 	         0xFFFFFFFF
+    #define DATA_LENGTH         (MAX_BUFFER_SIZE-MASK_DATA)
+    #define XBEE_DATA_LEN       (256-MASK_DATA)
+    #define LOCAL_BACK 	         0xFFFFFFFF
 
 	/* FLAGS */
-	#define FLAG_URGENT          (uint8_t)0b10000000  
-	#define FLAG_ACK             (uint8_t)0b01000000
-	#define FLAG_FIN             (uint8_t)0b00100000
-	#define FLAG_ENCRYPT         (uint8_t)0b00010000
-	#define FLAG_QUERY           (uint8_t)0b00001000
-	#define FLAG_BROKEN          (uint8_t)0b00000100	
-	#define FLAG_ERROR           (uint8_t)0b00000010
-	#define FLAG_RESP            (uint8_t)0b00000001
+    #define FLAG_URGENT          (uint8_t)0b10000000  
+    #define FLAG_ACK             (uint8_t)0b01000000
+    #define FLAG_FIN             (uint8_t)0b00100000
+    #define FLAG_ENCRYPT         (uint8_t)0b00010000
+    #define FLAG_QUERY           (uint8_t)0b00001000
+    #define FLAG_BROKEN          (uint8_t)0b00000100	
+    #define FLAG_ERROR           (uint8_t)0b00000010
+    #define FLAG_RESP            (uint8_t)0b00000001
 
-	/* PROTOCOL */
-	#define PROT_TCP             (uint8_t)0b00100000
-	#define PROT_UDP             (uint8_t)0b00010000
-	#define PROT_VOICE           (uint8_t)0b00001000
-	#define PROT_RT              (uint8_t)0b00000100
-	#define PROT_GRAPHICS        (uint8_t)0b00000010
-	#define PROT_TEXT            (uint8_t)0b00000001
-	
-	/* PACKET FLAGS */
-	#define PACKET_USED            1
-	#define PACKET_UNUSED          2
+    /* PROTOCOL */
+    #define PROT_TCP             (uint8_t)0b00100000
+    #define PROT_UDP             (uint8_t)0b00010000
+    #define PROT_VOICE           (uint8_t)0b00001000
+    #define PROT_RT              (uint8_t)0b00000100
+    #define PROT_GRAPHICS        (uint8_t)0b00000010
+    #define PROT_TEXT            (uint8_t)0b00000001
+
+    /* PACKET FLAGS */
+    #define PACKET_USED            1
+    #define PACKET_UNUSED          2
     #define PACKET_SUSPEND         4
-	#define PACKET_PROTECTION      8
+    #define PACKET_PROTECTION      8
     #define PACKET_REMOVE         16
 
 	/* RESULT CODE */
-	#define SUCCESS                0
-	#define ERR_SOCKET_IO_FAIL    -1
-	#define ERR_AUTH_FAIL         -2
-	#define ERR_GEN_KEY_FAIL      -3
-	#define ERR_RUNNING_TASK      -4
-	#define ERR_FALSE_ADDR        -5
-	#define ERR_ECRYPT_FAILURE    -6
+    #define SUCCESS                0
+    #define ERR_SOCKET_IO_FAIL    -1
+    #define ERR_AUTH_FAIL         -2
+    #define ERR_GEN_KEY_FAIL      -3
+    #define ERR_RUNNING_TASK      -4
+    #define ERR_FALSE_ADDR        -5
+    #define ERR_ECRYPT_FAILURE    -6
     #define ERR_CHILD_PROCESS     -7
     #define ERR_HASH_FAIL         -8
     #define ERR_SESSION_CERT      -9
@@ -140,7 +140,7 @@
     #define ERR_LAND_STATE       -11
     #define ERR_INTERNAL_PKT     -12
 
-	/* HCI SCAN CODE */
+    /* HCI SCAN CODE */
     #define NOSCAN					0
     #define ISCAN					1
     #define PSCAN					2
@@ -148,20 +148,20 @@
 
     #define LOGPATH               (uint8_t*)"./service.log"
 
-	/* STATUS MASK */
-	#define STATUS_KILL				128
-	#define STATUS_EXIT 			64
-	#define STATUS_TIMO				32
-	#define STATUS_INTERR			16
-	#define STATUS_TIMO_M			8
-	#define STATUS_RUNNING          4
-	#define STATUS_TIMO_L			1
+    /* STATUS MASK */
+    #define STATUS_KILL				128
+    #define STATUS_EXIT 			64
+    #define STATUS_TIMO				32
+    #define STATUS_INTERR			16
+    #define STATUS_TIMO_M			8
+    #define STATUS_RUNNING          4
+    #define STATUS_TIMO_L			1
 	
-	/* SESSION STATE */
-	#define SESSION_NONE            1
-	#define SESSION_WAIT            2
-	#define SESSION_CRAT            4
-	#define SESSION_PEND            8
+    /* SESSION STATE */
+    #define SESSION_NONE            1
+    #define SESSION_WAIT            2
+    #define SESSION_CRAT            4
+    #define SESSION_PEND            8
 
     #define RANDOM_SEED           256   
 #endif
@@ -192,10 +192,10 @@
     pthread_mutex_unlock(&(mutx));}
 
 union bcursor_t {
-	uint8_t 	u8[8];
-	uint16_t 	u16[4];
-	uint32_t	u32[2];
-	uint64_t	u64;
+    uint8_t     u8[8];
+    uint16_t    u16[4];
+    uint32_t    u32[2];
+    uint64_t    u64;
 };
 
 struct bcursor_T {
@@ -203,84 +203,84 @@ struct bcursor_T {
 };
 
 struct PACKET_HEADER {
-	uint8_t SRC[8];
-	uint8_t DST[8];
-	uint8_t CM[8];
-	uint8_t HP[1];
-	uint8_t PROTO[1];
-	uint8_t ID[2];
-	uint8_t FLAGS[1];
-	uint8_t FRAG[1];
-	uint8_t SEQ[2];
-	uint8_t TMS[4];
-	uint8_t LEN[2];
-	uint8_t TTL[1];
-	uint8_t PARAM[1];
-	uint8_t DC[MD5_DIGEST_LENGTH];
+    uint8_t SRC[8];
+    uint8_t DST[8];
+    uint8_t CM[8];
+    uint8_t HP[1];
+    uint8_t PROTO[1];
+    uint8_t ID[2];
+    uint8_t FLAGS[1];
+    uint8_t FRAG[1];
+    uint8_t SEQ[2];
+    uint8_t TMS[4];
+    uint8_t LEN[2];
+    uint8_t TTL[1];
+    uint8_t PARAM[1];
+    uint8_t DC[MD5_DIGEST_LENGTH];
 }__attribute__((packed));
 
 struct PACKET_LINK_LAYER {
-	uint64_t src;                       // (8 byte) Source Address
-	uint64_t dst;                       // (8 byte) Destination Address
-	uint64_t cm;                        // (8 byte) Channel Mask
-	uint8_t  hp; 	                    // (1 byte) HP
-	uint8_t proto; 	                    // (1 byte) PROTOCOL
-	uint16_t id;                        // (2 byte) Network ID
-	uint8_t  flags;                     // (1 byte) Packet Flag Info
-	uint8_t frag;                       // (1 byte) Fragmented Packet
-	uint16_t seq;                       // (4 byte) Packet Sequential Number
+    uint64_t src;                       // (8 byte) Source Address
+    uint64_t dst;                       // (8 byte) Destination Address
+    uint64_t cm;                        // (8 byte) Channel Mask
+    uint8_t  hp; 	                    // (1 byte) HP
+    uint8_t proto; 	                    // (1 byte) PROTOCOL
+    uint16_t id;                        // (2 byte) Network ID
+    uint8_t  flags;                     // (1 byte) Packet Flag Info
+    uint8_t frag;                       // (1 byte) Fragmented Packet
+    uint16_t seq;                       // (4 byte) Packet Sequential Number
 }__attribute__((packed));
 
 struct PACKET_SECURITY_LAYER {
-	uint8_t DC[MD5_DIGEST_LENGTH];      // Data Checksum
+    uint8_t DC[MD5_DIGEST_LENGTH];      // Data Checksum
 }__attribute__((packed));
 
 struct PACKET_NETWORK_CURRENT_CONFIG {
-	uint8_t  ttl;
+    uint8_t  ttl;
     uint8_t  param;
     uint32_t sec;
     uint32_t usec;
 }__attribute__((packed));
 
 union PACKET {
-	struct PACKET_HEADER header;
-	uint8_t data[MAX_BUFFER_SIZE];
+    struct PACKET_HEADER header;
+    uint8_t data[MAX_BUFFER_SIZE];
 };
 
 struct PACKET_DATA {
-	uint8_t data[DATA_LENGTH];
+    uint8_t data[DATA_LENGTH];
 };
 
 struct PACKET_CHAIN {
-	uint8_t flag;
-	struct list_head list;
-	union PACKET   packet;
+    uint8_t flag;
+    struct list_head list;
+    union PACKET   packet;
 };
 
 typedef struct __session_t {
     /* Session Info */
     sem_t    *slock;
     int32_t  id;            // session ID
-	int32_t  state;         // session State
-	int32_t  method;        // encryption method;
-	/* Descriptors */
-	int32_t  hci;           // hci socket       ( defaut -1 )
-	int32_t  sock;          // bluetooth socket ( default -1 )
-	int32_t  temp;          // temp descriptor
-	/* Address */ 
-	uint64_t hostAddr;      // host Address
-	uint64_t clientAddr;    // client Address
-	/* AES Key */
-	uint8_t  key[AES256_KEYSIZE];
-	uint8_t  iv[AES256_IVSIZE];
-	/* RSA Key */
-	RSA      *hostKey;
-	RSA      *clientKey;
-	/* Session Packet Chain */
-	struct PACKET_CHAIN *pkt;
-	struct PACKET_NETWORK_CURRENT_CONFIG pnc;
-	struct list_head *streamIn;
-	struct list_head *streamOut;
+    int32_t  state;         // session State
+    int32_t  method;        // encryption method;
+    /* Descriptors */
+    int32_t  hci;           // hci socket       ( defaut -1 )
+    int32_t  sock;          // bluetooth socket ( default -1 )
+    int32_t  temp;          // temp descriptor
+    /* Address */ 
+    uint64_t hostAddr;      // host Address
+    uint64_t clientAddr;    // client Address
+    /* AES Key */
+    uint8_t  key[AES256_KEYSIZE];
+    uint8_t  iv[AES256_IVSIZE];
+    /* RSA Key */
+    RSA      *hostKey;
+    RSA      *clientKey;
+    /* Session Packet Chain */
+    struct PACKET_CHAIN *pkt;
+    struct PACKET_NETWORK_CURRENT_CONFIG pnc;
+    struct list_head *streamIn;
+    struct list_head *streamOut;
 } session_t;
 
 struct THREAD_CONTROL_BOX{
@@ -289,10 +289,10 @@ struct THREAD_CONTROL_BOX{
     uint8_t mask;
     uint8_t task;
     uint8_t flag;
-	/* Descriptors */    
+    /* Descriptors */    
 	int32_t  in;            // descriptor for task in
 	int32_t  out;           // descriptor as  task out
-	/* Timeout ticks */    
+    /* Timeout ticks */    
     int64_t	ticks;
     /* Log */
     FILE 	*Log;
@@ -359,13 +359,13 @@ void    getHeaderLinkLayer(struct PACKET_CHAIN *pkt, struct PACKET_LINK_LAYER *l
 void    setReportPacket(uint64_t host,uint64_t client,struct PACKET_CHAIN *pkt,uint8_t *data,size_t length);
 
 /* Python Backend Code */
-void setHeaderOffset(struct PACKET_HEADER *pkt,const uint32_t offset,const uint32_t subset,const uint64_t opt,const uint8_t bitmode);
-void getHeaderOffset(struct PACKET_HEADER *pkt,const uint32_t offset,const uint32_t subset,uint64_t *opt,const uint8_t bitmode);
-void setHeaderOffset16(struct PACKET_HEADER *pkt, const uint32_t offset, uint8_t *hash, const uint32_t bitmode);
-void getHeaderOffset16(struct PACKET_HEADER *pkt, const uint32_t offset, uint8_t *hash, const uint32_t bitmode);
-void initPacketHeader(struct PACKET_HEADER *pkt);
-void str2pkth(struct PACKET_HEADER *pkt,void *buf);
-void str2pktb(void *pkt,void *buf,uint32_t opt);
-void pkth2str(struct PACKET_HEADER *pkt,void *str);
-void pktCombine(void *pkt,void *head,void *body,uint32_t opt);
-void initArea(void *pkt,uint32_t size);
+void    setHeaderOffset(struct PACKET_HEADER *pkt,const uint32_t offset,const uint32_t subset,const uint64_t opt,const uint8_t bitmode);
+void    getHeaderOffset(struct PACKET_HEADER *pkt,const uint32_t offset,const uint32_t subset,uint64_t *opt,const uint8_t bitmode);
+void    setHeaderOffset16(struct PACKET_HEADER *pkt, const uint32_t offset, uint8_t *hash, const uint32_t bitmode);
+void    getHeaderOffset16(struct PACKET_HEADER *pkt, const uint32_t offset, uint8_t *hash, const uint32_t bitmode);
+void    initPacketHeader(struct PACKET_HEADER *pkt);
+void    str2pkth(struct PACKET_HEADER *pkt,void *buf);
+void    str2pktb(void *pkt,void *buf,uint32_t opt);
+void    pkth2str(struct PACKET_HEADER *pkt,void *str);
+void    pktCombine(void *pkt,void *head,void *body,uint32_t opt);
+void    initArea(void *pkt,uint32_t size);
