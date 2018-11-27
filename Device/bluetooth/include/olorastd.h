@@ -42,62 +42,62 @@
 #include <endian.h>
 #include <byteswap.h>
 
-#define OLORA_DAEMON_NAME	 "OLoRa Bluetooth Network Daemon"
-#define OLORA_DAEMON_VERSION "1.1.0"
+#define OLORA_DAEMON_NAME	     "OLoRa Bluetooth Network Daemon"
+#define OLORA_DAEMON_VERSION     "1.1.0"
 
-#define OLORA_DEBUG_FLAG        1
+#define OLORA_DEBUG_FLAG            1
 /* Encryption Definitions */
-#define AES256_KEYSIZE       256
-#define AES256_IVSIZE        128
-#define AES256_BLKSIZE        16
+#define AES256_KEYSIZE            256
+#define AES256_IVSIZE             128
+#define AES256_BLKSIZE             16
 
-#define RSA_KEY_LEN			4096
-#define RSA_BYTE_SIZE		 512
-#define RSA_KEY_2048        2048
-#define RSA_KEY_2048_LEN     256
-#define RSA_KEY_2048_KEY_LEN 214
-#define RSA_KEY_4096        4096
-#define RSA_KEY_4096_LEN     512
-#define RSA_KEY_4096_KEY_LEN 478
+#define RSA_KEY_LEN              4096
+#define RSA_BYTE_SIZE             512
+#define RSA_KEY_2048             2048
+#define RSA_KEY_2048_LEN          256
+#define RSA_KEY_2048_KEY_LEN      214
+#define RSA_KEY_4096             4096
+#define RSA_KEY_4096_LEN          512
+#define RSA_KEY_4096_KEY_LEN      478
 
-#define ENC_MASK_AES    1
-#define ENC_MASK_RSA    2
-#define ENC_MASK_NON    3
+#define ENC_MASK_AES                1
+#define ENC_MASK_RSA                2
+#define ENC_MASK_NON                3
     
-#define EXT_PIPE_OUT    "/tmp/.olora.out"
-#define EXT_PIPE_IN     "/tmp/.olora.in"
-#define BUFFER_SIZE 	1008
+#define EXT_PIPE_OUT             "/tmp/.olora.out"
+#define EXT_PIPE_IN              "/tmp/.olora.in"
+#define BUFFER_SIZE              1008
 /* MESSAGE PROTOCOL STACK OFFSET INFO */
 #ifndef __OLORA_PACKET_HEADER__
     #define __OLORA_PACKET_HEADER__
-    #define likely(x)       __builtin_expect((x),1)
-    #define unlikely(x)     __builtin_expect((x),0)
-    #define MAX_BUFFER_SIZE 1008
+    #define likely(x)            __builtin_expect((x),1)
+    #define unlikely(x)          __builtin_expect((x),0)
+    #define MAX_BUFFER_SIZE      1008
     /* I/O Direction in unnamed pipe */
-    #define private		static
-    #define READ		0
-    #define WRITE		1
+    #define private	             static
+    #define READ                  0
+    #define WRITE                 1
 
     /* PACKET OFFSET */
-    #define MASK_SRC 	0
-    #define MASK_DST 	8
-    #define MASK_CM		16
-    #define MASK_HP		24
-    #define MASK_PROTO  25
-    #define MASK_ID	    26
-    #define MASK_FLAGS	28
-    #define MASK_FRAG   29
-    #define MASK_SEQ	30
-    #define MASK_TMS	32
-    #define MASK_LEN	36
-    #define MASK_TTL	38
-    #define MASK_PARAM	39
-    #define MASK_DC	    40
-    #define MASK_DATA	(MASK_DC + MD5_DIGEST_LENGTH)
+    #define MASK_SRC              0
+    #define MASK_DST              8
+    #define MASK_CM	             16
+    #define MASK_HP              24
+    #define MASK_PROTO           25
+    #define MASK_ID	             26
+    #define MASK_FLAGS           28
+    #define MASK_FRAG            29
+    #define MASK_SEQ             30
+    #define MASK_TMS             32
+    #define MASK_LEN             36
+    #define MASK_TTL             38
+    #define MASK_PARAM           39
+    #define MASK_DC	             40
+    #define MASK_DATA            (MASK_DC + MD5_DIGEST_LENGTH)
 
 	/* PACKET STRUCT */
-    #define DATA_LENGTH         (MAX_BUFFER_SIZE-MASK_DATA)
-    #define XBEE_DATA_LEN       (256-MASK_DATA)
+    #define DATA_LENGTH          (MAX_BUFFER_SIZE-MASK_DATA)
+    #define XBEE_DATA_LEN        (256-MASK_DATA)
     #define LOCAL_BACK 	         0xFFFFFFFF
 
 	/* FLAGS */
@@ -141,29 +141,29 @@
     #define ERR_INTERNAL_PKT     -12
 
     /* HCI SCAN CODE */
-    #define NOSCAN					0
-    #define ISCAN					1
-    #define PSCAN					2
-    #define PISCAN					3
+    #define NOSCAN                 0
+    #define ISCAN                  1
+    #define PSCAN                  2
+    #define PISCAN                 3
 
-    #define LOGPATH               (uint8_t*)"./service.log"
+    #define LOGPATH              (uint8_t*)"./service.log"
 
     /* STATUS MASK */
-    #define STATUS_KILL				128
-    #define STATUS_EXIT 			64
-    #define STATUS_TIMO				32
-    #define STATUS_INTERR			16
-    #define STATUS_TIMO_M			8
-    #define STATUS_RUNNING          4
-    #define STATUS_TIMO_L			1
+    #define STATUS_KILL          128
+    #define STATUS_EXIT           64
+    #define STATUS_TIMO           32
+    #define STATUS_INTERR         16
+    #define STATUS_TIMO_M          8
+    #define STATUS_RUNNING         4
+    #define STATUS_TIMO_L          1
 	
     /* SESSION STATE */
-    #define SESSION_NONE            1
-    #define SESSION_WAIT            2
-    #define SESSION_CRAT            4
-    #define SESSION_PEND            8
+    #define SESSION_NONE           1
+    #define SESSION_WAIT           2
+    #define SESSION_CRAT           4
+    #define SESSION_PEND           8
 
-    #define RANDOM_SEED           256   
+    #define RANDOM_SEED          256
 #endif
 
 #define waitMutex(mutx,cond,err){                   \
@@ -289,14 +289,14 @@ struct THREAD_CONTROL_BOX{
     uint8_t mask;
     uint8_t task;
     uint8_t flag;
-    /* Descriptors */    
+    /* Descriptors */
 	int32_t  in;            // descriptor for task in
 	int32_t  out;           // descriptor as  task out
     /* Timeout ticks */    
     int64_t	ticks;
     /* Log */
     FILE 	*Log;
-    sem_t   *log;    
+    sem_t   *log;
     /* Session */
     session_t *sess;
 };
