@@ -107,7 +107,7 @@ class ControlGate(Process):
             self.readList.append(self.ntIn)
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
         elif(desc==PRSS_LIST.OLORANT):
-            os.system("python3 ./oloraXB.py & ")
+            os.system("sudo service oloraxb restart")
             self.xbOut.open(os.O_WRONLY)
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn)

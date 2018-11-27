@@ -48,7 +48,7 @@ This is a software 1:1 bluetooth server to link internal user space area. You ca
 ### How to build oloraNT?
 1. chage directory to ./src
 2. make
-#### If you want to install oloraNT as service or olorapkt.so to use python, 
+#### If you want to install oloraNT as a service or olorapkt.so to use python, 
 1. change directory to ./src
 2. make
 3. sudo make install
