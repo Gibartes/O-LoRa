@@ -1,27 +1,27 @@
 .SUFFIXES: .c .o
-CC 			= gcc
+CC          = gcc
 
 ifeq ($(shell arch),x86_64)
-CFLAGS 		= -O2 -c -Werror -Wall -Wstrict-overflow
-LFLAGS		= -O2 -Werror -Wall -Wstrict-overflow
-#CFLAGS 		= -O2 -c -Werror -Walloca -Wstringop-overflow
-#LFLAGS		= -O2 -Werror -Walloca -Wstringop-overflow
+CFLAGS      = -O2 -c -Werror -Wall -Wstrict-overflow
+LFLAGS      = -O2 -Werror -Wall -Wstrict-overflow
+#CFLAGS     = -O2 -c -Werror -Walloca -Wstringop-overflow
+#LFLAGS     = -O2 -Werror -Walloca -Wstringop-overflow
 else
-CFLAGS 		= -O2 -c -Werror
-LFLAGS		= -O2 -Werror
+CFLAGS      = -O2 -c -Werror
+LFLAGS      = -O2 -Werror
 endif
 
 # -Walloca				 (for debug)
 # -Wstringop-overflow 	 (for debug)
 # -> type option detects buffer overflow in calls to string handling functions like memcpy 
 
-INCLUDE 	= -I../include
-LDFLAGS 	= -lbluetooth -lpthread -lrt -lcrypto -lpam -lpam_misc
-PROJECT 	= oloraNT
+INCLUDE     = -I../include
+LDFLAGS     = -lbluetooth -lpthread -lrt -lcrypto -lpam -lpam_misc
+PROJECT     = oloraNT
 
-LIBNAME		= olora
-LIBTARGET 	= olorapkt.so
-SERVICE_FL	= olorablu.service
+LIBNAME     = olora
+LIBTARGET   = olorapkt.so
+SERVICE_FL  = olorablu.service
 
 MAIN = task.o
 SRCS = blue.c hash.c pkt.c sess.c log.c
@@ -45,8 +45,10 @@ SHELL: test.c $(OBJS)
 
 MVARCH: $(PROJECT) $(LIBTARGET)
 ifeq ($(shell arch),x86_64)
+	mkdir -p ./amd64/ 2>/dev/null
 	cp $(PROJECT) $(LIBTARGET) ./amd64/
 else
+	mkdir -p ./arm/ 2>/dev/null
 	cp $(PROJECT) $(LIBTARGET) ./arm/
 endif
 
