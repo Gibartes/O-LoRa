@@ -1,15 +1,5 @@
 # O-LoRa
 
-## O-LoRa - Android
----------------------------------------
-
-O-LoRa Android application collaborating with Myeongeun and MinSu
-
----------------------------------------
-
-- Components :
-
-
 ---------------------------------------
 
 ## O-LoRa - Device
@@ -85,4 +75,17 @@ __ Written by Gibartes __
 - The Flows of packets
   - 1st 	: oloraNT -> Gate -> oloraXB
   - 2nd 	: oloraNT <- Gate <- oloraXB
+---------------------------------------
+
+
+## O-LoRa - Android
+---------------------------------------
+
+O-LoRa Android application collaborating with Myeongeun and MinSu
+
+---------------------------------------
+
+- Components :
+
+
 ---------------------------------------
