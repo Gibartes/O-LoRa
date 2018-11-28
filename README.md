@@ -97,7 +97,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	prot = pkt.get_header(PACKET_HEADER_CONFIG.MASK_PROT,prot,1)
 	print(prot)
 ```
-* Sometimes, the above way is apt to messy if you need to get more than three values in the header field to process your logics. This library offers the function of header parsing. The data saves in parseinfo where defined in PACKET class. The return type is OrderedDict. But it does not seem to be beautiful original python output concerning hex type. You can use binascii module or printHex() function to convert hex data intuitively.
+* Sometimes, the above way is apt to messy if you need to get more than three values in the header field to process your logics. This library offers the function of header parsing. The data saves in parseinfo where defined in PACKET class, and the return type is OrderedDict. But it does not seem to be beautiful original python output concerning hex type. You can use binascii module or printHex() function to convert hex data intuitively.
 
 ```python
 	pkt.parse()
