@@ -280,7 +280,7 @@ static void *outputTask(void *param){
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             continue;
         }
-		getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
+        getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
@@ -298,7 +298,7 @@ static void *outputTask(void *param){
         }
         err = sendPacket(tcb->sess->sock,tcb->sess,&msg,&link,&data,len,tcb->sess->method);
         if(err<=0){
-        	// Marking Here.
+            // Marking Here.
             // Maybe doesn't work when echo-test with current test tool ===>
             getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
