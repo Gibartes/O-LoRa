@@ -49,8 +49,8 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 ```
 * After spliting, you can see bytes in the packet like this :
 ```python
-	pkt.print_header()		#  print header in the packet
-	pkt.print_header(256)	#  print 256 bytes at payload in the packet
+	pkt.print_header()            #  print header in the packet
+	pkt.print_header(256)        #  print 256 bytes at payload in the packet
 ```
 * You can also manipulate a value in the packet. After revising the pacet, you must update the packet.
 ```python
@@ -64,7 +64,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	prot = pkt.get_header(PACKET_HEADER_CONFIG.MASK_PROT,prot,1)
 	print(prot)
 ```
-* Sometimes, the above way is apt to messy if you need more than three values in the header field to process your logics. This library offers the function of header parsing. The data saves in parseinfo where defined in PACKET class. The return type is OrderedDict. But it does not seem to be beautiful original python output concerning hex type. You can use binascii module or printHex() function to convert hex data intuitivly.
+* Sometimes, the above way is apt to messy if you need more than three values in the header field to process your logics. This library offers the function of header parsing. The data saves in parseinfo where defined in PACKET class. The return type is OrderedDict. But it does not seem to be beautiful original python output concerning hex type. You can use binascii module or printHex() function to convert hex data intuitively.
 
 ```python
 	pkt.parse()
