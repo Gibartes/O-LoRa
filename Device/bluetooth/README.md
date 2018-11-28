@@ -33,7 +33,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * You can also fill data using a ctype c_uint8 array like
 ```python
 	data = c_uint8*PACKET_HEADER_CONFIG.DATA_LENGTH
-	pkt.set_packet(data(B0,B1,B2,....)
+	pkt.set_packet(data(B0,B1,B2,....))
 ```
 * Or alternatively,
 ```python
