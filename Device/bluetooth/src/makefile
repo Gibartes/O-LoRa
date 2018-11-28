@@ -21,12 +21,13 @@ PROJECT     = oloraNT
 
 LIBNAME     = olora
 LIBTARGET   = olorapkt.so
-SERVICE_FL  = olorablu.service
+SERVICE_FL  = olorant.service
 
 MAIN = task.o
 SRCS = blue.c hash.c pkt.c sess.c log.c
 OBJS = $(SRCS: .c = .o) 
 LIBSRCS = pkt.c hash.c
+PYTHON3FL = packet.py
 
 .c.o:
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<
@@ -58,7 +59,8 @@ PREFIX := /usr/local
 endif
 
 DESTDIR ?=
-DEAMONDIR = /etc/systemd/system/
+DEAMONDIR   = /etc/systemd/system/
+PYTHON3PATH = /usr/lib/python3/dist-packages/
 
 install: $(PROJECT) $(LIBTARGET)
 	install -d $(DESTDIR)$(PREFIX)/bin
@@ -68,13 +70,13 @@ install: $(PROJECT) $(LIBTARGET)
 	install -m 750 $(SERVICE_FL) $(DEAMONDIR)
 	sudo systemctl enable olorant
 	sudo service olorant start
-
+	install -d $(DESTDIR)$(PYTHON3PATH)
+	install -m 755 $(PYTHON3FL) $(PYTHON3PATH)
 uninstall:
 	sudo systemctl disable olorant
 	sudo service olorant stop
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(PROJECT)
 	rm -f $(DESTDIR)$(PREFIX)/lib/$(LIBTARGET)
 	rm -f $(DEAMONDIR)$(SERVICE_FL)
-
 clean:
 	rm -rf *.o $(PROJECT) $(LIBTARGET) shell
