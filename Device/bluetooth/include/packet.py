@@ -6,16 +6,22 @@ from collections import OrderedDict
 if os.geteuid()==0:
     try:
         LIB_PATH    = "/usr/local/lib/olorapkt.so"
-        parser = cdll.LoadLibrary(LIB_PATH)
+        parser      = cdll.LoadLibrary(LIB_PATH)
+        parser      = None
     except:
         print("[!] You must register oloraNT as system service to use this library with sudo.")
         print("[!] You should type 'sudo make install' at O-LoRa/Device/bluetooth/src\n[!] or manually copy lib.")
         sys.exit(0)
 else:
-    if(platform.machine() == 'x86_64'):
-        LIB_PATH    = "{0}/lib/amd64/olorapkt.so".format(os.environ['HOME'])
-    else:
-        LIB_PATH    = "{0}/lib/arm/olorapkt.so".format(os.environ['HOME'])
+    try:
+        LIB_PATH    = "/usr/local/lib/olorapkt.so"
+        parser      = cdll.LoadLibrary(LIB_PATH)
+        parser      = None
+    except:
+        if(platform.machine() == 'x86_64'):
+            LIB_PATH = "{0}/lib/amd64/olorapkt.so".format(os.environ['HOME'])
+        else:
+            LIB_PATH = "{0}/lib/arm/olorapkt.so".format(os.environ['HOME'])
 
 class PACKET_HEADER_CONFIG(object):
     MASK_SRC        =   0
@@ -371,7 +377,32 @@ class PACKET:
         self.parseinfo    = dict()
         self.init_header()
         self.init_payload()  
-        
+
+# Named pipe object
+class ObjectPipe:
+    def __init__(self,channel):
+        self.path = channel
+        self.pipe = 0
+    def mkfifo(self):
+        try:
+            os.mkfifo(self.path)
+            return 0
+        except OSError as e:return -1
+    def open(self,flag):
+        self.pipe = os.open(self.path,flag)
+        return self.pipe
+    def write(self,rcv,close=False):
+        res = os.write(self.pipe,rcv)
+        if close:self.pipe.close()
+        return res
+    def recv(self,size=1008,close=False):
+        res	 = os.read(self.pipe,size)
+        if close:self.pipe.close()
+        return res
+    def close(self):
+        try:self.pipe.close()
+        except:pass
+ 
 # example to use
 if __name__ == '__main__':
 
