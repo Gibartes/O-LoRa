@@ -41,11 +41,17 @@ class ControlGate(Process):
         
     # Debugging Function
     def __echoNT(self):
+        pkt      = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH)
         while(True):          
             packet = self.ntIn.recv()
             if(packet!=0 and packet!=b''):
-                print(colored('[+] [GATE] BLE --> BLE.','grey',attrs=['bold']))
-                self.ntOut.write(packet)
+                pkt.packet = packet
+                pkt.split()
+                if(pkt.parseinfo['SRC']==pkt.parseinfo['DST']):
+                	print(colored('[+] [GATE] Client Bronken.','green',attrs=['bold']))
+               	else:
+                    print(colored('[+] [GATE] BLE --> BLE.','grey',attrs=['bold']))
+                    self.ntOut.write(packet)
             else:
                 print(colored('[+] [GATE] Connection Lost','red',attrs=['bold']))
                 break

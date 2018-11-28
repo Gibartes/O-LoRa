@@ -287,8 +287,8 @@ static void *outputTask(void *param){
         if(err==0){
             getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
+            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);           
             setPacketOffset(&msg,MASK_DST,0,targetHost,8);
-            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
             setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_BROKEN|FLAG_ERROR,1);
             sem_wait(tcb->sess->slock);
             enqueuePacket(tcb->sess->streamIn,&msg);
@@ -302,8 +302,8 @@ static void *outputTask(void *param){
             // Maybe doesn't work when echo-test with current test tool ===>
             getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
-            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
             setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
+            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
             setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_ACK|FLAG_ERROR|FLAG_RESP,1);
             sem_wait(tcb->sess->slock);
             enqueuePacket(tcb->sess->streamIn,&msg);
