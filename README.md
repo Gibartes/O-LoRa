@@ -77,6 +77,14 @@ __ Written by Gibartes __
   - 2nd 	: oloraNT <- Gate <- oloraXB
 ---------------------------------------
 
+## O-LoRa - Xbee - oloraXB
+__ Written by MinJae __
+---------------------------------------
+
+ This python code controlls xbee module.
+---------------------------------------
+- Components :
+---------------------------------------
 
 ## O-LoRa - Android
 ---------------------------------------
