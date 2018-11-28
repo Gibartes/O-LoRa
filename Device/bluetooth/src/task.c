@@ -232,6 +232,8 @@ static void *outputTask(void *param){
     int32_t  err 	= 0;
     uint64_t len    = 0;
     uint64_t flag   = 0;
+    uint64_t targetHost = 0;
+    uint64_t systemHost = 0; 
     //int32_t flags = fcntl(tcb->in,F_GETFL,0);
     //fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
 
@@ -277,22 +279,36 @@ static void *outputTask(void *param){
         else if(err<1){
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             continue;
-        }    // IGNORE
-
+        }
+		getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
-            logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
+            getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
+            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
+            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
             setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_BROKEN|FLAG_ERROR,1);
             sem_wait(tcb->sess->slock);
             enqueuePacket(tcb->sess->streamIn,&msg);
             sem_post(tcb->sess->slock);
+            logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
         err = sendPacket(tcb->sess->sock,tcb->sess,&msg,&link,&data,len,tcb->sess->method);
         if(err<=0){
+        	// Marking Here.
+            // Maybe doesn't work when echo-test with current test tool ===>
+            getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
+            getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
+            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
+            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
+            setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_ACK|FLAG_ERROR|FLAG_RESP,1);
+            sem_wait(tcb->sess->slock);
+            enqueuePacket(tcb->sess->streamIn,&msg);
+            sem_post(tcb->sess->slock);
+            // <===
             setMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [Output] client disonnected. : ENO:[%d]-EC:[%d]-LEN:[%llu].",errno,err,len);
             continue;
@@ -497,7 +513,7 @@ static int32_t mainTask(uint8_t channel){
     tcb->task        = 0;
     tcb->flag        = 0;
     tcb->ticks       = ticks;
-    tcb->Log         = Log;    
+    tcb->Log         = Log;
     tcb->log         = &log;
     tcb->sess        = &sess;
 
@@ -512,7 +528,7 @@ static int32_t mainTask(uint8_t channel){
 
     pthread_mutex_init(&input,NULL);
     pthread_mutex_init(&output,NULL);
-    pthread_mutex_init(&spinner,NULL);	
+    pthread_mutex_init(&spinner,NULL);
     pthread_cond_init(&input_cond,NULL);
     pthread_cond_init(&output_cond,NULL);
     pthread_cond_init(&spinner_cond,NULL);
@@ -553,9 +569,9 @@ static int32_t mainTask(uint8_t channel){
         sem_wait(tcb->sig);
         tcb->mask = 0;
         sem_post(tcb->sig);
-        sem_wait(tcb->log);		
+        sem_wait(tcb->log);
         logClean(Log,LOGPATH);
-        sem_post(tcb->log);		
+        sem_post(tcb->log);
         logWrite(Log,&log,"[*] session wait\n");
 
         enableScan(hciSock,di.dev_id,PISCAN);  /* Discoverable */
