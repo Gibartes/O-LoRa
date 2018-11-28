@@ -78,5 +78,6 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(PROJECT)
 	rm -f $(DESTDIR)$(PREFIX)/lib/$(LIBTARGET)
 	rm -f $(DEAMONDIR)$(SERVICE_FL)
+	rm -f $(PYTHON3PATH)$(PYTHON3FL)
 clean:
 	rm -rf *.o $(PROJECT) $(LIBTARGET) shell
