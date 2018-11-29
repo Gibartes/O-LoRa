@@ -215,9 +215,10 @@ static void *watchDog(void *param){
         if(pthread_mutex_destroy(&spinner)==EBUSY){
             pthread_cond_broadcast(&spinner_cond);}
         logWrite(tcb->Log,tcb->log,"[*] [WatchDog] sync wait.");
-        pthread_barrier_wait(&barrier);		/* Task Sync */
+        close(tcb->sess->sock);
         close(tcb->in);
-        close(tcb->out);
+        close(tcb->out);        
+        pthread_barrier_wait(&barrier);		/* Task Sync */
         logWrite(tcb->Log,tcb->log,"[*] [WatchDog] exit.");
         pthread_exit(NULL);
 }
@@ -656,6 +657,6 @@ int32_t main(void){
     printf("[*]     Author  : Gibartes                              [*]\n");
     printf("[*]_____________________________________________________[*]\n");
     printf("[*] Start Olora Bluetooth Lower Network Bridge Service. [*]\n");
-    mainTask(1);
+    while(1){mainTask(1);}
     return 0;
 }
