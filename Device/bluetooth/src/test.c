@@ -52,7 +52,7 @@ int32_t main(int argc,char **argv){
     link.dst  = rem_addr;
     pnc.ttl   = 30;
     pnc.param = 2;
-    printf("[*] Connection success at %016lX\n",rem_addr);
+    printf("[*] Connection success at %016llX\n",rem_addr);
     printf("STATUS : %d",status);
     
     uint64_t tst  = 0;
@@ -76,8 +76,8 @@ int32_t main(int argc,char **argv){
         hexPrint(hash,MD5_DIGEST_LENGTH);
         
 	    e = bluetoothSendInst(sock,&pkt);
-	    printf("__HEX__ %ld\n",tst++);
-	    hexPrint(&pkt.packet,256);
+	    printf("__HEX__ %llu\n",tst);
+	    hexPrint(&pkt.packet,128);
 	    if(e<=0){
 	        printf("[*] Connection Disabled. Cause : %d\n",e);
 	        break;
@@ -91,8 +91,8 @@ int32_t main(int argc,char **argv){
 	    }
 	    pkt2data(&pkt,&data);
 	    printf("[GET]: %s",data.data);
-	    printf("__HEX__\n");	    
-	    hexPrint(data.data,256);
+	    printf("__HEX__ %llu\n",tst++);
+	    hexPrint(&pkt.packet,128);
 	    if(e<BUFFER_SIZE){read(sock,data.data,BUFFER_SIZE);} 
     }
     
