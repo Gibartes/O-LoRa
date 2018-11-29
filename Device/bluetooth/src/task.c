@@ -74,7 +74,7 @@ static inline uint8_t takeTask(struct THREAD_CONTROL_BOX *tcb,sem_t *sema,uint8_
 }
 static inline void initTask(struct THREAD_CONTROL_BOX *tcb,sem_t *sema){
     sem_wait(sema);
-    tcb->task = TASK_NONE;
+    tcb->task = 0;
     sem_post(sema);
 }
 
@@ -185,23 +185,23 @@ static void *watchDog(void *param){
 
         logWrite(tcb->Log,tcb->log,"[*] [WatchDog] wait signal to sync...");    
         wakeUpTask();
-        setTask(tcb,tcb->sess->slock,TASK_WATCHDOG);
+        setTask(tcb,tcb->sig,TASK_WATCHDOG);
         while(1){
-            usleep(tout);		// HARD waiting : waiting for system ticks ms(about 0.1ms)
-            status = getTask(tcb,tcb->sess->slock);
-            // send proper mutex signal when pending per each case.
-            if(!(status&TASK_INPUT)){
-                wakeMutex2(input,input_cond);}
-            if(!(status&TASK_OUTPUT)){
-                wakeMutex2(output,output_cond);}
-            if(!(status&TASK_SPIN)){
-                wakeMutex2(spinner,spinner_cond);}
+            usleep(10*tout);		// HARD waiting : waiting for system ticks ms(about 0.1ms)
+            status = getTask(tcb,tcb->sig);
             if(status==TASK_SUM){break;}
+            // send proper mutex signal when pending per each case.
+            if((status&TASK_INPUT)==0){
+                wakeMutex2(input,input_cond);}
+            if((status&TASK_OUTPUT)==0){
+                wakeMutex2(output,output_cond);}
+            if((status&TASK_SPIN)==0){
+                wakeMutex2(spinner,spinner_cond);}
         }
         initTask(tcb,tcb->sess->slock);
         pthread_barrier_wait(&hbarrier);		/* Task Sync */
-        logWrite(tcb->Log,tcb->log,"[*] [WatchDog] barrier pass...");
         takeMask(tcb,tcb->sig,STATUS_KILL);
+        logWrite(tcb->Log,tcb->log,"[*] [WatchDog] barrier pass...");
         printf("Phase down\n");
         goto phase1;
         
@@ -234,31 +234,28 @@ static void *outputTask(void *param){
     uint64_t flag   = 0;
     uint64_t targetHost = 0;
     uint64_t systemHost = 0; 
-    //int32_t flags = fcntl(tcb->in,F_GETFL,0);
-    //fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
+    int32_t flags = fcntl(tcb->in,F_GETFL,0);
+    fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
 
     __builtin_prefetch(&msg.packet,1,3);    
     while(1){
         waitMutex2(output,output_cond);
-
         if(getMask(tcb,tcb->sig,STATUS_EXIT)){goto exit;}
         if(getMask(tcb,tcb->sig,STATUS_KILL)){
             logWrite(tcb->Log,tcb->log,"[*] [Output] wait signal to sync...");
-            setTask(tcb,tcb->sess->slock,TASK_OUTPUT);
+            setTask(tcb,tcb->sig,TASK_OUTPUT);
+            logWrite(tcb->Log,tcb->log,"[*] [Output] barrier wait...");            
             pthread_barrier_wait(&hbarrier);
             #if OLORA_DEBUG_FLAG  == 1
             logWrite(tcb->Log,tcb->log,"[*] [Output] barrier pass...");
             #endif
             takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO_L);
             continue;}
-
         if(getMask(tcb,tcb->sig,STATUS_TIMO_L)){
             takeMask(tcb,tcb->sig,STATUS_TIMO_L);
             continue;}
-
         memset(&msg.packet,0,BUFFER_SIZE);
         memset(&data,0,DATA_LENGTH);
-
         err = bluetoothRecvInst(tcb->in,&msg,&len);
 
         if(err<=0 && errno!=EAGAIN){
@@ -277,7 +274,9 @@ static void *outputTask(void *param){
             }continue;
         }
         else if(err<1){
-            logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
+            if(err!=ERR_INTERNAL_PKT){
+                logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
+            }
             continue;
         }
         getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
@@ -344,7 +343,7 @@ static void *inputTask(void *param){
             goto exit;}
         if(getMask(tcb,tcb->sig,STATUS_KILL)){
             logWrite(tcb->Log,tcb->log,"[*] [Input] wait signal to sync...");
-            setTask(tcb,tcb->sess->slock,TASK_INPUT);
+            setTask(tcb,tcb->sig,TASK_INPUT);
             pthread_barrier_wait(&hbarrier);
             #if OLORA_DEBUG_FLAG  == 1
             logWrite(tcb->Log,tcb->log,"[*] [Input] barrier pass...");
@@ -354,7 +353,6 @@ static void *inputTask(void *param){
         if(getMask(tcb,tcb->sig,STATUS_TIMO)){
             takeMask(tcb,tcb->sig,STATUS_TIMO);
             continue;}
-
         memset(&msg.packet,0,BUFFER_SIZE);
         memset(&data,0,DATA_LENGTH);
         sem_wait(tcb->sess->slock);		
@@ -392,9 +390,25 @@ static int32_t spin(void *param){
     struct THREAD_CONTROL_BOX *tcb 	= (struct THREAD_CONTROL_BOX *)param;
     struct PACKET_CHAIN *pkt        = NULL;
     int32_t err = 0;
-
+    
     while(1){
-        waitMutex2(spinner,spinner_cond);
+        waitMutex2(spinner,spinner_cond);   
+        if(getMask(tcb,tcb->sig,STATUS_EXIT)){
+            logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
+            takeMask(tcb,tcb->sig,STATUS_RUNNING);
+            pthread_barrier_wait(&barrier);	
+            return 0;}
+        if(getMask(tcb,tcb->sig,STATUS_KILL)){
+            logWrite(tcb->Log,tcb->log,"[*] [MainTask] wait signal to sync...");
+            takeMask(tcb,tcb->sig,STATUS_RUNNING);
+            setTask(tcb,tcb->sig,TASK_SPIN);
+            sem_wait(tcb->sess->slock);
+            init_list_head(tcb->sess->streamIn);
+            sem_post(tcb->sess->slock);
+            pthread_barrier_wait(&hbarrier);
+            takeMask(tcb,tcb->sig,STATUS_KILL);            
+            logWrite(tcb->Log,tcb->log,"[*] [MainTask] barrier pass...");
+            return 1;}           
         do{
             sem_wait(tcb->sess->slock);
             pkt = dequeuePacket(tcb->sess->streamIn);
@@ -406,22 +420,9 @@ static int32_t spin(void *param){
                     logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
                     break;
                 }
-            }
-        }while(pkt!=NULL);
-        
-        if(getMask(tcb,tcb->sig,STATUS_EXIT)){
-            logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
-            takeMask(tcb,tcb->sig,STATUS_RUNNING);
-            pthread_barrier_wait(&barrier);	
-            return 0;}
-        if(getMask(tcb,tcb->sig,STATUS_KILL)){
-            logWrite(tcb->Log,tcb->log,"[*] [MainTask] wait signal to sync...");
-            takeMask(tcb,tcb->sig,STATUS_RUNNING);
-            setTask(tcb,tcb->sess->slock,TASK_SPIN);
-            pthread_barrier_wait(&hbarrier);
-            logWrite(tcb->Log,tcb->log,"[*] [MainTask] barrier pass...");
-            takeMask(tcb,tcb->sig,STATUS_KILL);
-            return 1;}
+            }else{break;}
+        }while(1);
+      
     }return err;
 }
 
@@ -583,14 +584,18 @@ static int32_t mainTask(uint8_t channel){
             timeout.tv_nsec = now.tv_usec*10000;
             waitMutexTime(spinner,spinner_cond,timeout,err);
             if(getMask(tcb,tcb->sig,STATUS_EXIT)){
-               logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
+               logWrite(tcb->Log,tcb->log,"[*] [MS] exit signal...");
                pthread_barrier_wait(&barrier);
                goto exit;}
             if(getMask(tcb,tcb->sig,STATUS_KILL)){
-               logWrite(tcb->Log,tcb->log,"[*] [MainTask] wait signal to sync...");
-               setTask(tcb,tcb->sess->slock,TASK_SPIN);
+               logWrite(tcb->Log,tcb->log,"[*] [MS] wait signal to sync...");
+               setTask(tcb,tcb->sig,TASK_SPIN);
+               sem_wait(tcb->sess->slock);
+               init_list_head(tcb->sess->streamIn);
+               sem_post(tcb->sess->slock);
                pthread_barrier_wait(&hbarrier);
                takeMask(tcb,tcb->sig,STATUS_KILL);
+                logWrite(tcb->Log,tcb->log,"[*] [MS] barrier pass...");
                continue;}
             if(getMask(tcb,tcb->sig,STATUS_TIMO_M)){
                 takeMask(tcb,tcb->sig,STATUS_TIMO_M);
