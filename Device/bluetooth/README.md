@@ -50,7 +50,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * After spliting, you can see bytes in the packet like this :
 ```python
 	pkt.print_header()            #  print header in the packet
-	pkt.print_header(256)        #  print 256 bytes at payload in the packet
+	pkt.print_payload(256)        #  print 256 bytes at payload in the packet
 ```
 * You can also manipulate a value in the packet. After revising the packet, you must update the packet.
 ```python
