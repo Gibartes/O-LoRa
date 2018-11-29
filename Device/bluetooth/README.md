@@ -24,10 +24,13 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 3. sudo make install
 ---------------------------------------
 ## Python Documentations
-* The olora packet module allows the defined olora packet structure in C to use in python code. This is a C extenstion so that you need olorapkt.so which is offered by oloraNT and python development support package(python3-dev). The installation step is simple. If you have installed oloraNT, you don't need further steps.
+* The olora packet module allows the defined olora packet structure in C to use in python code. This is a C extenstion so that you need olorapkt.so which is offered by oloraNT and python development support package(python3-dev). The installation step is simple. If you have installed oloraNT, you don't need further steps. Type "pip install pyolora" on your terminal.
 
 ### 1. Declare a packet
 ```python
+	from olora.packet import *
+	from olora.define import *
+
 	pkt = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH)
 ```
 * You can also fill data using a ctype c_uint8 array like
@@ -72,5 +75,15 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	print(pkt.parseinfo)
 	print(pkt.printHex(pkt.parseinfo['DST']))
 ```
+* PyOlora also offers UNIX pipe object with ObjectPipe Class for handling pipe easily because oloraNT uses two pipes to communicate with userspace system. 
+** First, declare an ObjectPipe object with path of the pipe. 
+** Second, make a pipe files if have not been created by others.
+** Third, open the declared pipe with mode like os.O_WRONLY or os.O_RDONLY, and so on. But you need to think about the fact that code hangs utill other process catch your pipe.
 
+```python
+	yourPipe = ObjectPipe(PIPE_LIST.NT_IN)
+	yourPipe.mkfifo()
+	yourPipe.open(os.ORDONLY)
+```
+* After setting up the pipe, you can get the descriptor number as pipe.pipe which can be applied to select(). pipe.recv() delivers data from the pipe and, pipe.write(buffer) writes data in the buffer to the pipe.
 ---------------------------------------
