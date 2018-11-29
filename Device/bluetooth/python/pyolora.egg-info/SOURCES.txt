@@ -1,4 +1,7 @@
 setup.py
+olora/__init__.py
+olora/define.py
+olora/packet.py
 pyolora.egg-info/PKG-INFO
 pyolora.egg-info/SOURCES.txt
 pyolora.egg-info/dependency_links.txt
