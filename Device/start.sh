@@ -23,7 +23,7 @@ function show_help(){
 clear
 echo "[*] Olora System [*] "
 
-if [ $# < 1 ]; then
+if [ $# -lt 1 ]; then
 	show_help
 	exit 0
 fi
