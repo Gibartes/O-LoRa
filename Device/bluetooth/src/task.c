@@ -458,7 +458,7 @@ static int32_t mainTask(uint8_t channel){
  
     struct hci_dev_info di;
     hciSock = createHciSocket();
-    if(hciSock<0){free(tcb);return -1;}
+    if(hciSock<0){goto exit;}
     locAddr = getPrimaryLocalBluetoothAddress(hciSock,&di);
     if(locAddr==0){
         printf("[-] This device doesn't have any bluetooth components.\n");
@@ -471,7 +471,7 @@ static int32_t mainTask(uint8_t channel){
     if(err<0){
         printf("[*] Unable to control bluetooth device. [Are you running with sudo?]\n");
         logWrite(Log,&log,"[*] Unable to control bluetooth device. [Are you running with sudo?]");
-        free(tcb);return 0;
+        goto exit;
     }
 
     sock    = createBluetoothSocket(channel);
@@ -517,8 +517,7 @@ static int32_t mainTask(uint8_t channel){
     tcb->out         = createNamedPipe(EXT_PIPE_OUT,O_WRONLY,0660);
     if(tcb->in<=0 || tcb->out<=0){
         logWrite(Log,&log,"[*] pipe occupied.");
-        free(tcb);
-        return -1;
+        goto exit;
     }
 
     pthread_mutex_init(&input,NULL);
@@ -579,19 +578,19 @@ static int32_t mainTask(uint8_t channel){
             //waitMutexTime(spinner,spinner_cond,timeout,err);
             waitMutex2(spinner,spinner_cond); 
             if(getMask(tcb,tcb->sig,STATUS_EXIT)){
-               logWrite(tcb->Log,tcb->log,"[*] [MS] exit signal...");
-               pthread_barrier_wait(&barrier);
-               goto exit;}
+                logWrite(tcb->Log,tcb->log,"[*] [MS] exit signal...");
+                pthread_barrier_wait(&barrier);
+                goto exit;}
             if(getMask(tcb,tcb->sig,STATUS_KILL)){
-               logWrite(tcb->Log,tcb->log,"[*] [MS] wait signal to sync...");
-               setTask(tcb,tcb->sig,TASK_SPIN);
-               sem_wait(tcb->sess->slock);
-               init_list_head(tcb->sess->streamIn);
-               sem_post(tcb->sess->slock);
-               pthread_barrier_wait(&hbarrier);
-               takeMask(tcb,tcb->sig,STATUS_KILL);
+                logWrite(tcb->Log,tcb->log,"[*] [MS] wait signal to sync...");
+                setTask(tcb,tcb->sig,TASK_SPIN);
+                sem_wait(tcb->sess->slock);
+                init_list_head(tcb->sess->streamIn);
+                sem_post(tcb->sess->slock);
+                pthread_barrier_wait(&hbarrier);
+                takeMask(tcb,tcb->sig,STATUS_KILL);
                 logWrite(tcb->Log,tcb->log,"[*] [MS] barrier pass...");
-               continue;}
+                continue;}
             if(getMask(tcb,tcb->sig,STATUS_TIMO_M)){
                 takeMask(tcb,tcb->sig,STATUS_TIMO_M);
                 continue;}
@@ -636,7 +635,7 @@ static int32_t mainTask(uint8_t channel){
         logWrite(Log,&log,"[*] [MainTask] shutdown session.");
         close(hciSock);
         close(ipipe[READ]);
-        if(tcb!=NULL){free(tcb);}
+        free(tcb);
         if(sess.hostKey!= NULL){
             RSA_free(sess.hostKey);
             sess.hostKey = NULL;
