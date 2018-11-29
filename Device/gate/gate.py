@@ -13,10 +13,11 @@ from define import *
 from packet import *
 
 class ControlGate(Process):
-    def __init__(self,debug=False):
+    def __init__(self,debug=False,echo=False):
         Process.__init__(self)
         setproctitle.setproctitle('oloraGT')
         self.debug      = debug
+        self.echo       = False
         self.readList   = []
         self.ntIn       = ObjectPipe(PIPE_LIST.NT_IN)
         self.ntOut      = ObjectPipe(PIPE_LIST.NT_OUT)
@@ -47,8 +48,9 @@ class ControlGate(Process):
             if(packet!=0 and packet!=b''):
                 pkt.packet = packet
                 pkt.split()
+                pkt.parse()
                 if(pkt.parseinfo['SRC']==pkt.parseinfo['DST']):
-                	print(colored('[+] [GATE] Client Bronken.','green',attrs=['bold']))
+                	print(colored('[+] [GATE] Client Broken.','green',attrs=['bold']))
                	else:
                     print(colored('[+] [GATE] BLE --> BLE.','grey',attrs=['bold']))
                     self.ntOut.write(packet)
@@ -120,7 +122,8 @@ class ControlGate(Process):
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
                 
     def run(self):
-        #self.__echoNT()
+        if(self.echo):
+            self.__echoNT()
         while(True):
             self.__selector()
 
@@ -132,6 +135,6 @@ if __name__ == '__main__':
     signal.signal(signal.SIGPIPE,signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal_handler)
     
-    cg = ControlGate(False)
+    cg = ControlGate(False,False)
     cg.start()
     sys.exit(0)
