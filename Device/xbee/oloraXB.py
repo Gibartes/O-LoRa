@@ -20,7 +20,7 @@ from digi.xbee.models.options import DiscoveryOptions
 from digi.xbee.models.status import NetworkDiscoveryStatus
 
 # User Defined Libraries
-sys.path.append('../bluetooth/include') # Xbeeprocess.py should be in the correct directory!
+sys.path.append('../bluetooth/python') # Xbeeprocess.py should be in the correct directory!
 from packet import *
 from define import *
 

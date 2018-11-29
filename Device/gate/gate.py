@@ -8,7 +8,7 @@ from select import select
 from termcolor import *
 from multiprocessing import *
 
-sys.path.append('../bluetooth/include')
+sys.path.append('../bluetooth/python')
 from define import *
 from packet import *
 

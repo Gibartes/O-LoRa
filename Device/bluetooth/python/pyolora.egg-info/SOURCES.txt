@@ -1,0 +1,6 @@
+setup.py
+pyolora.egg-info/PKG-INFO
+pyolora.egg-info/SOURCES.txt
+pyolora.egg-info/dependency_links.txt
+pyolora.egg-info/not-zip-safe
+pyolora.egg-info/top_level.txt

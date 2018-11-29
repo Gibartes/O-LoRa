@@ -27,8 +27,8 @@ MAIN      = task.o
 SRCS      = blue.c hash.c pkt.c sess.c log.c
 OBJS      = $(SRCS: .c = .o) 
 LIBSRCS   = pkt.c hash.c
-PYTHON3FL = ../include/packet.py
-PYTHON3NL = ../include/packet.py
+PYTHON3FL = ../python/packet.py
+PYTHON3NL = packet.py
 
 .c.o:
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<
