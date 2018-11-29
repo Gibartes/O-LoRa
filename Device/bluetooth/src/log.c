@@ -13,7 +13,7 @@ FILE *logOpen(const uint8_t *filepath){
     }return file;
 }
 
-void logClean(FILE *fp,const uint8_t *filepath){
+int32_t logClean(FILE *fp,const uint8_t *filepath){
     int32_t size = 0;
     if(fp!=NULL){
         fseek(fp,0,SEEK_END);
@@ -24,11 +24,12 @@ void logClean(FILE *fp,const uint8_t *filepath){
             if(size<0){
                 beCreated = 0;
                 fp = NULL;
-                return;}
+                return -1;}
             fp = logOpen(filepath);
             /* setvbuf(fp,NULL,_IONBF,0); */
-        }
-    }
+			return 1;
+        }return 0
+    }return -1;
 }
 
 void logClose(FILE *fp){

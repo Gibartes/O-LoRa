@@ -303,10 +303,10 @@ struct THREAD_CONTROL_BOX{
 
 
 /* LOG HANDLE */
-FILE *logOpen(const uint8_t *filepath);
-void  logClean(FILE *fp,const uint8_t *filepath);
-void  logClose(FILE *fp);
-void  logWrite(FILE *fp,sem_t *lock,char *fmt,...);
+FILE    *logOpen(const uint8_t *filepath);
+int32_t logClean(FILE *fp,const uint8_t *filepath);
+void    logClose(FILE *fp);
+void    logWrite(FILE *fp,sem_t *lock,char *fmt,...);
 
 /* ENCRYPTION & DECRYPTION */
 void    hash_md5(uint8_t result[MD5_DIGEST_LENGTH],uint8_t *plain,size_t size);

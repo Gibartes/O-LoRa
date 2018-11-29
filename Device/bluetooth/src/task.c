@@ -527,7 +527,8 @@ static int32_t mainTask(uint8_t channel){
         tcb->mask = 0;
         sem_post(tcb->sig);
         sem_wait(tcb->log);
-        logClean(Log,LOGPATH);
+        err = logClean(Log,LOGPATH);
+        if(err==1){tcb->Log = Log;}
         sem_post(tcb->log);
         logWrite(Log,&log,"[*] session wait\n");
 
