@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/Tab_Chat"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/colorInvisible"
+    android:paddingTop="10dp">
+
+    <ImageView
+        android:id="@+id/chaticon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/chat2" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tab_custom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chaticon"
+        android:text="채팅방"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:textSize="15sp"
+        android:typeface="serif" />
+
+
+</RelativeLayout>

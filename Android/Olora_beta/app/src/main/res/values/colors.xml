@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorWhite">#FFFF</color>
+    <color name="listview_item_active_color">#55191970</color>
+    <!--or #DAA520  << 더 어두움 -->
+    <color name="listview_item_inactive_color">#55b5cede</color>
+    <color name="listview_item_select_color">#99b5cede</color>
+    <color name="dialog_main_color">#191970</color>
+    <color name="dialog_sub_color">#000080</color>
+    <color name="colorInvisible">#00FF0000</color>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#88000000"
+    >
+    <!-- 타이틀바 -->
+    <RelativeLayout
+        android:id="@+id/BL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/dialog_main_color">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/titleBarText"
+            android:layout_height="53dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="블랙리스트"
+            android:textColor="#fff"
+            android:textSize="20dp" />
+
+    </RelativeLayout>
+    <!-- //end 타이틀바 -->
+    <ListView
+        android:id="@+id/List_blackView"
+        android:layout_below="@+id/BL"
+        style="@style/ListView_Style"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- 선택했을 때 다른화면을 덧씌우는 옵션. 색상줄때 하면될듯 -->
+    </ListView>
+
+</RelativeLayout>
+
