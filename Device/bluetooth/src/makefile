@@ -23,11 +23,11 @@ LIBNAME     = olora
 LIBTARGET   = olorapkt.so
 SERVICE_FL  = olorant.service
 
-MAIN = task.o
-SRCS = blue.c hash.c pkt.c sess.c log.c
-OBJS = $(SRCS: .c = .o) 
-LIBSRCS = pkt.c hash.c
-PYTHON3FL = packet.py
+MAIN      = task.o
+SRCS      = blue.c hash.c pkt.c sess.c log.c
+OBJS      = $(SRCS: .c = .o) 
+LIBSRCS   = pkt.c hash.c
+PYTHON3FL = ../src/packet.py
 
 .c.o:
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<
