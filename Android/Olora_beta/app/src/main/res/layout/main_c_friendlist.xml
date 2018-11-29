@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#88000000"
+    >
+    <RelativeLayout
+        android:paddingTop="20dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:id="@+id/RL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorInvisible"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_toLeftOf="@+id/button_channel"
+            android:layout_height="wrap_content"
+            android:background="@color/colorInvisible"
+            android:id="@+id/viewCH"
+            android:textColor="@color/colorWhite"
+            android:typeface="sans"
+            android:paddingRight="10dp"
+            android:text="(채널을 설정해주세요.)"
+            android:textSize="20dp"/>
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/button_reset1"
+            android:background="@drawable/reset"
+            android:layout_alignParentRight="true"/>
+       </RelativeLayout>
+
+    <ListView
+        android:id="@+id/List_friendView"
+        android:layout_below="@+id/RL"
+        style="@style/ListView_Style"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- 선택했을 때 다른화면을 덧씌우는 옵션. 색상줄때 하면될듯 -->
+    </ListView>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:allowUndo="false"
+        android:singleLine="true"
+        android:layout_above="@+id/btnAdd"
+        android:id="@+id/txt"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New List"
+        android:layout_above="@+id/btnDel"
+        android:id="@+id/btnAdd"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Clear"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btnDel"/>
+
+</RelativeLayout>
+

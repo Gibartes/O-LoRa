@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chatRoom"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center"
+    android:orientation="horizontal">
+    <View
+        android:id="@+id/chatLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:background="#888888" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/chatName"
+            android:layout_width="wrap_content"
+            android:maxWidth="250dp"
+            android:layout_height="wrap_content"
+            android:text="(알 수 없음)"
+            android:typeface="sans"
+            android:textColor="#000000"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/time_log_left"
+                android:layout_gravity="bottom"
+                android:text="2013430030"/>
+            <TextView
+                android:id="@+id/chatDate"
+                android:layout_width="wrap_content"
+                android:maxWidth="250dp"
+                android:layout_height="wrap_content"
+                android:text="text"
+                android:background="@color/colorInvisible"
+                android:typeface="serif"
+                android:textColor="#000000" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/time_log_right"
+                android:layout_gravity="bottom"
+                android:text="2013430030"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/chatRight"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:background="#888888" />
+</LinearLayout>
