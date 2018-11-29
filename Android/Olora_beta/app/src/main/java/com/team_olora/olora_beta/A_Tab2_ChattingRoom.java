@@ -292,7 +292,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     @Subscribe
-    public void receive_msg(Provider_RMf recvEvent) {
+    public void receive_msg(Provider_RecvMsgFunc recvEvent) {
         int key = recvEvent.getChatkey();
         load_in_chat(key);
         Log.d("Chatting recvkey :", String.valueOf(key));

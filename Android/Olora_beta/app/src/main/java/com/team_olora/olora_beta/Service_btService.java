@@ -146,11 +146,10 @@ public class Service_btService extends Service {
 
                                 case Service_BluetoothChatService.STATE_NONE:
                                     Toast.makeText(getApplicationContext(), "h : 장치와 연결이 끊어졌습니다.\n다시 연결해주세요.", Toast.LENGTH_SHORT).show();
-                                    Provider_BlueOn.getInstance().post(new Provider_BOf(0));
+                                    Provider_BlueOn.getInstance().post(new Provider_BlueOnFunc(0));
                                     DB.save_blueon(0);
                                     String nullbd = "000000000000";
                                     DB.save_bd(FuncGroup.hexStringToByteArray(nullbd));
-
                                     // 스스로 종료시키기. 재시작을 해줘야함.
                                     // 재시작하는 인터페이스를 연결해 줘야함???
                                     //setStatus(R.string.title_not_connected);
@@ -202,7 +201,7 @@ public class Service_btService extends Service {
 
                                 Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + room_key +
                                         "저장된 유저네임 : " + username + " 저장된 메시지 :" + receivemsg + " 저장된 유저 키: " + user);
-                                Provider_RecvMsg.getInstance().post(new Provider_RMf(chatkey));
+                                Provider_RecvMsg.getInstance().post(new Provider_RecvMsgFunc(chatkey));
                                 //DB.save_list_recievekey(send_key, receive_key);
 
                                 /** ** ** ** ** ** ** ** ** ** ** 푸시알람 ** ** ** ** ** ** ** ** ** ** ** */
@@ -304,13 +303,13 @@ public class Service_btService extends Service {
                             ch |= (tlqkf[2] & 0x00ff);
                             ch <<= 3;
                             ch |= (tlqkf[0] & 0x07);
-                            Provider_SetCH.getInstance().post(new Provider_SCf(ch));
+                            Provider_SetCH.getInstance().post(new Provider_SetCHFunc(ch));
                             break;
                         case Service_Constants.MESSAGE_DISCOVERY:
                             Log.d("DIscover:::", "받은 msg.org"+msg.obj);
                             discover((byte[]) msg.obj);
                             Log.d("DIscover:::", "bt Service 진입");
-                            Provider_Discovery.getInstance().post(new Provider_DCf());
+                            Provider_Discovery.getInstance().post(new Provider_DiscoveryFunc());
                             break;
                         case Service_Constants.MESSAGE_DEVICE_NAME:
                             // save the connected device's name
@@ -318,7 +317,7 @@ public class Service_btService extends Service {
 
                             Toast.makeText(getApplicationContext(), "h : Connected to "
                                     + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                            Provider_BlueOn.getInstance().post(new Provider_BOf(1));
+                            Provider_BlueOn.getInstance().post(new Provider_BlueOnFunc(1));
                             DB.save_blueon(1);
 
 
@@ -346,7 +345,7 @@ public class Service_btService extends Service {
                                 Log.d("SETNI:::", "Set NI 결과" + Mac);
                                 ByteBuffer Lbuf = ByteBuffer.wrap(Mac);
                                 long myMac = Lbuf.getLong();
-                                Provider_BusProvider.getInstance().post(new Provider_BPf(myNI, myMac));
+                                Provider_BusProvider.getInstance().post(new Provider_BusProviderFunc(myNI, myMac));
                             }
                             break;
                     }
@@ -380,8 +379,10 @@ public class Service_btService extends Service {
                 connectDevice(address, true);
                 Toast.makeText(getApplicationContext(), "connected : " + address, Toast.LENGTH_SHORT).show();
                 String BD = address.replaceAll(":", "");
-                Log.d("BDA : ", BD);
+                Log.d("BD - reconnect : ", BD);
                 DB.save_bd(FuncGroup.hexStringToByteArray(BD));
+                Log.d("BD - reconnect", "connectedbd : "+FuncGroup.byteArrayToHexString(FuncGroup.hexStringToByteArray(BD)));
+                Log.d("BD - reconnect", " get set bd : "+FuncGroup.byteArrayToHexString( DB.get_set_bd()));
 
             } catch (Exception e) {
                 //Toast.makeText(this, "error : " + e.toString(), Toast.LENGTH_SHORT).show();

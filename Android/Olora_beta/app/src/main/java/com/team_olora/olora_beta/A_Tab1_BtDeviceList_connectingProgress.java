@@ -42,7 +42,7 @@ public class A_Tab1_BtDeviceList_connectingProgress extends android.support.v4.a
             }
         });
 
-        Nayoen.setVisibility(View.GONE);
+      //  Nayoen.setVisibility(View.GONE);
 
         ProgressTitle = view.findViewById(R.id.progresstitle);
         ProgressTitle.setText("블루투스 연결 중...");
@@ -74,7 +74,7 @@ public class A_Tab1_BtDeviceList_connectingProgress extends android.support.v4.a
     }
 
     @Subscribe
-    public void isBlueOn(Provider_BOf isblue) {
+    public void isBlueOn(Provider_BlueOnFunc isblue) {
 
         int Bo = isblue.getIsBlueOn();
 

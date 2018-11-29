@@ -268,31 +268,29 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                 case R.id.connectedXbee:                      // 찾는 액티비티.
                     final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
 
-
                     alert.setTitle("OLora 재탐색");
                     alert.setMessage("다른 OLora 기기를 연결하시겠습니까?");
                     alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
+
                             grantLocationPermission();
                             //////////////////
                             //// 서비스 재시작
                             //////////////////
-                            Provider_BusProvider.getInstance().unregister(this);
-
+                 //           Provider_BusProvider.getInstance().unregister(this);
                             try {
                                 getActivity().unbindService(sconn);
                             }
                             catch (Exception e)
-                            {
-
-                            }
-
-
+                            {}
                             getActivity().stopService(new Intent(getActivity(), Service_btService.class));
-                            Provider_BusProvider.getInstance().register(this);
+                   //         Provider_BusProvider.getInstance().register(this);
                             Intent intent_s2 = new Intent(getActivity(), Service_btService.class);
                             getActivity().startService(intent_s2);
+
+
                             Intent serverIntent2 = new Intent(getActivity(), A_Tab1_BtDeviceList.class);
                             startActivityForResult(serverIntent2, REQUEST_CONNECT_DEVICE_SECURE);
                         }
@@ -357,7 +355,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
 
     @Subscribe
-    public void A(Provider_BPf activityResultEvent) {
+    public void A(Provider_BusProviderFunc activityResultEvent) {
         myName.setText(DB.get_user_Myname());
     }
 

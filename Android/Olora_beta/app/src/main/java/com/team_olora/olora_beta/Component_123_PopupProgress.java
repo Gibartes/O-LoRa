@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
-import java.nio.ByteBuffer;
-
 public class Component_123_PopupProgress extends android.support.v4.app.DialogFragment {
 
     ImageButton nayeonBtn;
@@ -150,7 +148,7 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
     }
 
     @Subscribe
-    public void isChSet(Provider_SCf scf) {
+    public void isChSet(Provider_SetCHFunc scf) {
         int setchannel = scf.getChannel();
         /**셋 채널 성공시 아래 실행**/
         Toast.makeText(getContext(), "CHANNEL:" + setchannel, Toast.LENGTH_LONG).show();
@@ -162,7 +160,7 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
     }
 
     @Subscribe
-    public void dodiscovery(Provider_DCf dcf) {
+    public void dodiscovery(Provider_DiscoveryFunc dcf) {
         /**디스커버리 성공시 아래 실행**/
 
         if (callTab == 1) {

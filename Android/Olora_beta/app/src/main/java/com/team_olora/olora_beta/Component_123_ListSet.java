@@ -172,7 +172,7 @@ public class Component_123_ListSet extends AppCompatActivity {
         }
     }
     @Subscribe
-    public void receive_NI(Provider_BPf bpf) {
+    public void receive_NI(Provider_BusProviderFunc bpf) {
         String NI = bpf.getMyNI();
         long addr = bpf.getMyMac();
         byte[] ni = NI.getBytes();

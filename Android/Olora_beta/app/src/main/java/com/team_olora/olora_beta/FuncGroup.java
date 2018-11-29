@@ -1,6 +1,12 @@
 package com.team_olora.olora_beta;
 
+import java.lang.Math;
+
 public class FuncGroup {
+
+    static void restart(){
+
+    }
 
     static String byteArrayToHexString(byte[] b) {
 
@@ -33,5 +39,9 @@ public class FuncGroup {
                     + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
+    }
+    static String intToBinary(int number)
+    {
+        return Integer.toBinaryString(number);
     }
 }

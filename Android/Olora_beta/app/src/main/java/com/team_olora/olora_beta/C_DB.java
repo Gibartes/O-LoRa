@@ -810,7 +810,6 @@ public class C_DB extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_set, set1);
         values.put(KEY_set2, set2);
-
         db.insert(TBL_Set, null, values);
         db.close();
     }
@@ -866,23 +865,22 @@ public class C_DB extends SQLiteOpenHelper {
     }
 
     public void save_bd(byte[] bd) {
+        int bd1 = 0;
+        bd1 |= (0xff&bd[0]) << 8;
+        bd1 |= (0xff&bd[1]);
+        int bd2 = 0;
+        bd2 |= (0xff&bd[2]) << 24;
+        bd2 |= (0xff&bd[3]) << 16;
+        bd2 |= (0xff&bd[4]) << 8;
+        bd2 |= (0xff&bd[5]);
+
         int a = get_setint(0);
         int b = 0;
-
-        int bd1 = 0;
-        bd1 |= bd[5] << 8;
-        bd1 |= bd[4];
-
-        int bd2 = 0;
-        bd2 |= bd[3] << 24;
-        bd2 |= bd[2] << 16;
-        bd2 |= bd[1] << 8;
-        bd2 |= bd[0];
-
         a = a & ~(bdMSK1);
-        a |= bd1;
-        b |= bd2;
-        save_set_setting(bd1, bd2);
+        a |= bdMSK1&bd1;
+        b |= bdMSK2&bd2;
+
+        save_set_setting(a, b);
     }
 
 
@@ -910,15 +908,16 @@ public class C_DB extends SQLiteOpenHelper {
 
 
     public boolean get_set_push() {
+
         Cursor c = get_set_cursor();
         boolean set = true;
         if (c.moveToFirst()) {
-            if ((c.getInt(0) & pushMSK) >> 23 == 1)
+            if ((c.getInt(0) & pushMSK) >> 23 == 1) {
                 set = true;
+            }
             else
                 set = false;
         }
-
         return set;
     }
 
@@ -978,12 +977,12 @@ public class C_DB extends SQLiteOpenHelper {
         Cursor c = get_set_cursor();
         byte[] bd = new byte[6];
         if (c.moveToFirst()) {
-            bd[5] = (byte) ((c.getInt(0) & bdMSK1) >> 8);
-            bd[4] = (byte) (c.getInt(0) & bdMSK1);
-            bd[3] = (byte) (c.getInt(1) >> 24);
-            bd[2] = (byte) (c.getInt(1) >> 16);
-            bd[1] = (byte) (c.getInt(1) >> 8);
-            bd[0] = (byte) c.getInt(1);
+            bd[0] = (byte) ((c.getInt(0) & bdMSK1) >> 8);
+            bd[1] = (byte) (c.getInt(0) & bdMSK1);
+            bd[2] = (byte) (c.getInt(1) >> 24);
+            bd[3] = (byte) (c.getInt(1) >> 16);
+            bd[4] = (byte) (c.getInt(1) >> 8);
+            bd[5] = (byte) c.getInt(1);
         }
         return bd;
     }
