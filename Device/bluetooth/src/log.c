@@ -28,7 +28,7 @@ int32_t logClean(FILE *fp,const uint8_t *filepath){
             fp = logOpen(filepath);
             /* setvbuf(fp,NULL,_IONBF,0); */
 			return 1;
-        }return 0
+        }return 0;
     }return -1;
 }
 
