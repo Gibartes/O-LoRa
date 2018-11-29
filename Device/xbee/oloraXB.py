@@ -20,9 +20,8 @@ from digi.xbee.models.options import DiscoveryOptions
 from digi.xbee.models.status import NetworkDiscoveryStatus
 
 # User Defined Libraries
-sys.path.append('../bluetooth/python') # Xbeeprocess.py should be in the correct directory!
-from packet import *
-from define import *
+from olora.packet import *
+from olora.define import *
 
 NumOfOtherPids = 5
 # 6 : Unit Test Mode (=4+2(userwriter,userreader))

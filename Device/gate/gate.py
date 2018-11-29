@@ -8,9 +8,8 @@ from select import select
 from termcolor import *
 from multiprocessing import *
 
-sys.path.append('../bluetooth/python')
-from define import *
-from packet import *
+from olora.packet import *
+from olora.define import *
 
 class ControlGate(Process):
     def __init__(self,debug=False,echo=False):
