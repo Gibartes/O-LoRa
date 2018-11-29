@@ -217,9 +217,8 @@ static void *watchDog(void *param){
         logWrite(tcb->Log,tcb->log,"[*] [WatchDog] sync wait.");
         close(tcb->sess->sock);
         close(tcb->in);
-        close(tcb->out);        
+        close(tcb->out);
         pthread_barrier_wait(&barrier);		/* Task Sync */
-        logWrite(tcb->Log,tcb->log,"[*] [WatchDog] exit.");
         pthread_exit(NULL);
 }
 
@@ -255,6 +254,7 @@ static void *outputTask(void *param){
         if(getMask(tcb,tcb->sig,STATUS_TIMO_L)){
             takeMask(tcb,tcb->sig,STATUS_TIMO_L);
             continue;}
+            
         memset(&msg.packet,0,BUFFER_SIZE);
         memset(&data,0,DATA_LENGTH);
         err = bluetoothRecvInst(tcb->in,&msg,&len);
@@ -277,8 +277,7 @@ static void *outputTask(void *param){
         else if(err<1){
             if(err!=ERR_INTERNAL_PKT){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
-            }
-            continue;
+            }continue;
         }
         getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
@@ -318,7 +317,6 @@ static void *outputTask(void *param){
     exit:
         logWrite(tcb->Log,tcb->log,"[*] [Output] sync wait.");
         pthread_barrier_wait(&barrier);
-        logWrite(tcb->Log,tcb->log,"[*] [Output] exit.");
         pthread_exit(NULL);
 }
 
@@ -339,9 +337,7 @@ static void *inputTask(void *param){
     while(1){
         waitMutex2(input,input_cond);
 
-        if(getMask(tcb,tcb->sig,STATUS_EXIT)){
-            logWrite(tcb->Log,tcb->log,"[*] [Input] exit signal...");
-            goto exit;}
+        if(getMask(tcb,tcb->sig,STATUS_EXIT)){goto exit;}
         if(getMask(tcb,tcb->sig,STATUS_KILL)){
             logWrite(tcb->Log,tcb->log,"[*] [Input] wait signal to sync...");
             setTask(tcb,tcb->sig,TASK_INPUT);
@@ -354,11 +350,10 @@ static void *inputTask(void *param){
         if(getMask(tcb,tcb->sig,STATUS_TIMO)){
             takeMask(tcb,tcb->sig,STATUS_TIMO);
             continue;}
+            
         memset(&msg.packet,0,BUFFER_SIZE);
         memset(&data,0,DATA_LENGTH);
-        sem_wait(tcb->sess->slock);		
         err = recvPacket(tcb->sess->sock,tcb->sess,&msg,&data,tcb->sess->method);
-        sem_post(tcb->sess->slock);
         if(err<=0 && errno!=EAGAIN){
             setMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [Input] client disconnected : ENO:[%d]-EC:[%d]-LEN:[%llu].",errno,err,len);
@@ -374,8 +369,8 @@ static void *inputTask(void *param){
         if(err==0){
             logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : Broken Hash");
             continue;}
-            
-        sem_wait(tcb->sess->slock);
+        
+        sem_wait(tcb->sess->slock);     
         enqueuePacket(tcb->sess->streamIn,&msg);
         sem_post(tcb->sess->slock);
     }
@@ -383,7 +378,6 @@ static void *inputTask(void *param){
     exit:
         logWrite(tcb->Log,tcb->log,"[*] [Input] sync wait.");
         pthread_barrier_wait(&barrier);
-        logWrite(tcb->Log,tcb->log,"[*] [Input] exit.");
         pthread_exit(NULL);	
 }
 
@@ -392,8 +386,8 @@ static int32_t spin(void *param){
     struct PACKET_CHAIN *pkt        = NULL;
     int32_t err = 0;
     
-    while(1){
-        waitMutex2(spinner,spinner_cond);   
+    while(1){   
+        waitMutex2(spinner,spinner_cond);
         if(getMask(tcb,tcb->sig,STATUS_EXIT)){
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
             takeMask(tcb,tcb->sig,STATUS_RUNNING);
@@ -407,9 +401,9 @@ static int32_t spin(void *param){
             init_list_head(tcb->sess->streamIn);
             sem_post(tcb->sess->slock);
             pthread_barrier_wait(&hbarrier);
-            takeMask(tcb,tcb->sig,STATUS_KILL);            
+            takeMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] barrier pass...");
-            return 1;}           
+            return 1;}
         do{
             sem_wait(tcb->sess->slock);
             pkt = dequeuePacket(tcb->sess->streamIn);
@@ -422,8 +416,7 @@ static int32_t spin(void *param){
                     break;
                 }
             }else{break;}
-        }while(1);
-      
+        }while(1);            
     }return err;
 }
 
@@ -447,8 +440,8 @@ static int32_t mainTask(uint8_t channel){
     session_t  sess;
     pthread_t service_thread[MAX_TASK_COUNT];
     pid_t pid[MAX_TASK_COUNT];
-    struct timeval  now;
-    struct timespec timeout;    
+    //struct timeval  now;
+    //struct timespec timeout;    
     signal(SIGPIPE,SIG_IGN);
     if(pipe(ipipe)==-1){
         printf("[-] Cannot create unnamed pipe.");
@@ -580,10 +573,11 @@ static int32_t mainTask(uint8_t channel){
         printf("[*] Accept wait...\n");
         
         while(1){
-            gettimeofday(&now,NULL);
-            timeout.tv_sec  = now.tv_sec;
-            timeout.tv_nsec = now.tv_usec*10000;
-            waitMutexTime(spinner,spinner_cond,timeout,err);
+            //gettimeofday(&now,NULL);
+            //timeout.tv_sec  = now.tv_sec;
+            //timeout.tv_nsec = now.tv_usec*10000;
+            //waitMutexTime(spinner,spinner_cond,timeout,err);
+            waitMutex2(spinner,spinner_cond); 
             if(getMask(tcb,tcb->sig,STATUS_EXIT)){
                logWrite(tcb->Log,tcb->log,"[*] [MS] exit signal...");
                pthread_barrier_wait(&barrier);
