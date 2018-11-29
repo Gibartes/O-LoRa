@@ -187,7 +187,7 @@ static void *watchDog(void *param){
         wakeUpTask();
         setTask(tcb,tcb->sig,TASK_WATCHDOG);
         while(1){
-            usleep(10*tout);		// HARD waiting : waiting for system ticks ms(about 0.1ms)
+            usleep(tout);		// HARD waiting : waiting for system ticks ms(about 0.1ms)
             status = getTask(tcb,tcb->sig);
             if(status==TASK_SUM){break;}
             // send proper mutex signal when pending per each case.
@@ -232,8 +232,6 @@ static void *outputTask(void *param){
     int32_t  err 	= 0;
     uint64_t len    = 0;
     uint64_t flag   = 0;
-    uint64_t targetHost = 0;
-    uint64_t systemHost = 0; 
     int32_t flags = fcntl(tcb->in,F_GETFL,0);
     fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
 
@@ -246,10 +244,8 @@ static void *outputTask(void *param){
             setTask(tcb,tcb->sig,TASK_OUTPUT);
             logWrite(tcb->Log,tcb->log,"[*] [Output] barrier wait...");            
             pthread_barrier_wait(&hbarrier);
-            #if OLORA_DEBUG_FLAG  == 1
-            logWrite(tcb->Log,tcb->log,"[*] [Output] barrier pass...");
-            #endif
             takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO_L);
+            logWrite(tcb->Log,tcb->log,"[*] [Output] barrier pass...");            
             continue;}
         if(getMask(tcb,tcb->sig,STATUS_TIMO_L)){
             takeMask(tcb,tcb->sig,STATUS_TIMO_L);
@@ -279,35 +275,15 @@ static void *outputTask(void *param){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
         }
-        getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
-            getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
-            getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
-            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);           
-            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
-            setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_BROKEN|FLAG_ERROR,1);
-            sem_wait(tcb->sess->slock);
-            enqueuePacket(tcb->sess->streamIn,&msg);
-            sem_post(tcb->sess->slock);
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
         err = sendPacket(tcb->sess->sock,tcb->sess,&msg,&link,&data,len,tcb->sess->method);
         if(err<=0){
-            // Marking Here.
-            // Maybe doesn't work when echo-test with current test tool ===>
-            getPacketOffset(&msg,MASK_SRC,0,&targetHost,8);
-            getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
-            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
-            setPacketOffset(&msg,MASK_DST,0,targetHost,8);
-            setPacketOffset(&msg,MASK_FLAGS,0,flag|FLAG_ACK|FLAG_ERROR|FLAG_RESP,1);
-            sem_wait(tcb->sess->slock);
-            enqueuePacket(tcb->sess->streamIn,&msg);
-            sem_post(tcb->sess->slock);
-            // <===
             setMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [Output] client disonnected. : ENO:[%d]-EC:[%d]-LEN:[%llu].",errno,err,len);
             continue;
@@ -342,15 +318,13 @@ static void *inputTask(void *param){
             logWrite(tcb->Log,tcb->log,"[*] [Input] wait signal to sync...");
             setTask(tcb,tcb->sig,TASK_INPUT);
             pthread_barrier_wait(&hbarrier);
-            #if OLORA_DEBUG_FLAG  == 1
+            takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO);            
             logWrite(tcb->Log,tcb->log,"[*] [Input] barrier pass...");
-            #endif
-            takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO);
             continue;}	    
         if(getMask(tcb,tcb->sig,STATUS_TIMO)){
             takeMask(tcb,tcb->sig,STATUS_TIMO);
             continue;}
-            
+          
         memset(&msg.packet,0,BUFFER_SIZE);
         memset(&data,0,DATA_LENGTH);
         err = recvPacket(tcb->sess->sock,tcb->sess,&msg,&data,tcb->sess->method);
@@ -369,10 +343,11 @@ static void *inputTask(void *param){
         if(err==0){
             logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : Broken Hash");
             continue;}
-        
-        sem_wait(tcb->sess->slock);     
-        enqueuePacket(tcb->sess->streamIn,&msg);
-        sem_post(tcb->sess->slock);
+        err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+        if(err<=0 && errno!=EAGAIN){
+            setMask(tcb,tcb->sig,STATUS_EXIT);
+            logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
+        }
     }
     
     exit:
@@ -383,9 +358,8 @@ static void *inputTask(void *param){
 
 static int32_t spin(void *param){
     struct THREAD_CONTROL_BOX *tcb 	= (struct THREAD_CONTROL_BOX *)param;
-    struct PACKET_CHAIN *pkt        = NULL;
     int32_t err = 0;
-    
+
     while(1){   
         waitMutex2(spinner,spinner_cond);
         if(getMask(tcb,tcb->sig,STATUS_EXIT)){
@@ -397,26 +371,10 @@ static int32_t spin(void *param){
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] wait signal to sync...");
             takeMask(tcb,tcb->sig,STATUS_RUNNING);
             setTask(tcb,tcb->sig,TASK_SPIN);
-            sem_wait(tcb->sess->slock);
-            init_list_head(tcb->sess->streamIn);
-            sem_post(tcb->sess->slock);
             pthread_barrier_wait(&hbarrier);
             takeMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] barrier pass...");
             return 1;}
-        do{
-            sem_wait(tcb->sess->slock);
-            pkt = dequeuePacket(tcb->sess->streamIn);
-            sem_post(tcb->sess->slock);
-            if(pkt!=NULL){
-                err = write(tcb->out,&pkt->packet,BUFFER_SIZE);
-                if(err<=0 && errno!=EAGAIN){
-                    setMask(tcb,tcb->sig,STATUS_EXIT);
-                    logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
-                    break;
-                }
-            }else{break;}
-        }while(1);            
     }return err;
 }
 
