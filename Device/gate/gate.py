@@ -16,7 +16,7 @@ class ControlGate(Process):
         Process.__init__(self)
         setproctitle.setproctitle('oloraGT')
         self.debug      = debug
-        self.echo       = False
+        self.echo       = echo
         self.readList   = []
         self.ntIn       = ObjectPipe(PIPE_LIST.NT_IN)
         self.ntOut      = ObjectPipe(PIPE_LIST.NT_OUT)
