@@ -4,10 +4,6 @@ import java.lang.Math;
 
 public class FuncGroup {
 
-    static void restart(){
-
-    }
-
     static String byteArrayToHexString(byte[] b) {
 
         // String Buffer can be used instead

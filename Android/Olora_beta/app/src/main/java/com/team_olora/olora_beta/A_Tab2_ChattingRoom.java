@@ -66,11 +66,9 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         public void onServiceConnected(ComponentName name, IBinder service) {
             //Toast.makeText(getApplicationContext(), "바운드 됨", Toast.LENGTH_LONG).show();
             Service_btService.myBinder mbinder = (Service_btService.myBinder) service;
-
             mbtService = mbinder.getSercive();
             mbtService.make_handler();
             mbtService.set_connect();
-
         }
 
         // unbind 되었을 때
