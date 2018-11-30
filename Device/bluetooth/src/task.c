@@ -286,7 +286,7 @@ static void *outputTask(void *param){
         if(err==0){
             /* Notify error to sender.
             getPacketOffset(&msg,MASK_SRC,0,&remoteHost,8);
-            setPacketOffset(&msg,MASK_DST,0,remoteHost,8);			
+            setPacketOffset(&msg,MASK_DST,0,remoteHost,8);
             setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
             setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
             sem_wait(tcb,tcb->sess->slock);
