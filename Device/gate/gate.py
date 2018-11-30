@@ -71,8 +71,6 @@ class ControlGate(Process):
                     pkt.packet = packet
                     pkt.split()
                     pkt.parse()
-                    if(debug):
-                        pkt.print(PACKET_HEADER_CONFIG.MASK_DATA)
                     if(pkt.parseinfo['SRC']==0 or pkt.parseinfo['DST']==0):
                         print(colored('[+] [GATE] Dropped. This is an internal packet.','yellow',attrs=['bold']))
                         continue               
@@ -88,8 +86,6 @@ class ControlGate(Process):
                     pkt.packet = packet
                     pkt.split()
                     pkt.parse()
-                    if(debug):
-                        pkt.print(PACKET_HEADER_CONFIG.MASK_DATA)
                     if(pkt.parseinfo['SRC']==0 or pkt.parseinfo['DST']==0):
                         print(colored('[+] [GATE] Dropped. This is an internal packet.','yellow',attrs=['bold']))
                         continue
