@@ -279,15 +279,16 @@ static void *outputTask(void *param){
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
-            #setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
-            #sem_wait(tcb,tcb->sess->slock);
-            #err = write(tcb->out,&msg.packet,BUFFER_SIZE);
-            #sem_wait(tcb,tcb->sess->slock);
-            #if(err<=0 && errno!=EAGAIN){
-            #    setMask(tcb,tcb->sig,STATUS_EXIT);
-            #    logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
-            #    continue;
-            #}
+            /* Notify error to sender.
+            setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
+            sem_wait(tcb,tcb->sess->slock);
+            err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+            sem_wait(tcb,tcb->sess->slock);
+            if(err<=0 && errno!=EAGAIN){
+                setMask(tcb,tcb->sig,STATUS_EXIT);
+                logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
+                continue;
+            }*/
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
@@ -326,6 +327,13 @@ static void *inputTask(void *param){
         if(getMask(tcb,tcb->sig,STATUS_KILL)){
             logWrite(tcb->Log,tcb->log,"[*] [Input] wait signal to sync...");
             setTask(tcb,tcb->sig,TASK_INPUT);
+            /* Notify session down to system
+            setPacketOffset(&msg,MASK_FLAGS,0,FLAG_FIN|FLAG_RESP,1);
+            setPacketOffset(&msg,MASK_DST,0,0,8);
+            sem_wait(tcb,tcb->sess->slock);
+            err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+            sem_wait(tcb,tcb->sess->slock);
+            */
             pthread_barrier_wait(&hbarrier);
             takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO);            
             logWrite(tcb->Log,tcb->log,"[*] [Input] barrier pass...");
@@ -352,9 +360,9 @@ static void *inputTask(void *param){
         if(err==0){
             logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : Broken Hash");
             continue;}
-        #sem_wait(tcb,tcb->sess->slock);
+        //sem_wait(tcb,tcb->sess->slock);
         err = write(tcb->out,&msg.packet,BUFFER_SIZE);
-        #sem_post(tcb,tcb->sess->slock);		
+        //sem_post(tcb,tcb->sess->slock);
         if(err<=0 && errno!=EAGAIN){
             setMask(tcb,tcb->sig,STATUS_EXIT);
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
@@ -547,10 +555,12 @@ static int32_t mainTask(uint8_t channel){
         printf("[*] Accept wait...\n");
         
         while(1){
-            //gettimeofday(&now,NULL);
-            //timeout.tv_sec  = now.tv_sec;
-            //timeout.tv_nsec = now.tv_usec*10000;
-            //waitMutexTime(spinner,spinner_cond,timeout,err);
+            /*
+            gettimeofday(&now,NULL);
+            timeout.tv_sec  = now.tv_sec;
+            timeout.tv_nsec = now.tv_usec*10000;
+            waitMutexTime(spinner,spinner_cond,timeout,err);
+            */
             waitMutex2(spinner,spinner_cond); 
             if(getMask(tcb,tcb->sig,STATUS_EXIT)){
                 logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit signal...");
