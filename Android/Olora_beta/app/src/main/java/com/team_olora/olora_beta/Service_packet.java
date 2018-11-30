@@ -36,7 +36,7 @@ public class Service_packet {
         //Toast.makeText(getApplicationContext(), "byte" + splited[5], Toast.LENGTH_LONG).show();
 
         for (int i = 0; i < 6; i++) {
-            byte[] s = FuncGroup.hexStringToByteArray(splited[i].toString());
+            byte[] s = hex2Byte(splited[i].toString());
             ret_addr[i + 2] = s[0];
         }
 
@@ -46,90 +46,123 @@ public class Service_packet {
         return ret_addr;
     }
 
+    // hex string -> byte 변환
+    public byte[] hex2Byte(String str) {
+        byte[] bytes = new byte[str.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer
+                    .parseInt(str.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
+    }
+
+    /////////////////////////////////////////////
+    /////////////////////////////////////////////
+    public String byte2hex(byte[] b) {
+
+        // String Buffer can be used instead
+
+        String hs = "";
+        String stmp = "";
+
+        for (int n = 0; n < b.length; n++) {
+            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
+
+            if (stmp.length() == 1) {
+                hs = hs + "0" + stmp;
+            } else {
+                hs = hs + stmp;
+            }
+
+            if (n < b.length - 1) {
+                hs = hs + "";
+            }
+        }
+
+        return hs;
+    }
 
 
     // 패킷 패킹. 바로 보낼 수 있는 형태
     // id, hp 따로 - command 가 setId, setHp 아니면 hp, id 인자는 상관없음
-    public byte[] converted_packet(String s, byte[] t_a, String command, byte hp, byte[] id, byte[] msg) {
+    public byte[] converted_packet(String s, byte[] t_a, String param, byte hp, byte[] id, byte[] msg) {
         byte[] s_a = converted_addr(s);
 
-        // 풀 패킷
-        byte[] packet = new byte[1024];
+        // for header
+        byte[] packet = new byte[56];
 
         for (int i = 0; i < 8; i++) {
             packet[i] = s_a[i];
         }
+
+        for (int i = 8; i < 16; i++) {
+            packet[i] = t_a[i - 8];
+        }
+
+        // data length
+        if(msg.length < 256)
+        {
+            packet[37] = (byte)msg.length;
+        }
+        else
+        {
+            int length = msg.length;
+            packet[36] = (byte)(length >> 8);
+            packet[37] = (byte)(packet[36]*256);
+        }
+
         // reset command
-        switch (command) {
+        switch (param) {
             case "ping":
-                packet[30] = (byte) 0xFF;
-                packet[31] = (byte) 0xF2;
+                packet[39] = (byte) 0xFF;
                 break;
             case "FORCE_RESET":
-                packet[30] = 0x00;
-                packet[31] = 0x00;
+                packet[39] = (byte) 0x00;
                 break;
             case "SET_DISCOVERY_TIME":
 
                 break;
             case "SEND_BROADCAST":
-                packet[30] = 0x00;
-                packet[31] = 0x12;
+                packet[39] = (byte) 0x12;
                 break;
             case "SEND_UNICAST":
-                packet[30] = 0x00;
-                packet[31] = 0x10;
+                packet[39] = (byte) 0x10;
                 break;
             case "SET_NODEIDENTIFIER":  // NID
-                packet[30] = 0x00;
-                packet[31] = 0x0b;
+                packet[39] = (byte) 0x0b;
                 break;
             case "SET_NETWORK_ID":      // ID
-                packet[30] = 0x00;
-                packet[31] = 0x09;
+                packet[39] = (byte) 0x09;
+
                 // id 셋팅
-                packet[25] = id[0];
-                packet[26] = id[1];
+                packet[26] = id[0];
+                packet[27] = id[1];
 
                 break;
             case "SET_PREAMIBLE_ID":    // HP
-                packet[30] = 0x00;
-                packet[31] = 0x07;
+                packet[39] = (byte) 0x07;
                 // hp 셋팅
                 packet[24] = hp;
                 break;
 
             case "START_DISCOVERY":
-                packet[30] = 0x00;
-                packet[31] = 0x0f;
+                packet[39] = (byte) 0x0F;
                 break;
             case "SET_CH":
-                packet[30] = 0x00;
-                packet[31] = 0x13;
-                Log.d("SET_CH:::", "SET_Ch 커맨드 =" + FuncGroup.byteArrayToHexString(Arrays.copyOfRange(packet, 30, 32)));
+                packet[39] = (byte) 0x13;
+                Log.d("SET_CH:::", "SET_Ch 커맨드 =" + byte2hex(Arrays.copyOfRange(packet, 39, 40)));
                 break;
 
             default:
                 break;
         }
 
-
-        for (int i = 8; i < 16; i++) {
-            packet[i] = t_a[i - 8];
-        }
-
         // 메시지
-        int msgLen = 0;
-        try {
-            msgLen=msg.length;
-        }catch (Exception e){}
-        for (int i = 0; i < msgLen; i++) {
-            packet[i + 36] = msg[i];
-            if (i == msgLen - 1)
-                packet[36 + i + 1] = 0x03;
-        }
+        byte[] packet_send = new byte[packet.length + msg.length];
+        System.arraycopy(packet, 0, packet_send, 0, packet.length);
+        System.arraycopy(msg, 0, packet_send, packet.length, msg.length);
 
-        return packet;
+        return packet_send;
     }
 
 
@@ -147,26 +180,25 @@ public class Service_packet {
 
     // read 한것 분석 함수
     byte[] handleRead(byte[] packet) {
-        byte[] command = new byte[2];
-        byte[] source_addr = new byte[8];
+        byte[] command = new byte[1];
+        byte[] dest_addr = new byte[8];
         byte[] datafield = null;
 
-        command[0] = packet[30];
-        command[1] = packet[31];
-        int i=0;
-        for (i = 0; i < 8; i++)
-            source_addr[i] = packet[i];
-        Log.d("get user", "source_addr: "+FuncGroup.byteArrayToHexString(source_addr));
-        ByteBuffer Lbuf = ByteBuffer.wrap(source_addr);
-        macaddr = Lbuf.getLong();
-        Log.d("get user", "macaddr: "+macaddr);
+        command[0] = packet[39];
 
-        if (command[0] == 0x00 && command[1] == 0x00)
+        for (int i = 0; i < 8; i++)
+            dest_addr[i] = packet[i];
+
+        ByteBuffer Lbuf = ByteBuffer.wrap(dest_addr);
+        macaddr = Lbuf.getLong();
+
+        if (command[0] == 0x00)
             packet = packet;
+
         else {
 
             try {
-                datafield = Arrays.copyOfRange(packet, 36, indexOfEOT(packet));
+                datafield = Arrays.copyOfRange(packet, 56, indexOfEOT(packet));
             } catch (Exception e) {
 
             }
@@ -174,7 +206,6 @@ public class Service_packet {
 
         return datafield;
     }
-
 
     // 0 -> 그냥 send
     // 1 -> send result - 걸러내기.
@@ -193,7 +224,9 @@ public class Service_packet {
      * 19 : set channel -> HP. ID 순서대로 1byte 2byte
      */
     public int getCmd(byte opt, byte[] cmd) {
-        int command = (((cmd[0] & 0xffff) << 8) | (cmd[1] & 0xffff));
+        //int command = (((cmd[0] & 0xffff) << 8) | (cmd[1] & 0xffff));
+        int command = cmd[0];
+
         int R = -1;
         /*
         if ((opt & 0x40) == 0) {

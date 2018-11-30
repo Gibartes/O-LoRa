@@ -41,7 +41,7 @@ public class Service_btService extends Service {
 
     /***/
 
-    public C_DB DB = null;
+    public Service_DBHelper DB = null;
 
     /****/
 
@@ -65,9 +65,9 @@ public class Service_btService extends Service {
     //////////////////////
     @Override
     public void onCreate() {
-        //Toast.makeText(getApplicationContext(), "service :  start", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "service :  start", Toast.LENGTH_LONG).show();
 
-        DB = new C_DB(getApplicationContext());
+        DB = new Service_DBHelper(getApplicationContext());
         startForeground(1, new Notification());
 
     }
@@ -76,7 +76,7 @@ public class Service_btService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        //Toast.makeText(getApplicationContext(), "service : onBind", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "service : onBind", Toast.LENGTH_LONG).show();
 
         return mIBinder;
     }
@@ -86,14 +86,14 @@ public class Service_btService extends Service {
 
         // 백그라운드 핵심..
         // foreground 만 해주면 잡지랄 아무것도 안해도됨.??
-        //Toast.makeText(getApplicationContext(), "service : onStartCommand", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "service : onStartCommand", Toast.LENGTH_LONG).show();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-       // Toast.makeText(getApplicationContext(), "service : onUnbind", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "service : onUnbind", Toast.LENGTH_LONG).show();
 
         return super.onUnbind(intent);
     }
@@ -101,15 +101,15 @@ public class Service_btService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // Toast.makeText(getApplicationContext(), "service : onDestroy", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "service : onDestroy", Toast.LENGTH_LONG).show();
 
         // 대몬 종료시 addr 초기화.
-        A_MainActivity.RSP_MacAddr = "00:00:00:00:00:00";
+        MainActivity.RSP_MacAddr = "00:00:00:00:00:00";
 
 
         if (mChatService != null) {
             mChatService.stop();
-            //Toast.makeText(getApplicationContext(), "service : 쓰레드 종료", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "service : 쓰레드 종료", Toast.LENGTH_LONG).show();
 
 
         }
@@ -146,10 +146,11 @@ public class Service_btService extends Service {
 
                                 case Service_BluetoothChatService.STATE_NONE:
                                     Toast.makeText(getApplicationContext(), "h : 장치와 연결이 끊어졌습니다.\n다시 연결해주세요.", Toast.LENGTH_SHORT).show();
-                                    Provider_BlueOn.getInstance().post(new Provider_BlueOnFunc(0));
+                                    Provider_BlueOn.getInstance().post(new Provider_BOf(0));
                                     DB.save_blueon(0);
                                     String nullbd = "000000000000";
-                                    DB.save_bd(FuncGroup.hexStringToByteArray(nullbd));
+                                    DB.save_bd(hexStringToByteArray(nullbd));
+
                                     // 스스로 종료시키기. 재시작을 해줘야함.
                                     // 재시작하는 인터페이스를 연결해 줘야함???
                                     //setStatus(R.string.title_not_connected);
@@ -158,53 +159,106 @@ public class Service_btService extends Service {
                             break;
 
                         case Service_Constants.MESSAGE_WRITE:
-                           // Toast.makeText(getApplicationContext(), "h : 송신 성공.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "h : 송신 성공.", Toast.LENGTH_SHORT).show();
                             byte[] writeBuf = (byte[]) msg.obj;
                             break;
 
                         case Service_Constants.MESSAGE_READ:
-                           // Toast.makeText(getApplicationContext(), "h : 수신 성공.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "h : 수신 성공.", Toast.LENGTH_SHORT).show();
                             /**에코테스트**/
                             Component_2_msgAdapter msgAdapter1 = new Component_2_msgAdapter();
                             /**보내기 */
                             // encodingmsg가 감
 
                             /**받기*/
-
                             byte[] read = (byte[]) msg.obj;
-                            int readLen = 0;
-                            try {
-                                readLen = read.length;
-                            }catch (Exception e){}
-
-                            if (readLen != 0) {
+                            if (read.length != 0) {
                                 String receivemsg = msgAdapter1.parse_msg((byte[]) msg.obj);
-                                int room_key;
+                                int send_key = msgAdapter1.Send;         // 받은 send
+                                int receive_key = msgAdapter1.Receive;   // 받은 receive
+                                /** 바꾸기 전 **/
+                                //헤더에서 유저 맥어드레스 받아서 유저키 얻음
                                 long usermac = Service_packet.macaddr; // 유저 mac addr
                                 int user = DB.get_user_key(usermac); // 유저 키
                                 Log.d("Service", ": get user key = " + user);
                                 int black = DB.get_isblack(usermac);
 
-                                if(user==-1) {
-                                    //user 검색이 안되면 즉 discovery 필요
-                                    user = DB.save_user("친구검색이필요합니다.", usermac);
-                                }else {
-                                    //user 검색 된다 discovery 불필요
-                                }
                                 String username = DB.get_user_name(user);
+                                /**** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **
+                                 * 룸넘버 체크 알고리즘
+                                 * */
+                                if (send_key == 0 && receive_key == 0) {
+                                    Log.d("Service", ": 퍼블릭! : " + String.valueOf(usermac));
+                                    Log.d("Service", ": 퍼블릭! : " + toByteArray(usermac));
+                                    Log.d("Service", ": 퍼블릭! : " + byteArrayToHexString(toByteArray(usermac)));
 
-                                // addr 와 일치하는 room key 있는지 검색
-                                // 있으면 roomkey, 없으면 만들어서 리턴
-                                int ch = DB.get_net_Current_ch();
-                                room_key= DB.echo_room_key(username,user,usermac);
-                                int chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
+                                    //public, 처리필요없음
+                                } else if (send_key != 0 && receive_key == 0) {
+                                    //채팅방 생성 안한 상대한테 온 메시지
+                                    //상대가 친구목록에 있는지 체크
+                                    if (user == -1) {
+                                        //없는유저
+                                        Log.d("Service", ": 없는친구 : " + usermac);
+                                        //일단 채팅방 만들고 못보낸다는 메시지 띄워주기
+                                        //유저는 탐색되지 않은 유저로 친구목록에 생성
+                                        Toast.makeText(getApplicationContext(), "친구 목록에 존재하지 않는 사용자입니다.\n친구목록 우측 상단의 리셋버튼을 눌러 검색해보세요!", Toast.LENGTH_LONG).show();
+                                        user = DB.save_user("이친구와대화할수없습니다.", usermac);
+                                        receive_key = DB.save_list_private(username, user);
+                                    } else {
+                                        //있는유저
+                                        //채팅방 생성
+                                        if (black > 0) {
+                                            Log.d("Service", ": 있는유저 : 채팅방 생성 : " + user);
+                                            receive_key = DB.save_list_private(username, user);
+                                        } else
+                                            break;
+                                    }
 
-                                Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + room_key +
+                                    if (user == 0) // echo용
+                                    {
+                                        Log.d("Service", ": 에코용 : 나와의 고독한 대화방 : " + user);
+                                        receive_key = DB.save_list_private("나와의 대화방" + DB.get_user_name(user), user);
+                                    }
+                                } else if (send_key == 0 && receive_key != 0) {
+                                    // 에러
+                                    Log.d("Service::ERR", String.valueOf(receive_key));
+                                    Log.d("Service", ": 에러용에러용에러용 : " + user);
+                                    break;
+                                } else if (send_key != 0 && receive_key != 0) {
+                                    //서로 채팅방이 생성되어있는 private
+                                    Log.d("Service::채팅", String.valueOf(receive_key));
+                                    Log.d("Service", ": 채팅방이 생성된 프라이빗 : " + user);
+                                    // 블랙인지 아닌지 검색
+                                    Log.d("Service::ROM", String.valueOf(receive_key));
+                                    if (black > 0) {
+                                        // 블랙 아닌경우
+                                        // 채팅방 테이블에서 룸 넘버 == receive인 채팅방이
+                                        // (채널 == 현재채널 && 유저 키 = return ) 인지 확인
+                                        if (DB.check_list_key(receive_key, user) > 0) {
+                                            //같으므로 룸넘버 receive에 채팅저장
+
+                                            Log.d("Service::ROM", String.valueOf(receive_key));
+                                        } else {
+                                            //다르므로 새로 채팅방 생성하고 새로운 receive 저장.
+                                            receive_key = DB.save_list_private(username, user);
+                                        }
+                                    } else {
+                                        // 블랙인경우
+                                        // 프로세스 종료.
+                                        break;
+                                    }
+                                }
+
+                                int ch = DB.get_net_View_ch();
+                                int chatkey = DB.save_chatmsg(ch, receive_key, username, receivemsg, false, user);
+
+                                Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + receive_key +
                                         "저장된 유저네임 : " + username + " 저장된 메시지 :" + receivemsg + " 저장된 유저 키: " + user);
-                                Provider_RecvMsg.getInstance().post(new Provider_RecvMsgFunc(chatkey));
-                                //DB.save_list_recievekey(send_key, receive_key);
+                                Provider_RecvMsg.getInstance().post(new Provider_RMf(chatkey));
+                                DB.save_list_recievekey(send_key, receive_key);
+                                /** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** */
 
-                                /** ** ** ** ** ** ** ** ** ** ** 푸시알람 ** ** ** ** ** ** ** ** ** ** ** */
+
                                 Boolean push = DB.get_set_push();
                                 Boolean vibe = DB.get_set_vibe();
                                 Boolean sound = DB.get_set_sound();
@@ -213,12 +267,12 @@ public class Service_btService extends Service {
 
                                     NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                                    Intent intent = new Intent(getApplicationContext(), A_Tab2_ChattingRoom.class);
+                                    Intent intent = new Intent(getApplicationContext(), Component_2_ChattingRoomMain.class);
                                     Intent intent_ = new Intent(getApplicationContext(), Service_PushPop.class);
-                                    String address = A_MainActivity.RSP_MacAddr.toString();
-                                    String time = DB.get_chat_time(ch, room_key, chatkey);
+                                    String address = MainActivity.RSP_MacAddr.toString();
+                                    String time = DB.get_chat_time(ch, receive_key, chatkey);
                                     intent.putExtra("device_address", address);
-                                    intent.putExtra("Room_key", room_key);
+                                    intent.putExtra("Room_key", receive_key);
 
                                     //   intent_.putExtra("NAME", username);
                                     //  intent_.putExtra("MSG", receivemsg);
@@ -297,19 +351,18 @@ public class Service_btService extends Service {
                             byte[] tlqkf = (byte[]) msg.obj;
                             int ch = 0;
                             ch &= 0x3FFFF;
-                            String id1 = FuncGroup.byteArrayToHexString(tlqkf);
+                            String id1 = byteArrayToHexString(tlqkf);
                             ch |= (tlqkf[1] & 0x7f);
                             ch <<= 8;
                             ch |= (tlqkf[2] & 0x00ff);
                             ch <<= 3;
                             ch |= (tlqkf[0] & 0x07);
-                            Provider_SetCH.getInstance().post(new Provider_SetCHFunc(ch));
+                            Provider_SetCH.getInstance().post(new Provider_SCf(ch));
                             break;
                         case Service_Constants.MESSAGE_DISCOVERY:
-                            Log.d("DIscover:::", "받은 msg.org"+msg.obj);
                             discover((byte[]) msg.obj);
                             Log.d("DIscover:::", "bt Service 진입");
-                            Provider_Discovery.getInstance().post(new Provider_DiscoveryFunc());
+                            Provider_Discovery.getInstance().post(new Provider_DCf());
                             break;
                         case Service_Constants.MESSAGE_DEVICE_NAME:
                             // save the connected device's name
@@ -317,7 +370,7 @@ public class Service_btService extends Service {
 
                             Toast.makeText(getApplicationContext(), "h : Connected to "
                                     + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                            Provider_BlueOn.getInstance().post(new Provider_BlueOnFunc(1));
+                            Provider_BlueOn.getInstance().post(new Provider_BOf(1));
                             DB.save_blueon(1);
 
 
@@ -345,16 +398,16 @@ public class Service_btService extends Service {
                                 Log.d("SETNI:::", "Set NI 결과" + Mac);
                                 ByteBuffer Lbuf = ByteBuffer.wrap(Mac);
                                 long myMac = Lbuf.getLong();
-                                Provider_BusProvider.getInstance().post(new Provider_BusProviderFunc(myNI, myMac));
+                                Provider_BusProvider.getInstance().post(new Provider_BPf(myNI, myMac));
                             }
                             break;
                     }
                 }
             };
         } else if (mChatService.mState != Service_BluetoothChatService.STATE_CONNECTED) {
-            //Toast.makeText(getApplicationContext(), "h : 재연결 필요", Toast.LENGTH_LONG).show();
-        }
-            //Toast.makeText(getApplicationContext(), " h : 이미 연결되어있습니다.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "h : 재연결 필요", Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(getApplicationContext(), " h : 이미 연결되어있습니다.", Toast.LENGTH_LONG).show();
 
     }
 
@@ -369,24 +422,22 @@ public class Service_btService extends Service {
 
 
             // 연결 직전 여기서 addr 셋팅
-            if (A_MainActivity.RSP_MacAddr != "00:00:00:00:00:00")
-                address = A_MainActivity.RSP_MacAddr;
+            if (MainActivity.RSP_MacAddr != "00:00:00:00:00:00")
+                address = MainActivity.RSP_MacAddr;
             else
-                A_MainActivity.RSP_MacAddr = "00:00:00:00:00:00";
+                MainActivity.RSP_MacAddr = "00:00:00:00:00:00";
 
 
             try {
                 connectDevice(address, true);
                 Toast.makeText(getApplicationContext(), "connected : " + address, Toast.LENGTH_SHORT).show();
                 String BD = address.replaceAll(":", "");
-                Log.d("BD - reconnect : ", BD);
-                DB.save_bd(FuncGroup.hexStringToByteArray(BD));
-                Log.d("BD - reconnect", "connectedbd : "+FuncGroup.byteArrayToHexString(FuncGroup.hexStringToByteArray(BD)));
-                Log.d("BD - reconnect", " get set bd : "+FuncGroup.byteArrayToHexString( DB.get_set_bd()));
+                Log.d("BDA : ", BD);
+                DB.save_bd(hexStringToByteArray(BD));
 
             } catch (Exception e) {
                 //Toast.makeText(this, "error : " + e.toString(), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(this, A_MainActivity.RSP_MacAddr, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, MainActivity.RSP_MacAddr, Toast.LENGTH_SHORT).show();
                 Toast.makeText(this, "connected : nothing\n장치를 선택하고 연결해주세요", Toast.LENGTH_SHORT).show();
 
 
@@ -414,28 +465,30 @@ public class Service_btService extends Service {
 
 
     public void discover(byte[] bytes) {
-        // 8 : Addr / 20 : NI
-        int addrLen = 28;
-        int num_user = (bytes.length-1) / addrLen;
-       // int num_user = bytes[0];
-        byte[] user = new byte[addrLen];
+        int max = 28;
+        int num_user = bytes.length / max;
+        byte[] user = new byte[max];
         DB.delete_user_All();
         Log.d("Discovery:::", "삭제후" + String.valueOf(DB.get_user_num()));
-        Log.d("Discovery:::", "받은 bytearray" + FuncGroup.byteArrayToHexString(bytes));
-        Log.d("Discovery:::", "받은 bytearray 길이 " + bytes.length+"  받은 bytearray 길이2 " + bytes[0]);
-        Log.d("Discovery:::", "num_user" + num_user);
 
-        int user_index=1;
-        while (user_index<num_user) {
+        while (num_user > 0) {
+            num_user--;
+            int index = num_user * max;
             int i = 0;
-            while (i < addrLen) {
-                user[i] = bytes[i + user_index*addrLen];
+            while (i < max) {
+                int b = i + index;
+                user[i] = bytes[b];
                 i++;
             }
-            Log.d("user : ", FuncGroup.byteArrayToHexString(user));
+            Log.d("user : ", byteArrayToHexString(user));
             parse(user);
-            user_index++;
         }
+    }
+
+    public static byte[] toByteArray(long value) {
+        byte[] bytes = new byte[8];
+        ByteBuffer.wrap(bytes).putLong(value);
+        return bytes;
     }
 
     public void parse(byte[] bytes) {
@@ -450,25 +503,43 @@ public class Service_btService extends Service {
         for (; i < 8; i++) {
             addr_byte[i] = bytes[i];
         }
-        for (i=8; i < 20; i++) {
+        for (; i < 20; i++) {
             name_byte[i] = bytes[i];
         }
+        Log.d("user - name byte : ", byteArrayToHexString(name_byte) + "\n name = " + new String(name_byte));
 
         ByteBuffer Lbuf = ByteBuffer.wrap(addr_byte);
         addr = Lbuf.getLong();
 
-        Log.d("User - addr byte : ", FuncGroup.byteArrayToHexString(addr_byte) + "\n name = " + new String(addr_byte));
-        Log.d("User - name byte : ", FuncGroup.byteArrayToHexString(name_byte) + "\n name = " + new String(name_byte));
-
         name = new String(name_byte);
         Log.d("addr", String.valueOf(addr));
-
-        Log.d("User - addr byte : ",  "\n name = " +addr);
-        Log.d("User - name byte : ",  "\n name = " + name);
         int key = DB.save_user(name, addr);
         Log.d("Discovery:::", String.valueOf(key));
         Log.d("Discovery:::", "으악 늘어난다" + String.valueOf(DB.get_user_num()));
 
+    }
+
+    public static String byteArrayToHexString(byte[] bytes) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (byte b : bytes) {
+
+            sb.append(String.format("%02X", b & 0xff));
+        }
+
+        return sb.toString();
+    }
+
+
+    static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
     }
 
 }
