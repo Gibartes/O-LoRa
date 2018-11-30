@@ -279,7 +279,7 @@ static void *outputTask(void *param){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
         }
-		//getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
+        //getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
