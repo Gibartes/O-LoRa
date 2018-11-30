@@ -283,7 +283,7 @@ static void *outputTask(void *param){
             setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
             sem_wait(tcb,tcb->sess->slock);
             err = write(tcb->out,&msg.packet,BUFFER_SIZE);
-            sem_wait(tcb,tcb->sess->slock);
+            sem_post(tcb,tcb->sess->slock);
             if(err<=0 && errno!=EAGAIN){
                 setMask(tcb,tcb->sig,STATUS_EXIT);
                 logWrite(tcb->Log,tcb->log,"[*] [Output] exit : ENO:[%d]-EC:[%d].",errno,err);
@@ -331,7 +331,7 @@ static void *inputTask(void *param){
             setPacketOffset(&msg,MASK_DST,0,0,8);
             sem_wait(tcb,tcb->sess->slock);
             err = write(tcb->out,&msg.packet,BUFFER_SIZE);
-            sem_wait(tcb,tcb->sess->slock);
+            sem_post(tcb,tcb->sess->slock);
             */
             pthread_barrier_wait(&hbarrier);
             takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO);            
