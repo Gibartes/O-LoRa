@@ -263,7 +263,7 @@ static void *outputTask(void *param){
 
         getHeaderLinkLayer(&msg,&link);
         err = inputCheckOutside(tcb->sess,&link);
-        if(err==ERR_LAND_STATE){
+        if(err==ERR_FALSE_ADDR){
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
             if(flag&FLAG_FIN){
                 setMask(tcb,tcb->sig,STATUS_KILL);
