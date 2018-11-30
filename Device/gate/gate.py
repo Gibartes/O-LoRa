@@ -32,12 +32,12 @@ class ControlGate(Process):
         print(colored('[+] [GATE] Waiting for gates open.','yellow',attrs=['bold']))
         self.ntOut.open(os.O_WRONLY)
         self.ntIn.open(os.O_RDONLY)
-        self.readList.append(self.ntIn)        
+        self.readList.append(self.ntIn.pipe)        
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
         self.xbOut.open(os.O_WRONLY)
         self.xbIn.open(os.O_RDONLY)
         print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
-        self.readList.append(self.xbIn)
+        self.readList.append(self.xbIn.pipe)
         
     # Debugging Function
     def __echoNT(self):
