@@ -8,7 +8,9 @@ import os
 import sys 
 import math
 import signal
+import hashlib # for Hashing modified local data section
 from multiprocessing import Process, Queue, Pipe, Event, Lock # Local IPC
+
 
 # 3rd Party Libraries
 from digi.xbee.exception import *
@@ -312,7 +314,7 @@ def StartDisocveryProcess(fullpacket,ExecutorPipe, localxbee, xnet, ev3):
     # - HeaderSection will be shared. Only "SEQ", "DataSectionLength' will be different
     # - DataSection will be re-initialized to zero, when fully occupied packet was sent  
 
-
+    print('33333')
     while (i < NumberOfdevices):
         # Add one device info(Addr(8 bytes),NI(20 bytes))
         DataSection += bytearray(devices[i].get_64bit_addr())   # + Addr          
@@ -335,7 +337,21 @@ def StartDisocveryProcess(fullpacket,ExecutorPipe, localxbee, xnet, ev3):
     # Case 2. send left
     HeaderSection[30:32] =  b'\x00\x00' #  END of exeternal sequence packets
     HeaderSection[36:38] = ((NumberOfdevices%34) * 28).to_bytes(2,'big') # Data Section length of leftovers
+    print('3.5 3.5 3.5 ')
+    # Hash datasection
+    hashdatasection = DataSection + bytearray(952-len(DataSection))
+    hashvalue = hashlib.md5(hashdatasection).hexdigest()
+    # fetch front & end 8 bytes seperately + swap byte by byte
+    end = (bytes.fromhex(hashvalue)[8:16])[::-1]
+    front = (bytes.fromhex(hashvalue)[0:8])[::-1] 
+
+    # final send value
+
+    hashvalue_final = front + end
+    HeaderSection[PACKET_HEADER_CONFIG.MASK_DC:PACKET_HEADER_CONFIG.MASK_DATA] = (hashvalue_final)
+    # Send 
     ExecutorPipe.send(HeaderSection+DataSection)
+
 
     # JUST FOR DEBUGGING
     print('discover result datasection : ',DataSection)
@@ -510,9 +526,11 @@ def SendBroadcast(fullpacket, ExecutorPipe, localxbee, xnet, ev3): # should dist
     # upper 'header[28]' usage : how many number of Xbeepackets needed
     # lower 'header[28]' usage : success/fail
 
+
     # 3. Make Return Command Header & Datasection
     datasection = bytearray(0)
     header[28] |= (NeededSendTimes<<5) # 6,7,8 bit of OPTbyte denotes Total Sent Xbeepacket Numbers 
+    '''
     for i in range(NeededSendTimes):    # from the (first xbeepkt)~(EOT xbeepkt)
         header[28] = header[28] | (0b00000001<<i)
         if SendResult[i]==1:           # 1. IF Success
@@ -525,7 +543,7 @@ def SendBroadcast(fullpacket, ExecutorPipe, localxbee, xnet, ev3): # should dist
             datasection += b' <' + (i+1).to_bytes(1,'big') +b'> '
 
     # don't need padding EOT at the end 
-    '''
+    
     # must end with EOT
     if EOTindex!=987:
         datasection += b'\x03'
@@ -535,7 +553,7 @@ def SendBroadcast(fullpacket, ExecutorPipe, localxbee, xnet, ev3): # should dist
     '''
     # 4. CMD_Result
     
-    ResultPacket = header + datasection
+    ResultPacket = header + datasection # datasection is zero
     ExecutorPipe.send(ResultPacket)
     #print("result packet header: ", ResultPacket[0:56]);print('----\n--------')
     #print("result packet body: ", ResultPacket[56:56+datalength])
@@ -565,32 +583,32 @@ def SwitchRoom(fullpacket, ExecutorPipe, localxbee, xnet, ev3):
         fullpacket[28] &= 0b10111111 # Set OPT notify no error
     finally :
         # SEND 
-        ExecutorPipe.send(ResultPacket)
+        ExecutorPipe.send(fullpacket)
         print('after Switiching Room HP: ',localxbee.get_parameter("HP"))
         print('after Switiching Room ID: ',localxbee.get_parameter("ID"))   
 
 
 routine_dic = {
-    b'\x00\x00' : ForceReset,           # ooo      
-    b'\x00\x01' : Write,                # won't be used
-    b'\x00\x02' : GetPowerLevel,        # won't be used
-    b'\x00\x03' : SetPowerLevel,        # won't be used
-    b'\x00\x04' : GetChannelMask,       # won't be used
-    b'\x00\x05' : SetChannelMask,       # won't be used
-    b'\x00\x06' : GetPreambleId,        # ooo
-    b'\x00\x07' : SetPreambleId,        # ooo
-    b'\x00\x08' : GetNetworkId,         # ooo
-    b'\x00\x09' : SetNetworkId,         # ooo
-    b'\x00\x0a' : GetNodeIdentifier,    # ooo
-    b'\x00\x0b' : SetNodeIdentifier,    # ooo
-    b'\x00\x0c' : GetMyAddress,         # won't be used
-    b'\x00\x0d' : GetDisocveryTime,     # oo
-    b'\x00\x0e' : SetDisocveryTime,     # oo
-    b'\x00\x0f' : StartDisocveryProcess,# ooo      
-    b'\x00\x10' : SendSyncUnicast,      # ooo
-    b'\x00\x11' : SendAsyncUnicast,     # won't be used   
-    b'\x00\x12' : SendBroadcast,        # ooo
-    b'\x00\x13' : SwitchRoom            # ooo
+    b'\x00' : ForceReset,           # ooo      
+    b'\x01' : Write,                # 
+    b'\x02' : GetPowerLevel,        # 
+    b'\x03' : SetPowerLevel,        # 
+    b'\x04' : GetChannelMask,       # 
+    b'\x05' : SetChannelMask,       # 
+    b'\x06' : GetPreambleId,        # ooo
+    b'\x07' : SetPreambleId,        # ooo
+    b'\x08' : GetNetworkId,         # ooo
+    b'\x09' : SetNetworkId,         # ooo
+    b'\x0a' : GetNodeIdentifier,    # ooo
+    b'\x0b' : SetNodeIdentifier,    # ooo
+    b'\x0c' : GetMyAddress,         # o
+    b'\x0d' : GetDisocveryTime,     # oo
+    b'\x0e' : SetDisocveryTime,     # oo
+    b'\x0f' : StartDisocveryProcess,# ooo      
+    b'\x10' : SendSyncUnicast,      # ooo
+    b'\x11' : SendAsyncUnicast,     # o   
+    b'\x12' : SendBroadcast,        # ooo
+    b'\x13' : SwitchRoom            # ooo   CM,HP,IP order on data section
     
 }
 
@@ -602,7 +620,7 @@ routine_dic = {
 def sync_client_read(CmdQueue, PidQueue, ReseterPid): 
     
     # First create HK pipe
-    HKpipe = ObjectPipe("/tmp/.xbolora.in") # ("/tmp/.xbolora.in")
+    HKpipe = ObjectPipe(PIPE_LIST.XB_OUT) # ("/tmp/.xbolora.in")
     HKpipe.mkfifo()
     HKpipe.open(os.O_RDONLY)
 
@@ -633,17 +651,19 @@ def sync_client_read(CmdQueue, PidQueue, ReseterPid):
             pass
         #print('sync_client_reader will die..')
         os.kill(MyPid, signal.SIGKILL) 
+    
     # add signal routine
     signal.signal(signal.SIGUSR1, ATmodeErrorRoutine)    
-
 
     # MAIN LOOP OF SYNC_CLIENT_READ
     while True:
         # 0. receive from pipe HK made 
+        print('before getting packet')
         fullpacket = bytearray(HKpipe.recv()) # originpacket(packet.Packet) 
-        
-        # A. check if the packet is a 'FULL' packet 
-        if len(fullpacket) <= 1008: 
+        packetlen = len(fullpacket)
+        print('received packetlen from user : ', packetlen)
+        # A. check if the packet is a 'FULL' packet, at least 56~1008 bytes 
+        if packetlen <= 1008 and packetlen >=56 :
             print('CMD_Listener got full cmd packet under 1008')
             # 1. IF Reset(Restart) Flag up
             if (fullpacket[28] >= 0b10000000):
@@ -657,28 +677,18 @@ def sync_client_read(CmdQueue, PidQueue, ReseterPid):
                     pass
                 #print('sync_client_reader will die..')
                 os.kill(MyPid, signal.SIGKILL)             
-            '''
-            # 1.5 check for XBEESLEEPCMD ; b'\xAA\x01'
-            elif (fullpacket[30:32] == b'\xAA\x01'):
-                for i in range(NumOfOtherPids):
-                    print(PidQueueCopy[i], i)
-                    os.kill(PidQueueCopy[i],signal.SIGSTOP)             
-            # 1.6 check for XBEEWAKECMD ; b'\xAA\x02'
-            elif (fullpacket[30:32] == b'\xAA\x02'):
-                #print('gonna wake you up')
-                for i in range(NumOfOtherPids):
-                    print(PidQueueCopy[i], i)
-                    os.kill(PidQueueCopy[i],signal.SIGCONT)              
-            '''
+
             # 2. Dump 
             else:
                 CmdQueue.put(fullpacket) 
         # B. if not full packet bypass
         else:
             print("/tmp/.xbolora.in Broke Detected!!") # ("/tmp/.xbolora.in")
-            HKpipe = ObjectPipe("/tmp/.xbolora.in") # ("/tmp/.xbolora.in")
-            HKpipe.open(os.O_RDONLY)
-    
+            HKpipe = ObjectPipe(PIPE_LIST.XB_OUT) # ("/tmp/.xbolora.in")
+            print('before reopening')
+            HKpipe.open(os.O_RDONLY);print('after opening')
+        
+
 def executor(CmdQueue, MsgQueue, ExecutorPipe,  ev3, PidQueue, ReseterPid, WaitPipe): 
     PidQueue.put(os.getpid())#;print('executor putted mypid')
     Reseter = ReseterPid.get()#;print('executor got reseterpid')
@@ -714,9 +724,10 @@ def executor(CmdQueue, MsgQueue, ExecutorPipe,  ev3, PidQueue, ReseterPid, WaitP
             # 3. Repeat below infinitely
             while (True):
                 # 1. Fetch
+                print('before cmdqueue get')
                 fullpacket = CmdQueue.get() # 1024 byte fullpacket 36+988 bytearray
                 # 2. Figure out command 
-                CMD_NUM = fullpacket[39:40]
+                CMD_NUM = fullpacket[39:40];print("received command number : ", CMD_NUM)
                 print('before routine')
                 # 3. Execute (routine functions are defined at rountine.py module)
                 try:
@@ -738,14 +749,14 @@ def sync_client_write(Sender1Pipe,  ev2, PidQueue, DebugQueue, lk, AwakePipe):
     
     PidQueue.put(os.getpid())
     
-    HKpipe = ObjectPipe("/tmp/.xbolora.out") # ("/tmp/.xbolora.out")
+    HKpipe = ObjectPipe(PIPE_LIST.XB_IN) # ("/tmp/.xbolora.out")
     HKpipe.mkfifo()
     HKpipe.open(os.O_WRONLY)
     
     # FIRST SEND GATE.PY MSG TO OPEN THE GATE AGAIN
     #HOST = '127.0.0.1'
     #PORT = 10732
-    #OpenGateRequest = PACKET(PACKET_FULL,PACKET_DATA_LEN)
+    #OpenGateRequest = PACKET(PACKET_FULL,DATA_LENGTH)
     #OpenGateRequest.put_data(30,0xAA)
     #OpenGateRequest.put_data(31,0x00)    
     #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -754,13 +765,13 @@ def sync_client_write(Sender1Pipe,  ev2, PidQueue, DebugQueue, lk, AwakePipe):
 
     while(True):
 
-        # 1. receive one full(1024)packet(result packet)
-        ResultPacket = Sender1Pipe.recv()                       # 1024byte fullpacket from executorpipe
-        convResultPacket = PACKET(PACKET_FULL,PACKET_DATA_LEN)  # packet.Packet
+        # 1. receive one full(<1008)packet(result packet)
+        ResultPacket = Sender1Pipe.recv();print('packet len :', len(ResultPacket))   # <1008byte fullpacket from executorpipe
+        convResultPacket = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH)  # packet.Packet
         AwakePipe.send(b'Wake Executor')                        # Wake up Executor 
         
         # 2. convert fullpacket -> packet.Packet
-        for i in range(len(ResultPacket)): # length == 1024
+        for i in range(len(ResultPacket)): # length <= 1008
             convResultPacket.put_data(i, ResultPacket[i]) # copy i'th position's byte 
 
         # 3. priority: sync > async. Thus block async_client
@@ -773,7 +784,7 @@ def sync_client_write(Sender1Pipe,  ev2, PidQueue, DebugQueue, lk, AwakePipe):
         except:
             print("Broken HKPipe at Sync-client(WR) [XBee >>> Gate]")
             HKpipe.close()
-            HKpipe = ObjectPipe("/tmp/.xbolora.out") # ("/tmp/.xbolora.out")
+            HKpipe = ObjectPipe(PIPE_LIST.XB_IN) # ("/tmp/.xbolora.out")
             HKpipe.open(os.O_WRONLY)
 
         # For debugging
@@ -1020,7 +1031,7 @@ def async_client(Sender2Pipe, ev2, PidQueue, DebugQueue, lk):
   
     PidQueue.put(os.getpid())
 
-    HKpipe = ObjectPipe("/tmp/.xbolora.out") # ("/tmp/.xbolora.out")
+    HKpipe = ObjectPipe(PIPE_LIST.XB_IN) # ("/tmp/.xbolora.out")
     HKpipe.mkfifo()
     HKpipe.open(os.O_WRONLY)
 
@@ -1028,7 +1039,7 @@ def async_client(Sender2Pipe, ev2, PidQueue, DebugQueue, lk):
         # 1. receive one full(<=1008)packet(result packet)
         FullPacket = Sender2Pipe.recv() # <=1008byte fullpacket
         #print('async client recieved message file')
-        convFullPacket = PACKET(PACKET_FULL,PACKET_DATA_LEN) # packet.Packet
+        convFullPacket = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH) # packet.Packet
         
         # 2. convert fullpacket -> packet.Packet
         for i in range(len(FullPacket)): # length == 1024
@@ -1045,7 +1056,7 @@ def async_client(Sender2Pipe, ev2, PidQueue, DebugQueue, lk):
         except:
             print("Broken HKPipe at Async Client [XBee >>> Gate]")
             HKpipe.close()
-            HKpipe = ObjectPipe("/tmp/.xbolora.out") # ("/tmp/.xbolora.out")
+            HKpipe = ObjectPipe(PIPE_LIST.XB_IN) # ("/tmp/.xbolora.out")
             HKpipe.open(os.O_WRONLY)
 
         #print('async client putted MSG in HKpipe')
@@ -1084,7 +1095,7 @@ def userwriter(PidQueue): # userwriter should be OFF on Acutal Usage
     #PidQueue.put(os.getpid())
 
     # HK pipe (User 입장에선 명령을 내리는 파이프)
-    CmdPipe = ObjectPipe("/tmp/.xbolora.in") # ("/tmp/.xbolora.in")
+    CmdPipe = ObjectPipe(PIPE_LIST.XB_OUT) # ("/tmp/.xbolora.in")
     CmdPipe.mkfifo()
     CmdPipe.open(os.O_WRONLY)
 
@@ -1092,7 +1103,7 @@ def userwriter(PidQueue): # userwriter should be OFF on Acutal Usage
     ResetMoment = 5;DiscoverMoment = 10;SleepMoment=3;WakeMoment=10
     while True:
         # 1. configure test input(full bytearray packet)
-        sendpkt = PACKET(PACKET_FULL,PACKET_DATA_LEN)
+        sendpkt = PACKET(PACKET_FULL,DATA_LENGTH)
         data = c_uint8*PACKET_FULL
         sendpkt.set_packet(data(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,0xFF,\
         0xA0,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,0xB0,0xC0,0xD0,0xAA,0xBC,0xA0,0xFF,0xDB,0x9C,0x80,0x20,0x03))
@@ -1191,7 +1202,7 @@ def userreader(PidQueue, DebugQueue):
 
 
 if __name__ == "__main__":
-    setproctitle.setproctitle(PROCESS_LIST.XBEE_CNODE)   
+    setproctitle.setproctitle("oloraXB")   
     executable = sys.executable
     args = sys.argv[:]
     args.insert(0, sys.executable)
