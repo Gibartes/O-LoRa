@@ -279,6 +279,15 @@ static void *outputTask(void *param){
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
+            #setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);			
+            #sem_wait(tcb,tcb->sess->slock);
+            #err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+            #sem_wait(tcb,tcb->sess->slock);
+            #if(err<=0 && errno!=EAGAIN){
+            #    setMask(tcb,tcb->sig,STATUS_EXIT);
+            #    logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
+            #    continue;
+            #}
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
@@ -343,7 +352,9 @@ static void *inputTask(void *param){
         if(err==0){
             logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : Broken Hash");
             continue;}
+        #sem_wait(tcb,tcb->sess->slock);
         err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+        #sem_post(tcb,tcb->sess->slock);		
         if(err<=0 && errno!=EAGAIN){
             setMask(tcb,tcb->sig,STATUS_EXIT);
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
