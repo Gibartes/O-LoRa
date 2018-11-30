@@ -279,7 +279,7 @@ static void *outputTask(void *param){
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
-            #setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);			
+            #setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
             #sem_wait(tcb,tcb->sess->slock);
             #err = write(tcb->out,&msg.packet,BUFFER_SIZE);
             #sem_wait(tcb,tcb->sess->slock);
