@@ -286,8 +286,7 @@ static void *outputTask(void *param){
             sem_wait(tcb,tcb->sess->slock);
             if(err<=0 && errno!=EAGAIN){
                 setMask(tcb,tcb->sig,STATUS_EXIT);
-                logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
-                continue;
+                logWrite(tcb->Log,tcb->log,"[*] [Output] exit : ENO:[%d]-EC:[%d].",errno,err);
             }*/
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
