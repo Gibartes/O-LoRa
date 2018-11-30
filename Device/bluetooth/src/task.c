@@ -228,7 +228,11 @@ static void *outputTask(void *param){
     struct PACKET_CHAIN	msg;
     struct PACKET_DATA data;
     struct PACKET_LINK_LAYER link;
-    
+
+    /*
+	uint64_t systemHost = 0;
+	uint64_t remoteHost = 0;
+	*/
     int32_t  err 	= 0;
     uint64_t len    = 0;
     uint64_t flag   = 0;
@@ -275,11 +279,15 @@ static void *outputTask(void *param){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
         }
+		//getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){
             /* Notify error to sender.
+            getPacketOffset(&msg,MASK_SRC,0,&remoteHost,8);
+            setPacketOffset(&msg,MASK_DST,0,remoteHost,8);			
+            setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
             setPacketOffset(&msg,MASK_FLAGS,0,FLAG_BROKEN|FLAG_ERROR|FLAG_RESP,1);
             sem_wait(tcb,tcb->sess->slock);
             err = write(tcb->out,&msg.packet,BUFFER_SIZE);
