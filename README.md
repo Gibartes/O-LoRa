@@ -61,6 +61,8 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 
 #### 1. Declare a packet
 ```python
+	from olora.packet import *
+	from olora.define import *
 	pkt = PACKET(PACKET_HEADER_CONFIG.PACKET_FULL,PACKET_HEADER_CONFIG.DATA_LENGTH)
 ```
 * You can also fill data using a ctype c_uint8 array like
