@@ -264,7 +264,6 @@ static void *outputTask(void *param){
             logWrite(tcb->Log,tcb->log,"[*] [Output] exit : ENO:[%d]-EC:[%d]-LEN:[%llu].",errno,err,len);
             goto exit;
         }
-
         getHeaderLinkLayer(&msg,&link);
         err = inputCheckOutside(tcb->sess,&link);
         if(err==ERR_FALSE_ADDR){
@@ -278,7 +277,8 @@ static void *outputTask(void *param){
             if(err!=ERR_INTERNAL_PKT){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
-        }      
+        }
+        
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){           
@@ -368,9 +368,13 @@ static void *inputTask(void *param){
         if(err==0){
             logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : Broken Hash");
             continue;}
-        //sem_wait(tcb,tcb->sess->slock);
+        #if (OLORA_BETA_FLAG == 1)
+        sem_wait(tcb,tcb->sess->slock);
         err = write(tcb->out,&msg.packet,BUFFER_SIZE);
-        //sem_post(tcb,tcb->sess->slock);
+        sem_post(tcb,tcb->sess->slock);
+        #else
+        err = write(tcb->out,&msg.packet,BUFFER_SIZE);
+        #endif
         if(err<=0 && errno!=EAGAIN){
             setMask(tcb,tcb->sig,STATUS_EXIT);
             logWrite(tcb->Log,tcb->log,"[*] [MainTask] exit : ENO:[%d]-EC:[%d].",errno,err);
