@@ -48,12 +48,13 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	for i in buffer:
 		pkt.put_seq_data(i)
 ```
-* Or alternatively,
+* I'd recommend third case to fill data. Or alternatively,
 ```python
 	buffer = obp.recv()
 	if(buffer!=0 and buffer!=b''):
 		pkt.packet = buffer
 ```
+* But in this case, some features cannot be used because of type problem.
 
 ### 2. Handle the packet
 * You'd better separate header and data from the packet.
