@@ -278,15 +278,12 @@ static void *outputTask(void *param){
             if(err!=ERR_INTERNAL_PKT){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
-        }
-        #if (OLORA_BETA_FLAG == 1)
-        getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
-        #endif
-        setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
+        }      
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){           
             #if (OLORA_BETA_FLAG == 1)
+            getPacketOffset(&msg,MASK_DST,0,&systemHost,8);
             getPacketOffset(&msg,MASK_SRC,0,&remoteHost,8);
             setPacketOffset(&msg,MASK_DST,0,remoteHost,8);
             setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
@@ -302,6 +299,7 @@ static void *outputTask(void *param){
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
+        setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         err = sendPacket(tcb->sess->sock,tcb->sess,&msg,&link,&data,len,tcb->sess->method);
         if(err<=0){
             setMask(tcb,tcb->sig,STATUS_KILL);
