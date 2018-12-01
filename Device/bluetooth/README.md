@@ -5,7 +5,7 @@ __ Written by Gibartes __
 This is a software that is 1:1 bluetooth server to link internal user space area. You can utilize this software for other purposes as well as this off-grid network project if you're planning to compose server or controller with bluetooth protocol.
 
 ---------------------------------------
-## External description about oloraNT
+## External features about oloraNT
 * Named pipe for input to userspace	: /tmp/.olora.out
 * Named pipe for output to bluetooth client	: /tmp/.olora.in
 * Internal command to exit current session 	:
