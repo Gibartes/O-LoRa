@@ -108,6 +108,17 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	print(pkt.parseinfo)
 	print(pkt.printHex(pkt.parseinfo['DST']))
 ```
+* Olora system uses MD5 Hash for verifying integrity of the packet. You can make a MD5 digest and put in the header with PACKET class.
+
+```python
+	pkt.cal_hash(PACKET_HEADER_CONFIG.DATA_LENGTH)
+	print("HASH-VALUE : ",pkt.hash)
+	pkt.set_hash()
+	pkt.combine()
+	pkt.update()
+	print("HASH-VALUE in the header : ",pkt.get_hash())
+```
+
 * PyOlora also offers UNIX pipe object with ObjectPipe Class for handling pipe easily because oloraNT uses two pipes to communicate with userspace system. 
   1. Declare an ObjectPipe object with path of the pipe. 
   2. Make a pipe files if have not been created by others.
