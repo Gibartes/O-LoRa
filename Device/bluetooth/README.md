@@ -95,7 +95,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 		pkt.packet = buffer
 	# Write data to the writable pipe.
 	writeCNT = writePipe.write(buffer)
-	if(writeCNT==0):
+	if(writeCNT<=0):
 		# handling error
 ```
 
