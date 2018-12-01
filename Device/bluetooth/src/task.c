@@ -229,10 +229,10 @@ static void *outputTask(void *param){
     struct PACKET_DATA data;
     struct PACKET_LINK_LAYER link;
 
-    /*
-	uint64_t systemHost = 0;
-	uint64_t remoteHost = 0;
-	*/
+    #if (OLORA_BETA_FLAG == 1)
+    uint64_t systemHost = 0;
+    uint64_t remoteHost = 0;
+    #endif
     int32_t  err 	= 0;
     uint64_t len    = 0;
     uint64_t flag   = 0;
@@ -283,8 +283,8 @@ static void *outputTask(void *param){
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
-        if(err==0){
-            /* Notify error to sender.
+        if(err==0){           
+            #if (OLORA_BETA_FLAG == 1)
             getPacketOffset(&msg,MASK_SRC,0,&remoteHost,8);
             setPacketOffset(&msg,MASK_DST,0,remoteHost,8);
             setPacketOffset(&msg,MASK_SRC,0,systemHost,8);
@@ -295,7 +295,8 @@ static void *outputTask(void *param){
             if(err<=0 && errno!=EAGAIN){
                 setMask(tcb,tcb->sig,STATUS_EXIT);
                 logWrite(tcb->Log,tcb->log,"[*] [Output] exit : ENO:[%d]-EC:[%d].",errno,err);
-            }*/
+            }
+            #endif
             logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : Broken Hash");
             continue;
         }
@@ -334,13 +335,13 @@ static void *inputTask(void *param){
         if(getMask(tcb,tcb->sig,STATUS_KILL)){
             logWrite(tcb->Log,tcb->log,"[*] [Input] wait signal to sync...");
             setTask(tcb,tcb->sig,TASK_INPUT);
-            /* Notify session down to system
+            #if (OLORA_BETA_FLAG == 1)
             setPacketOffset(&msg,MASK_FLAGS,0,FLAG_FIN|FLAG_RESP,1);
             setPacketOffset(&msg,MASK_DST,0,0,8);
             sem_wait(tcb,tcb->sess->slock);
             err = write(tcb->out,&msg.packet,BUFFER_SIZE);
             sem_post(tcb,tcb->sess->slock);
-            */
+            #endif
             pthread_barrier_wait(&hbarrier);
             takeMask(tcb,tcb->sig,STATUS_KILL|STATUS_TIMO);            
             logWrite(tcb->Log,tcb->log,"[*] [Input] barrier pass...");
@@ -599,6 +600,10 @@ static int32_t mainTask(uint8_t channel){
         remAddr = batoui64(src);
         sem_wait(tcb->sess->slock);
         sess.clientAddr = remAddr;
+        #if (OLORA_DEBUG_FLAG == 1)
+        int32_t flags = fcntl(tcb->in,F_GETFL,0);
+        fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
+        #endif
         sess.sock = clientfd;
         sem_post(tcb->sess->slock);	    
         enableScan(hciSock,di.dev_id,NOSCAN);  /* Hide */
@@ -643,6 +648,12 @@ int32_t main(void){
     printf("[*]     Author  : Gibartes                              [*]\n");
     printf("[*]_____________________________________________________[*]\n");
     printf("[*] Start Olora Bluetooth Lower Network Bridge Service. [*]\n");
+    #if (OLORA_DEBUG_FLAG == 1)
+    printf("[*] Debug features set.                                 [*]\n");
+    #endif
+    #if (OLORA_BETA_FLAG == 1)
+    printf("[*] Beta features set.                                  [*]\n");
+    #endif    
     while(1){
     	err = mainTask(1);
     	if(err!=0){break;}

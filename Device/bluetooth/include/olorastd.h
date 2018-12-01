@@ -46,6 +46,8 @@
 #define OLORA_DAEMON_VERSION     "1.1.0"
 
 #define OLORA_DEBUG_FLAG            1
+#define OLORA_BETA_FLAG             0
+
 /* Encryption Definitions */
 #define AES256_KEYSIZE            256
 #define AES256_IVSIZE             128
