@@ -42,7 +42,7 @@
 #include <endian.h>
 #include <byteswap.h>
 
-#define OLORA_DAEMON_NAME	     "OLoRa Bluetooth Network Daemon"
+#define OLORA_DAEMON_NAME        "OLoRa Bluetooth Network Daemon"
 #define OLORA_DAEMON_VERSION     "1.1.0"
 
 #define OLORA_DEBUG_FLAG            1
@@ -103,12 +103,12 @@
     #define LOCAL_BACK           0xFFFFFFFF
 
 	/* FLAGS */
-    #define FLAG_URGENT          (uint8_t)0b10000000  
+    #define FLAG_URGENT          (uint8_t)0b10000000
     #define FLAG_ACK             (uint8_t)0b01000000
     #define FLAG_FIN             (uint8_t)0b00100000
     #define FLAG_ENCRYPT         (uint8_t)0b00010000
     #define FLAG_QUERY           (uint8_t)0b00001000
-    #define FLAG_BROKEN          (uint8_t)0b00000100	
+    #define FLAG_BROKEN          (uint8_t)0b00000100
     #define FLAG_ERROR           (uint8_t)0b00000010
     #define FLAG_RESP            (uint8_t)0b00000001
 
