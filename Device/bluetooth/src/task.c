@@ -278,7 +278,7 @@ static void *outputTask(void *param){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
         }
-        
+
         pkt2data(&msg,&data);
         err = hashCompare(&msg,&data,DATA_LENGTH);
         if(err==0){           
@@ -606,7 +606,7 @@ static int32_t mainTask(uint8_t channel){
         sess.clientAddr = remAddr;
         #if (OLORA_DEBUG_FLAG == 1)
         int32_t flags = fcntl(tcb->in,F_GETFL,0);
-        fcntl(tcb->in,F_SETFL,flags|O_NONBLOCK);
+        fcntl(clientfd,F_SETFL,flags|O_NONBLOCK);
         #endif
         sess.sock = clientfd;
         sem_post(tcb->sess->slock);	    
