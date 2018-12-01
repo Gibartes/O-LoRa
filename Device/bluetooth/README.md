@@ -78,7 +78,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * PyOlora also offers UNIX pipe object with ObjectPipe Class for handling pipe easily because oloraNT uses two pipes to communicate with userspace system. 
   1. Declare an ObjectPipe object with path of the pipe. 
   2. Make a pipe file if have not been created by others.
-  3. Open the declared pipe with mode like os.O_WRONLY or os.O_RDONLY, and so on. But you need to think about the fact that code hangs utill other process catch your pipe.
+  3. Open the declared pipe with mode like os.O_WRONLY or os.O_RDONLY, and so on. But you need to think about the fact that code hangs untill other process catch your pipe.
 
 ```python
 	readPipe = ObjectPipe(PIPE_LIST.NT_IN)
