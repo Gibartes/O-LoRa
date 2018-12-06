@@ -42,7 +42,7 @@
             android:name=".A_Tab2_ChattingRoom"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".A_123_Set__Name"
+            android:name=".A_123_Setting__Activity"
             android:label="@string/title_activity_list_set"
             android:theme="@style/AppTheme.NoActionBar" />
 

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -116,6 +117,14 @@ public class A_Tab4 extends Fragment {
                 case R.id.setBlockList:
                     Intent blacklist = new Intent(v.getContext(), A_Tab4_BlackList.class);
                     startActivity(blacklist);
+                    break;
+                case R.id.setDcLv:
+                    Intent setdclv = new Intent(getContext(), A_123_Setting__Activity.class);
+                    setdclv.putExtra("prev_Name", "");
+                    setdclv.putExtra("Key", "");
+                    setdclv.putExtra("MODE", 3);
+                    getActivity().startActivityForResult(setdclv, 0);
+                    break;
             }
         }
 

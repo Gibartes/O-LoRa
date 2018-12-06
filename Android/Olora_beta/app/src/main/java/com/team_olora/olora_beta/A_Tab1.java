@@ -235,7 +235,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                     break;
 
                 case R.id.editMyName:
-                    Intent intent = new Intent(getContext(), A_123_Set__Name.class);
+                    Intent intent = new Intent(getContext(), A_123_Setting__Activity.class);
                     intent.putExtra("prev_Name", _name);
                     intent.putExtra("Key", 0); // 내 user key = 0
                     intent.putExtra("MODE", 0);

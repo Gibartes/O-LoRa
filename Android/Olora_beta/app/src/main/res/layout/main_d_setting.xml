@@ -128,8 +128,6 @@
             android:textColor="@color/colorWhite"
             android:textSize="18sp"
             android:textStyle="bold" />
-
-
         <Button
             android:id="@+id/setMsgLv"
             android:layout_width="match_parent"

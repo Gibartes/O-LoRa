@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 public class A_Tab2_DeleteChatRoom extends android.support.v4.app.DialogFragment {
     private Button BtnSet, BtnDel;
@@ -62,7 +61,7 @@ public class A_Tab2_DeleteChatRoom extends android.support.v4.app.DialogFragment
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.list_set:
-                    Intent intent = new Intent(getContext(), A_123_Set__Name.class);
+                    Intent intent = new Intent(getContext(), A_123_Setting__Activity.class);
                     intent.putExtra("MODE",1 );
                     intent.putExtra("prev_Name", roomName);
                     intent.putExtra("Key", roomKey);

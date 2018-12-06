@@ -468,25 +468,42 @@ public class C_DB extends SQLiteOpenHelper {
     public int save_list_private(String name, int userkey) {
         ContentValues values = new ContentValues();
         int current_netkey = -1;
+        int key = -1;
         Cursor c = get_net_Current();
         if (c.moveToFirst()) {
             current_netkey = c.getInt(0);
+            long useraddr = get_user_addr(userkey);
+            values.put(KEY_netkey, current_netkey);// net key
+            values.put(KEY_roomname, name);
+            values.put(KEY_userkey, userkey);
+            values.put(KEY_useraddr, useraddr);
+            values.put(KEY_receivekey, 0);
+            SQLiteDatabase db = getWritableDatabase();
+            if (db.insert(TBL_List, null, values) > 0) {
+                c = get_list_cursor();
+                c.moveToLast();
+                key = c.getInt(1);
+            }
+            db.close();
+        }else{
+            Log.d("saveError", "Check the channel");
+            // dummy chatting - mklee
+            values.put(KEY_netkey, 999);// net key
+            values.put(KEY_roomname, name);
+            long useraddr = get_user_addr(userkey);
+            values.put(KEY_userkey, userkey);
+            values.put(KEY_useraddr, useraddr);
+            values.put(KEY_receivekey, 0);
+            SQLiteDatabase db = getWritableDatabase();
+            if (db.insert(TBL_List, null, values) > 0) {
+                c = get_list_cursor();
+                c.moveToLast();
+                key = 999;
+            }
+            db.close();
         }
-       long useraddr = get_user_addr(userkey);
-        values.put(KEY_netkey, current_netkey);// net key
-        values.put(KEY_roomname, name);
-        values.put(KEY_userkey, userkey);
-        values.put(KEY_useraddr, useraddr);
-        values.put(KEY_receivekey, 0);
 
-        int key = -1;
-        SQLiteDatabase db = getWritableDatabase();
-        if (db.insert(TBL_List, null, values) > 0) {
-            c = get_list_cursor();
-            c.moveToLast();
-            key = c.getInt(1);
-        }
-        db.close();
+
         return key;
     }// update 메소드 정의 해야함
 
