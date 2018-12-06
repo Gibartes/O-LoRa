@@ -52,6 +52,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
     private int Key;
     private String Name;
     private NumberPicker set_Dclv;
+    private TextView set_Dclv_char;
     private int dclv;
 
     ProgressBar prog;
@@ -70,29 +71,41 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         Key = intent.getIntExtra("Key", 0);
         Name = intent.getStringExtra("prev_Name");
 
-        prog = findViewById(R.id.Prog);
         titleBar = findViewById(R.id.titleBarText);
-        setname = findViewById(R.id.txtSetList);
 
         setBox = findViewById(R.id.setbox);
-        progressBox=findViewById(R.id.progressbox);
 
-        timer_text = findViewById(R.id.timer);
-        timer_text.setVisibility(View.GONE);
-
+        setname = findViewById(R.id.txtSetList);
         btnDel = findViewById(R.id.btnTextDel);
+        set_Dclv = findViewById(R.id.setDclv);
+        set_Dclv_char =findViewById(R.id.setDclvchar);
+
+        progressBox=findViewById(R.id.progressbox);
+        prog = findViewById(R.id.Prog);
+        timer_text = findViewById(R.id.timer);
+        progressBox.setVisibility(View.GONE);
+
         btnSet = findViewById(R.id.btn_set);
         DB = new C_DB(getApplicationContext());
 
         Provider_BusProvider.getInstance().register(this);
-
+        Log.d("개씨발", "씨빨련아: "+mode);
         switch (mode) {
             case 0:
+                set_Dclv.setVisibility(View.GONE);
+                set_Dclv_char.setVisibility(View.GONE);
+                setname.setVisibility(View.VISIBLE);
+                btnDel.setVisibility(View.VISIBLE);
                 titleBar.setText("사용자 이름 변경");
                 setname.setHint("내 이름");
                 setname.setText(Name);
                 break;
             case 1:
+                set_Dclv.setVisibility(View.GONE);
+                set_Dclv_char.setVisibility(View.GONE);
+                setname.setVisibility(View.VISIBLE);
+                btnDel.setVisibility(View.VISIBLE);
+
                 userName = DB.get_list_userName(Key);
                 titleBar.setText("채팅방 이름 변경");
                 setname.setHint(userName);
@@ -100,17 +113,23 @@ public class A_123_Setting__Activity extends AppCompatActivity {
 
                 break;
             case 2:
+                set_Dclv.setVisibility(View.GONE);
+                set_Dclv_char.setVisibility(View.GONE);
+                setname.setVisibility(View.VISIBLE);
+                btnDel.setVisibility(View.VISIBLE);
+
                 titleBar.setText("친구 이름 변경");
                 setname.setText("친구 이름"); // 태그명 PrevName으로 변경
                 setname.setText(Name);
                 break;
             case 3:
-                titleBar.setText("채널 탐색 시간 설정");
                 setname.setVisibility(View.GONE);
-                int prev_val=DB.get_set_dclv();
                 btnDel.setVisibility(View.GONE);
-                set_Dclv = findViewById(R.id.setDclv);
                 set_Dclv.setVisibility(View.VISIBLE);
+                set_Dclv_char.setVisibility(View.VISIBLE);
+
+                titleBar.setText("채널 탐색 시간 설정");
+                int prev_val=DB.get_set_dclv();
                 set_Dclv.setMinValue(6);
                 set_Dclv.setMaxValue(15);
                 set_Dclv.setWrapSelectorWheel(false);
@@ -217,7 +236,8 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mod=4;
-                                    setBox.setVisibility(View.GONE);
+                                    set_Dclv.setVisibility(View.GONE);
+                                    set_Dclv_char.setVisibility(View.GONE);
                                     progressBox.setVisibility(View.VISIBLE);
                                     btnSet.setVisibility(View.GONE);
 

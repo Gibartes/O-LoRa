@@ -20,9 +20,9 @@ android:background="@color/colorInvisible">
     android:id="@+id/tab_custom"
     android:layout_below="@+id/friendicon"
     android:textColor="@color/colorWhite"
-    android:text="접속한 친구"
+    android:text="주변 유저"
     android:textStyle="bold"
-    android:textSize="15sp"
+    android:textSize="15dp"
     android:typeface="serif"/>
 
 </RelativeLayout>
