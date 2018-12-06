@@ -163,12 +163,7 @@ public class Service_btService extends Service {
                             break;
 
                         case Service_Constants.MESSAGE_READ:
-                           // Toast.makeText(getApplicationContext(), "h : 수신 성공.", Toast.LENGTH_SHORT).show();
-                            /**에코테스트**/
                             Component_2_msgAdapter msgAdapter1 = new Component_2_msgAdapter();
-                            /**보내기 */
-                            // encodingmsg가 감
-
                             /**받기*/
 
                             byte[] read = (byte[]) msg.obj;

@@ -21,6 +21,8 @@ import static android.content.ContentValues.TAG;
 public class A_Tab3 extends android.support.v4.app.Fragment {
     private TextView viewChannel;
     private ImageButton reset;
+    // dumy btn - lmk
+    ImageButton dummyFrieandBtn;
     private C_DB DB = null;
 
     private ListView listview;
@@ -47,6 +49,9 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         btnDel.setOnClickListener(new Event());
         btnAdd.setVisibility(View.GONE);
         btnDel.setVisibility(View.GONE);
+        //dumy btn - lmk
+        dummyFrieandBtn = layout.findViewById(R.id.dumyCreateFriendList);
+        dummyFrieandBtn.setOnClickListener(new Event());
         txt.setVisibility(View.GONE);
         listview = layout.findViewById(R.id.List_friendView);
         listview.setAdapter(adapter);
@@ -102,6 +107,11 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
                     }
 
                     break;
+                case R.id.dumyCreateFriendList:
+                    //dumy btn - mklee
+                    long dumyAddr = Math.round(Math.random()*100);
+                    int key = DB.save_user("dummy "+Long.toString(dumyAddr), dumyAddr);
+                    load_values();
             }
         }
 

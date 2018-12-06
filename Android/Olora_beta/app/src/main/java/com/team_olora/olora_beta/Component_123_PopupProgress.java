@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -17,7 +18,7 @@ import com.squareup.otto.Subscribe;
 
 public class Component_123_PopupProgress extends android.support.v4.app.DialogFragment {
 
-    ImageButton nayeonBtn;
+    Button nayeonBtn;
     private int callTab;
     private int key;
     private int ch;

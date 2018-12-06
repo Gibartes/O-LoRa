@@ -64,6 +64,13 @@
         android:text="Clear"
         android:layout_alignParentBottom="true"
         android:id="@+id/btnDel"/>
+    <ImageButton
+        android:id="@+id/dumyCreateFriendList"
+        android:layout_alignParentBottom="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/nayeon_icon"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
 

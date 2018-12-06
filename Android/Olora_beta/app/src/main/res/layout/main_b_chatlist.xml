@@ -45,12 +45,20 @@
         android:layout_height="match_parent">
         <!-- 선택했을 때 다른화면을 덧씌우는 옵션. 색상줄때 하면될듯 -->
     </ListView>
+
     <ExpandableListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tracklist">
-
     </ExpandableListView>
+
+    <ImageButton
+        android:id="@+id/dumyCreateChatList"
+        android:layout_alignParentBottom="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/sana_icon"/>
 
 </RelativeLayout>
 

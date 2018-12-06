@@ -2,6 +2,8 @@ package com.team_olora.olora_beta;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,24 +15,24 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
-public class Component_123_ListSet extends AppCompatActivity {
+public class A_123_Set__Name extends AppCompatActivity {
     InputMethodManager imm;
     int mode;
-
     int mod=0;
-
-    int HP;
-    int ID;
     private int ch;
-    byte[] HPbyte = new byte[1];
-    byte[] IDbyte = new byte[2];
-
+    private int timer_sec=10;
+    private TimerTask second;
+    private TextView timer_text;
+    private final Handler handler = new Handler();
 
     /**
      * 0 = 본인이름 설정
@@ -64,6 +66,10 @@ public class Component_123_ListSet extends AppCompatActivity {
         titleBar = findViewById(R.id.titleBarText);
         setname = findViewById(R.id.txtSetList);
 
+
+        timer_text = findViewById(R.id.timer);
+        timer_text.setVisibility(View.GONE);
+
         btnDel = findViewById(R.id.btnTextDel);
         btnSet = findViewById(R.id.btn_set);
         DB = new C_DB(getApplicationContext());
@@ -75,7 +81,6 @@ public class Component_123_ListSet extends AppCompatActivity {
                 titleBar.setText("사용자 이름 변경");
                 setname.setHint("내 이름");
                 setname.setText(Name);
-
                 break;
             case 1:
                 userName = DB.get_list_userName(Key);
@@ -116,30 +121,34 @@ public class Component_123_ListSet extends AppCompatActivity {
                     break;
                 case R.id.btn_set:
                     String name = setname.getText().toString();
-
                     switch (mode) {
                         case 0:
                             Service_packet packet = new Service_packet();
                             String s = A_MainActivity.addr_self;
                             byte[] d = packet.converted_addr(A_MainActivity.RSP_MacAddr);
+
                             ch=DB.get_net_Current_ch();
-                            HP = ch & 0x00000007;
-                            ID = ch & 0x0003FFF8;
-                            ID >>= 3;
-                            HPbyte[0] = (byte) HP;
-                            IDbyte[0] = (byte) (ID >> 8);
-                            IDbyte[1] = (byte) ID;
-                            byte[] CH = new byte[3];
-                            CH[0] = (byte) HP;
-                            CH[1] = (byte) (ID >> 8);
-                            CH[2] = (byte) ID;
+
                             if (Service_BluetoothChatService.mState == 3) {
                                 prog.setVisibility(View.VISIBLE);
                                 btnSet.setVisibility(View.GONE);
                                 mod=1;
-                                A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "SET_NODEIDENTIFIER", HPbyte[0], IDbyte, name.getBytes()));
-                            }
+                                A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "SET_NODEIDENTIFIER",FuncGroup.getCHbyte(ch)[0], FuncGroup.getIDbyte(ch), FuncGroup.getCHbyte(ch)));
+
+                                timer_sec=10;
+                                timer_text.setVisibility(View.VISIBLE);
+                                second = new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        Update();
+                                        timer_sec--;
+                                    }
+                                };
+                                Timer timer = new Timer();
+                                timer.schedule(second,0,1000);
+                              }
                             else{
+                                DB.get_user_Myname();
                                 DB.save_userMY(name, 0); // 본인 Xbee 맥 어드레스
                                 Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
                                 intent.putExtra("Page",0);
@@ -148,6 +157,7 @@ public class Component_123_ListSet extends AppCompatActivity {
                              }
                             break;
                         case 1:
+                            Log.d("setChatroomName", "name len = "+name.length());
                             if(name.length()==0)
                             {
                                 DB.update_list_name(userName,Key);
@@ -171,8 +181,26 @@ public class Component_123_ListSet extends AppCompatActivity {
             }
         }
     }
+    protected void Update() {
+        Runnable updater = new Runnable() {
+            public void run() {
+                timer_text.setText(timer_sec + "초");
+                if(timer_sec<1 & mod==1){
+                    timer_sec=10;
+                    mod=0;
+                    Toast.makeText(A_123_Set__Name.this, "이름 설정에 실패했습니다. \n연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
+                    intent.putExtra("Page",0);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+            }
+        };
+        handler.post(updater);
+    }
     @Subscribe
     public void receive_NI(Provider_BusProviderFunc bpf) {
+        mod=0;
         String NI = bpf.getMyNI();
         long addr = bpf.getMyMac();
         byte[] ni = NI.getBytes();
@@ -199,5 +227,6 @@ public class Component_123_ListSet extends AppCompatActivity {
     }
 
 }
+
 
 // DB 접근 안하도록 설계

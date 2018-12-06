@@ -40,4 +40,35 @@ public class FuncGroup {
     {
         return Integer.toBinaryString(number);
     }
+
+    static byte[] getHPbyte(int ch){
+        int HP = ch & 0x00000007;
+        byte[] HPbyte = new byte[1];
+        HPbyte[0] = (byte) HP;
+        return HPbyte;
+    }
+
+    static byte[] getIDbyte(int ch) {
+        byte[] IDbyte = new byte[2];
+        int ID = ch & 0x0003FFF8;
+        ID >>= 3;
+
+        IDbyte[0] = (byte) (ID >> 8);
+        IDbyte[1] = (byte) ID;
+        return IDbyte;
+    }
+
+    static byte[] getCHbyte(int ch){
+        byte[] CH = new byte[3];
+        int HP = ch & 0x00000007;
+        int ID = ch & 0x0003FFF8;
+        CH[0] = (byte) HP;
+        CH[1] = (byte) (ID >> 8);
+        CH[2] = (byte) ID;
+
+        return CH;
+    }
+
+
+
 }

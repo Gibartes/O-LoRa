@@ -50,6 +50,12 @@
             android:layout_gravity="center"
             android:background="@drawable/xbutton2"/>
     </LinearLayout>
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btn_set"

@@ -7,16 +7,16 @@
     tools:context=".Component_123_PopupProgress">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:background="@color/dialog_sub_color"
             android:id="@+id/progresstitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:background="@color/dialog_sub_color"
             android:maxLines="1"
             android:padding="20sp"
             android:text="@string/Pop_Progress_1"
@@ -67,24 +67,39 @@
                 android:textSize="15sp"
                 android:typeface="monospace" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/progLinear2"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone">
+
             <TextView
-                android:id="@+id/progLinear2"
-                android:visibility="gone"
+                android:id="@+id/progBdaddress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:text=""
-                android:textColor="@color/dialog_sub_color"
+                android:textColor="@color/dialog_sub_color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="연결 요청 중 입니다."
                 android:textSize="15sp"
                 android:typeface="monospace" />
+        </LinearLayout>
 
-
-        <ImageButton
+        <Button
             android:id="@+id/nayoenBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/nayeon_icon"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center_horizontal"
+            android:text="취소" />
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

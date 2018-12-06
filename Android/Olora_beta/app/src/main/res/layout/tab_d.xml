@@ -4,7 +4,6 @@
     android:id="@+id/Tab_Set"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
     android:background="@color/colorInvisible">
     <ImageView
         android:layout_width="30dp"
@@ -22,7 +21,7 @@
         android:textColor="@color/colorWhite"
         android:text="설정"
         android:textStyle="bold"
-        android:textSize="15sp"
+        android:textSize="15dp"
         android:typeface="serif"/>
 
 </RelativeLayout>

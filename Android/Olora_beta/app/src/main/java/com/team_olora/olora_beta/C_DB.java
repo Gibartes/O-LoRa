@@ -611,7 +611,8 @@ public class C_DB extends SQLiteOpenHelper {
         Cursor c = get_net_Current();
         if (c.moveToFirst()) {
             current_netkey = c.getInt(0);
-            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_roomname + " = " + _roomname + " WHERE " + KEY_netkey + " = " + current_netkey + " AND " + KEY_roomkey + " = " + _roomkey);
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_roomname + " = '" + _roomname + "'" +
+                    " WHERE " + KEY_netkey + " = " + current_netkey + " AND " + KEY_roomkey + " = " + _roomkey);
         }
         c.close();
     }

@@ -27,7 +27,8 @@ public class A_Tab2 extends Fragment {
     InputMethodManager imm;
     TextView channel;
     ImageButton btnChannel;
-
+    //dumy btn - mklee
+    ImageButton dumy_make_chatlist;
 
     public A_Tab2() {
     }
@@ -50,6 +51,11 @@ public class A_Tab2 extends Fragment {
         listview.setOnItemClickListener(new Event());
 
         listview.setOnItemLongClickListener(new Event());
+
+        //dumy btn - mklee
+        dumy_make_chatlist = layout.findViewById(R.id.dumyCreateChatList);
+        dumy_make_chatlist.setOnClickListener(new Event());
+
         DB = new C_DB(getContext());
         load_values();
 
@@ -72,6 +78,18 @@ public class A_Tab2 extends Fragment {
                     A_Tab2_SelectCh PopupChannel = new A_Tab2_SelectCh();
                     PopupChannel.setOnDismissListener(this);
                     PopupChannel.show(getActivity().getSupportFragmentManager(), "A_Tab2_SelectCh");
+                    break;
+
+                case R.id.dumyCreateChatList:
+                    //dumy btn - mklee
+                    int key;
+                    String userName="dummy user";
+                    int userKey=999;
+                    if ( (key = DB.save_list_private(userName, userKey))>0) {
+                        Log.d("MSGMSG: - makeRoom ", "userName = " + userName + "   userKey = " + userKey+"   key = "+key);
+                    }
+                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key,userKey);
+                    adapter.notifyDataSetChanged();
                     break;
             }
         }

@@ -4,7 +4,7 @@
     <string name="BlueOn">블루투스 켜기</string>
     <string name="Home_ReConnect">다시접속</string>
     <string name="Home_AnotherCode">다른 코드입력</string>
-    <string name="Pop_Progress_1">같은 채널의 유저 탐색중...</string>
+    <string name="Pop_Progress_1">같은 채널의 유저 탐색</string>
     <string name="Pop_Progress_2">약 </string>
     <string name="Pop_Progress_3">초가 소요됩니다</string>
 

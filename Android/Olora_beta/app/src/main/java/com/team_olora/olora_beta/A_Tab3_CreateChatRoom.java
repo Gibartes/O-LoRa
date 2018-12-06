@@ -77,7 +77,7 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
 
                     break;
                 case R.id.userSet:
-                    Intent intent1 = new Intent(getContext(), Component_123_ListSet.class);
+                    Intent intent1 = new Intent(getContext(), A_123_Set__Name.class);
                     intent1.putExtra("prev_Name", userName);
                     intent1.putExtra("Key", userKey);
                     intent1.putExtra("MODE", 2);

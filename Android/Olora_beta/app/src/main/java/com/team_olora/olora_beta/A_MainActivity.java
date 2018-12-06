@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,6 @@ public class A_MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setCustomView(R.layout.tab_b);
         tabLayout.getTabAt(2).setCustomView(R.layout.tab_c);
         tabLayout.getTabAt(3).setCustomView(R.layout.tab_d);
-
     }
     @Override
     protected void onDestroy(){

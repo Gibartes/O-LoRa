@@ -1,5 +1,6 @@
 package com.team_olora.olora_beta;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -61,22 +62,33 @@ public class A_Tab2_DeleteChatRoom extends android.support.v4.app.DialogFragment
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.list_set:
-                    Intent intent = new Intent(getContext(), Component_123_ListSet.class);
+                    Intent intent = new Intent(getContext(), A_123_Set__Name.class);
                     intent.putExtra("MODE",1 );
                     intent.putExtra("prev_Name", roomName);
                     intent.putExtra("Key", roomKey);
-                    Toast.makeText(getContext(), String.valueOf(roomKey), Toast.LENGTH_SHORT).show();
 
                     getActivity().startActivity(intent);
                     break;
                 case R.id.list_del:
-                    if(checked==2){
-                    DB.delete_list(roomKey);
-                    listener.onDismiss(dialogInterface);
-                    dismiss();}else{
-                        checked++;
-                        Toast.makeText(getContext(),"삭제 버튼을 3번누르면 삭제됩니다. \n'"+ roomName+"' 채팅방을 정말 삭제하시겠습니까? :"+String.valueOf(checked),Toast.LENGTH_SHORT).show();
-                    }
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                    alert.setTitle("채팅방 삭제");
+                    alert.setMessage("선택하신 채팅방을 삭제하시겠습니까?");
+                    alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DB.delete_list(roomKey);
+                            listener.onDismiss(dialogInterface);
+                            dismiss();
+                        }
+                    });
+                    alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                        }
+                    });
+                    alert.show();
                     break;
                 case R.id.list_Close:
                     listener.onDismiss(dialogInterface);

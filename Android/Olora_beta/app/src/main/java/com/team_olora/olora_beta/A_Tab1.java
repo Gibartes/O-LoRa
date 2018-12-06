@@ -189,11 +189,13 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
         @Override
         public void onClick(View v) {
             String _name = myName.getText().toString();
+
             switch (v.getId()) {
                 case R.id.showAllclear:
                     mod++;
                     switch (mod) {
                         case 1:
+
                             break;
                         case 2:
                             Toast.makeText(getContext(), "화면의 왼쪽 하단을 7회 클릭하면 데이터베이스 삭제 버튼이 나타납니다. 현재 :" + mod + "회", Toast.LENGTH_SHORT).show();
@@ -233,7 +235,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                     break;
 
                 case R.id.editMyName:
-                    Intent intent = new Intent(getContext(), Component_123_ListSet.class);
+                    Intent intent = new Intent(getContext(), A_123_Set__Name.class);
                     intent.putExtra("prev_Name", _name);
                     intent.putExtra("Key", 0); // 내 user key = 0
                     intent.putExtra("MODE", 0);
@@ -273,8 +275,6 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                     alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
-
                             grantLocationPermission();
                             //////////////////
                             //// 서비스 재시작
