@@ -99,7 +99,6 @@ public class A_Tab1_BtDeviceList extends Activity {
                 } else {
                     if (!blueAdapter.isEnabled()) {
                         Toast.makeText(getApplicationContext(), "단말기의 블루투스 기능이 꺼져있습니다.", Toast.LENGTH_LONG).show();
-
                     } else {
                         doDiscovery();
                         v.setVisibility(View.GONE);

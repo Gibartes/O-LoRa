@@ -36,17 +36,7 @@ public class Service_btService extends Service {
     public String address = null;
     ListChatAdapter m_Adapter;
 
-
-    /***/
-
-    /***/
-
     public C_DB DB = null;
-
-    /****/
-
-    /****/
-
 
     // 바인더 객체 반환.
     private IBinder mIBinder = new myBinder();
@@ -101,17 +91,12 @@ public class Service_btService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-       // Toast.makeText(getApplicationContext(), "service : onDestroy", Toast.LENGTH_LONG).show();
 
         // 대몬 종료시 addr 초기화.
         A_MainActivity.RSP_MacAddr = "00:00:00:00:00:00";
 
-
         if (mChatService != null) {
             mChatService.stop();
-            //Toast.makeText(getApplicationContext(), "service : 쓰레드 종료", Toast.LENGTH_LONG).show();
-
-
         }
     }
 
@@ -214,13 +199,6 @@ public class Service_btService extends Service {
                                     String time = DB.get_chat_time(ch, room_key, chatkey);
                                     intent.putExtra("device_address", address);
                                     intent.putExtra("Room_key", room_key);
-
-                                    //   intent_.putExtra("NAME", username);
-                                    //  intent_.putExtra("MSG", receivemsg);
-                                    //  intent_.putExtra("TIME", time);
-                                    //  intent_.putExtra("ROOMKEY", receive_key);
-                                    //  intent_.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                    //  startActivity(intent_);
 
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
