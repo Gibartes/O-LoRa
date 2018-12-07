@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
     Button BtnConnect, BtnDel;
-    FloatingActionButton BtnPop;
     ImageButton BtnClose;
+    FloatingActionButton BtnPop;
 
     int dial = 0;
     C_DB DB = null;
@@ -86,13 +86,15 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
                 case R.id.channelConnect:
                     if (checked != -1) {
                         if (Service_BluetoothChatService.mState == 3) {
-                            int key = adapter.getKEY(checked);
-                            DB.set_net(key);
+                            int ch = adapter.getCh(checked);
+                            //dummy chset -- lmk
+                            DB.set_current_ch(ch);
                             DB.save_list_public();
+                            //
                             Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
                             Bundle bundle = new Bundle(2);
                             bundle.putInt("dismiss", 1);
-                            bundle.putInt("ChannelKey", key);
+                            bundle.putInt("ChannelKey", ch);
                             popupProgress.setOnDismissListener(this);
 
                             popupProgress.setArguments(bundle);
@@ -108,7 +110,7 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
                     break;
                 case R.id.channelDelete:
                     if (checked != -1) {
-                        DB.delete_net(adapter.getKEY(checked));
+                        DB.delete_ch(adapter.getCh(checked));
                         DB.delete_user_All();
                         adapter.remove(checked);
                         adapter.notifyDataSetChanged();
@@ -116,6 +118,7 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
                     }
                     channellistview.clearChoices();
                     break;
+
                 case R.id.channellistClose:
                     Intent intent = new Intent(getContext(), A_MainActivity.class);
                     intent.putExtra("Page", 1);
@@ -151,13 +154,12 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_net_cursor();
+        Cursor cursor = DB.get_ch_cursor();
         adapter.clear();
         while (cursor.moveToNext()) {
-            int key = cursor.getInt(0);
-            int addr = cursor.getInt(1);
-            String name = cursor.getString(2);
-            adapter.addItem(key, addr, name);
+            int ch = cursor.getInt(0);
+            String name = cursor.getString(1);
+            adapter.addItem(ch, name);
         }
         adapter.notifyDataSetChanged();
     }

@@ -29,9 +29,9 @@
             android:text="(채널을 설정해주세요.)"
             android:textSize="20dp"/>
         <ImageButton
+            android:id="@+id/button_discovery"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:id="@+id/button_reset1"
             android:background="@drawable/reset"
             android:layout_alignParentRight="true"/>
        </RelativeLayout>
@@ -44,26 +44,6 @@
         android:layout_height="match_parent">
         <!-- 선택했을 때 다른화면을 덧씌우는 옵션. 색상줄때 하면될듯 -->
     </ListView>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
-        android:allowUndo="false"
-        android:singleLine="true"
-        android:layout_above="@+id/btnAdd"
-        android:id="@+id/txt"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New List"
-        android:layout_above="@+id/btnDel"
-        android:id="@+id/btnAdd"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Clear"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/btnDel"/>
     <ImageButton
         android:id="@+id/dumyCreateFriendList"
         android:layout_alignParentBottom="true"

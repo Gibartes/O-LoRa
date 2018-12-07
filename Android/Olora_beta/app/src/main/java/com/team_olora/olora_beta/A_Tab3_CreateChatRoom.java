@@ -59,6 +59,8 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
                     int key;
                     if ( (key = DB.save_list_private(userName, userKey))>0) {
                         Log.d("MSGMSG: - makeRoom ", "userName = " + userName + "   userKey = " + userKey+"   key = "+key);
+                    }else{
+                        Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
 
                     Intent intent = new Intent(getContext(), A_MainActivity.class);

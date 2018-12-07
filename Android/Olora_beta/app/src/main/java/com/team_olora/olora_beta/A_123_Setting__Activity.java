@@ -104,9 +104,8 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 setname.setVisibility(View.VISIBLE);
                 btnDel.setVisibility(View.VISIBLE);
 
-                userName = DB.get_list_userName(Key);
                 titleBar.setText("채팅방 이름 변경");
-                setname.setHint(userName);
+                setname.setHint("채팅방 이름");
                 setname.setText(Name); // 태그명 PrevName으로 변경
                 break;
             case 2:
@@ -158,11 +157,9 @@ public class A_123_Setting__Activity extends AppCompatActivity {
     }
 
     private class Event implements View.OnClickListener {
-
-        String name = setname.getText().toString();
-
         @Override
         public void onClick(View v) {
+            final String name = setname.getText().toString();
             switch (v.getId()) {
                 case R.id.btnTextDel:
                     setname.setText("");
@@ -175,7 +172,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                             final String s = A_MainActivity.addr_self;
                             final byte[] d = packet.converted_addr(A_MainActivity.RSP_MacAddr);
 
-                            ch=DB.get_net_Current_ch();
+                            ch=DB.get_ch_Current();
 
                             if (Service_BluetoothChatService.mState == 3) {
                                 final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(A_123_Setting__Activity.this);
@@ -223,6 +220,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                             break;
                         case 1:
                             Log.d("setChatroomName", "name len = "+name.length());
+                            Log.d("setChatroomName", "name = "+name);
                             if(name.length()==0)
                             {
                                 DB.update_list_name(userName,Key);

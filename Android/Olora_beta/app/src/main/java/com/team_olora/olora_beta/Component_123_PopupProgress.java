@@ -22,7 +22,6 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
     Button nayeonBtn;
     private int callTab;
-    private int key;
     private int ch;
     private DialogInterface dialogInterface = getDialog();
     private DialogInterface.OnDismissListener listener;
@@ -50,13 +49,13 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         final View view = inflater.inflate(R.layout.popup_progress, container, false);
 
         callTab = getArguments().getInt("dismiss");
+        ch = getArguments().getInt("ChannelKey");
 
         nayeonBtn = view.findViewById(R.id.nayoenBtn);
         nayeonBtn.setOnClickListener(new Event());
  //       nayeonBtn.setVisibility(View.GONE);
         DB = new C_DB(getContext());
 
-        ch = DB.get_net_ch(key);
 /**
  *
  *   여기서 ch 파싱해서 명령어로
@@ -90,8 +89,6 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
             /** HP ID 순서대로 1 , 2바이트*/
             A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, CH_send));
         } else if (callTab == 2) {
-            ch = DB.get_net_Current_ch();
-
             byte[] IDbyte_send = new byte[952];
             Arrays.fill( IDbyte_send, (byte) 0 );
 
@@ -115,17 +112,12 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getContext(), "T.W.I.C.E.!", Toast.LENGTH_LONG);
-            /*Intent intent = new Intent(getContext(), A_MainActivity.class);
-            intent.putExtra("Page", dismiss);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            getActivity().startActivity(intent);*/
             if (callTab == 1) {
                 Intent intent1 = new Intent(getContext(), A_MainActivity.class);
                 intent1.putExtra("Page", 1);
 
-
                 Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
+                intent.putExtra("Room_ch",ch);
                 intent.putExtra("Room_key", 0);
                 intent.putExtra("User_key", 0);
                 intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
@@ -136,7 +128,6 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
                 } catch (Exception e) {
                     Toast.makeText(getActivity(), "연결할 장치를 선택해주세요", Toast.LENGTH_SHORT).show();
                 }
-
 
                 intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 /***지금은 메인액티비티도 열고 채팅룸도 열게 했음.. 개선이 필요할지도**/
@@ -172,7 +163,6 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         Toast.makeText(getContext(), "CHANNEL:" + setchannel, Toast.LENGTH_LONG).show();
         Log.d("Discovery", "set ch ok");
 
-        ch = DB.get_net_Current_ch();
         byte[] BB_send = new byte[952];
         Arrays.fill( BB_send, (byte) 0 );
 
@@ -189,6 +179,7 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
             intent1.putExtra("Page", 1);
 
             Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
+            intent.putExtra("Room_ch",ch);
             intent.putExtra("Room_key", 0);
             intent.putExtra("User_key", 0);
             intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);

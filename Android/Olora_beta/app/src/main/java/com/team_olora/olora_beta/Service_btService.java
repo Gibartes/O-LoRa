@@ -202,11 +202,11 @@ public class Service_btService extends Service {
                                     //user 검색 된다 discovery 불필요
                                 }
                                 String username = DB.get_user_name(user);
-
+    //와드
                                 // addr 와 일치하는 room key 있는지 검색
                                 // 있으면 roomkey, 없으면 만들어서 리턴
-                                int ch = DB.get_net_Current_ch();
-                                room_key = DB.echo_room_key(username, user, usermac);
+                                int ch = DB.get_ch_Current();
+                                room_key = DB.echo_room_key(username, user, usermac,ch);
                                 int chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
 
                                 Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + room_key +
@@ -226,7 +226,7 @@ public class Service_btService extends Service {
                                     Intent intent = new Intent(getApplicationContext(), A_Tab2_ChattingRoom.class);
                                     Intent intent_ = new Intent(getApplicationContext(), Service_PushPop.class);
                                     String address = A_MainActivity.RSP_MacAddr.toString();
-                                    String time = DB.get_chat_time(ch, room_key, chatkey);
+                                    String time = DB.get_chat_time(chatkey);
                                     intent.putExtra("device_address", address);
                                     intent.putExtra("Room_key", room_key);
 

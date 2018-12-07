@@ -27,8 +27,6 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
 
     private ListView listview;
     private ListFriendAdapter adapter = new ListFriendAdapter();
-    private EditText txt;
-    private Button btnAdd, btnDel;
 
     public A_Tab3() {
     }
@@ -42,17 +40,10 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.main_c_friendlist, container, false);
 
-        txt = layout.findViewById(R.id.txt);
-        btnAdd = layout.findViewById(R.id.btnAdd);
-        btnDel = layout.findViewById(R.id.btnDel);
-        btnAdd.setOnClickListener(new Event());
-        btnDel.setOnClickListener(new Event());
-        btnAdd.setVisibility(View.GONE);
-        btnDel.setVisibility(View.GONE);
+
         //dumy btn - lmk
         dummyFrieandBtn = layout.findViewById(R.id.dumyCreateFriendList);
         dummyFrieandBtn.setOnClickListener(new Event());
-        txt.setVisibility(View.GONE);
         listview = layout.findViewById(R.id.List_friendView);
         listview.setAdapter(adapter);
         listview.setChoiceMode(listview.CHOICE_MODE_SINGLE);
@@ -60,7 +51,7 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         listview.setOnItemClickListener(new Event());
         listview.setOnItemLongClickListener(new Event());
 
-        reset = layout.findViewById(R.id.button_reset1);
+        reset = layout.findViewById(R.id.button_discovery);
         reset.setOnClickListener(new Event());
 
         viewChannel = layout.findViewById(R.id.viewCH);
@@ -74,29 +65,13 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btnAdd:
-                    String str;
-                    str = txt.getText().toString();
-                    int size = adapter.getCount() + 1;
-                    if (str.trim().length() != 0) {
-                        int B = DB.save_user(str, 11); // user mac address
-                        load_values();
-                        txt.setText("");
-                    }
-                    break;
-                case R.id.btnDel:
-                    DB.delete_user_All();
-                    adapter.clear();
-                    load_values();
-                    break;
-
-                case R.id.button_reset1:
+                case R.id.button_discovery:
 
                     if (Service_BluetoothChatService.mState == 3) {
                         Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
                         Bundle bundle = new Bundle(2);
                         bundle.putInt("dismiss", 2);
-                        int key = DB.get_net_Current_key();
+                        int key = DB.get_ch_Current();
                         bundle.putInt("ChannelKey",key);
 
                         popupProgress.setArguments(bundle);
@@ -136,15 +111,15 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_net_Current();
+        Cursor cursor = DB.get_ch_cursor();
         Cursor cursor1 = DB.get_user_cursor();
         adapter.clear();
 
         if (cursor.moveToFirst()) {
-            if (cursor.getString(2) == null) {
-                viewChannel.setText("채널 : (" + cursor.getString(1) + ")");
+            if (cursor.getString(1) == null) {
+                viewChannel.setText("채널 : (" + cursor.getString(0) + ")");
             } else {
-                viewChannel.setText("채널 : " + cursor.getString(2));
+                viewChannel.setText("채널 : " + cursor.getString(1));
             }
         } else {
             viewChannel.setText("(채널을 설정해주세요.)");

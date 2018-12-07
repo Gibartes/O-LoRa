@@ -45,7 +45,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     private InputMethodManager imm;
     private Service_btService mbtService = null;
     private Service_packet packet = null;
-
+    private TextView ano_room;
     private TextView Public_msg;
 
     private int receive_key = 0;
@@ -56,7 +56,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     private int userKey;
     private String userName;
     private long useraddr;
-    private int channel, room;
+    private int cur_ch, room,ch;
 
 
     //////////////// 커넥션 객체
@@ -106,6 +106,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+        ch =  intent.getIntExtra("Room_ch",0);
         room = intent.getIntExtra("Room_key", 0);
         userKey = intent.getIntExtra("User_key", 0);
         Log.d("MSGMSG: - InRoom ","Room_key = "+room+"   User_key = "+userKey);
@@ -132,7 +133,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         m_ListView = findViewById(R.id.listView1);
         DB = new C_DB(this);
         userName = DB.get_user_name(userKey);
-        channel = DB.get_net_Current_ch();
+        cur_ch = DB.get_ch_Current();
 
         try {
             Log.d("MSGMSG: - last key ","userKey = "+userKey);
@@ -144,7 +145,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 
         if (room == 0) {
             Public_msg = findViewById(R.id.public_msg);
-            Public_msg.setText(String.valueOf(channel) + " 채널의 전체 대화방입니다.");
+            Public_msg.setText(String.valueOf(cur_ch) + " 채널의 전체 대화방입니다.");
 
             Animation mAnimation = new AlphaAnimation(1, 0);
             mAnimation.setDuration(500);
@@ -164,6 +165,12 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 //        curText = findViewById(R.id.msgMax);
         chatMessage = findViewById(R.id.chatText);
         sendMessage = findViewById(R.id.chatSend);
+        ano_room= findViewById(R.id.anotherch_alarm);
+        if(DB.get_ch_Current() != ch){
+            chatMessage.setVisibility(View.GONE);
+            sendMessage.setVisibility(View.GONE);
+            ano_room.setVisibility(View.VISIBLE);
+        }
         imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);
         chatMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -198,18 +205,9 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
                 if (msg.trim().length() != 0) {
                     imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);  // 키보드 내리기 or 내리지말기?
                     // send
-                    byte[] encodingmsg;
-                    receive_key = DB.get_list_receivekey(room);
+                    byte[] encodingmsg = msg.getBytes();
 
-                    if (room == 0) {
-                        // Broadcast msg send
-                        encodingmsg = msgAdapter.encoding_msg(msg, room, 0);
-                    } else {
-                        // Unicast msg send
-                        encodingmsg = msgAdapter.encoding_msg(msg, room, receive_key);
-                    }
-
-                    Log.d("MSGMSG", "여기서 보내는ch " + String.valueOf(channel));
+                    Log.d("MSGMSG", "여기서 보내는ch " + String.valueOf(cur_ch));
                     Log.d("MSGMSG", "여기서 보내는리시브 키 " + String.valueOf(receive_key));
                     Log.d("MSGMSG", "여기서 보내는샌드 키 " + String.valueOf(room));
                     String strrrr = new String(encodingmsg);
@@ -246,11 +244,11 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private int save_values(String name, String msg, boolean type, int userKey) {
-        return DB.save_chatmsg(channel, room, name, msg, type, userKey);
+        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey);
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_chat_cursor(channel, room);
+        Cursor cursor = DB.get_chat_cursor(cur_ch, room);
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(2);
@@ -269,7 +267,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_in_chat(int key) {
-        Cursor cursor = DB.get_chat_cusorLast(channel, room, key);
+        Cursor cursor = DB.get_chat_cusorLast(key);
         if (cursor.moveToFirst()) {
             do {
                 Log.d("Chatting Key :", String.valueOf(key));
@@ -331,9 +329,9 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             // send
             byte hp = 0x00;
             byte[] id = new byte[2];
-            hp = (byte) (channel & 0x0007);
-            id[0] = (byte) (channel & 0x0003);
-            id[1] = (byte) (channel & 0xFFF8);
+            hp = (byte) (cur_ch & 0x0007);
+            id[0] = (byte) (cur_ch & 0x0003);
+            id[1] = (byte) (cur_ch & 0xFFF8);
             byte[] sendapacket = null;
 
             byte[] message_send = new byte[952];

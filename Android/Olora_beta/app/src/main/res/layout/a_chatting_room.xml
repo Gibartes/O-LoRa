@@ -43,6 +43,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom">
+            <TextView
+                android:id="@+id/anotherch_alarm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="(다른 채널의 채팅방 입니다)"
+                android:textSize="25dp"
+                android:typeface="serif"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/chatText"

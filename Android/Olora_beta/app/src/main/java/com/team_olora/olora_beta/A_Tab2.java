@@ -1,5 +1,6 @@
 package com.team_olora.olora_beta;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -87,6 +88,8 @@ public class A_Tab2 extends Fragment {
                     int userKey=999;
                     if ( (key = DB.save_list_private(userName, userKey))>0) {
                         Log.d("MSGMSG: - makeRoom ", "userName = " + userName + "   userKey = " + userKey+"   key = "+key);
+                    }else{
+                        Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
                     adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key,userKey);
                     adapter.notifyDataSetChanged();
@@ -100,7 +103,10 @@ public class A_Tab2 extends Fragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
-            intent.putExtra("Room_key", adapter.getRoomkey(position));
+            int roomkey = adapter.getRoomkey(position);
+            int ch = DB.get_list_ch(roomkey);
+            intent.putExtra("Room_ch",ch);
+            intent.putExtra("Room_key", roomkey);
             intent.putExtra("User_key",adapter.getUserkey(position));
             intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
 
@@ -138,13 +144,13 @@ public class A_Tab2 extends Fragment {
 
     private void load_values() {
         Cursor cursor = DB.get_all_list_cursor();
-        Cursor cursor2 = DB.get_net_Current();
+        Cursor cursor2 = DB.get_ch_cursor_Current();
         adapter.clear();
         if (cursor2.moveToFirst()) {
-            if (cursor2.getString(2) == null) {
-                channel.setText("채널 : (" + cursor2.getString(1) + ")");
+            if (cursor2.getString(1) == null) {
+                channel.setText("채널 : (" + cursor2.getString(0) + ")");
             } else {
-                channel.setText("채널 : " + cursor2.getString(2));
+                channel.setText("채널 : " + cursor2.getString(1));
             }
         } else {
             channel.setText("(채널을 설정해주세요.)");
@@ -153,10 +159,9 @@ public class A_Tab2 extends Fragment {
         if (cursor.moveToFirst()) {
             do {
                 String room_name = cursor.getString(2);
-                int ch_key = cursor.getInt(0);
+                int ch = cursor.getInt(0);
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
-                int ch = DB.get_net_ch(ch_key);
                 adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, Integer.toString(ch) +"채널", room_key,user_key);
             } while (cursor.moveToNext());
         }

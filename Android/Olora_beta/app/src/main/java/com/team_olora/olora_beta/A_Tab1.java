@@ -143,7 +143,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
         DB = new C_DB(getContext());
 
-        view_ch = DB.get_net_Current_ch();
+        view_ch = DB.get_ch_Current();
         blueon = Service_BluetoothChatService.mState;
         if (blueon == 0) {
             connected_Xbee.setVisibility(View.GONE);
@@ -225,7 +225,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                 case R.id.clearall:
                     DB.delete_user_All();
                     DB.delete_list_All();
-                    DB.delete_net_All();
+                    DB.delete_ch_All();
                     DB.delete_chat();
                     DB.delete_black_all();
                     Intent resetDB = new Intent(getContext(), A_MainActivity.class);
