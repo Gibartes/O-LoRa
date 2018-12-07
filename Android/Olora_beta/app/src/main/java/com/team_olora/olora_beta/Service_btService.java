@@ -2,6 +2,7 @@ package com.team_olora.olora_beta;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -10,11 +11,15 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -54,15 +59,39 @@ public class Service_btService extends Service {
     //    콜백 메서드
     //////////////////////
     @Override
+    @RequiresApi(Build.VERSION_CODES.O)
     public void onCreate() {
         //Toast.makeText(getApplicationContext(), "service :  start", Toast.LENGTH_LONG).show();
 
         DB = new C_DB(getApplicationContext());
-        startForeground(1, new Notification());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            /************************/
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// 채널 ID
+            String id = "my_channel_01";
+// 채널 이름
+            CharSequence name = "test";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+// 알림 채널에 사용할 설정을 구성한다.
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]
+                    {
+                            100, 200, 300, 400, 500, 400, 300, 200, 400
+                    });
+// 뱃지 사용 여부를 설정한다.(8.0부터는 기본이 true인듯하다.)
+            mChannel.setShowBadge(false);
+            mNotificationManager.createNotificationChannel(mChannel);
+            /*************************/
+        }
+        else
+            startForeground(1, new Notification());
 
     }
     // onBind 바인더 return
-
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -83,7 +112,7 @@ public class Service_btService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-       // Toast.makeText(getApplicationContext(), "service : onUnbind", Toast.LENGTH_LONG).show();
+        // Toast.makeText(getApplicationContext(), "service : onUnbind", Toast.LENGTH_LONG).show();
 
         return super.onUnbind(intent);
     }
@@ -143,7 +172,7 @@ public class Service_btService extends Service {
                             break;
 
                         case Service_Constants.MESSAGE_WRITE:
-                           // Toast.makeText(getApplicationContext(), "h : 송신 성공.", Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(getApplicationContext(), "h : 송신 성공.", Toast.LENGTH_SHORT).show();
                             byte[] writeBuf = (byte[]) msg.obj;
                             break;
 
@@ -155,7 +184,8 @@ public class Service_btService extends Service {
                             int readLen = 0;
                             try {
                                 readLen = read.length;
-                            }catch (Exception e){}
+                            } catch (Exception e) {
+                            }
 
                             if (readLen != 0) {
                                 String receivemsg = msgAdapter1.parse_msg((byte[]) msg.obj);
@@ -165,10 +195,10 @@ public class Service_btService extends Service {
                                 Log.d("Service", ": get user key = " + user);
                                 int black = DB.get_isblack(usermac);
 
-                                if(user==-1) {
+                                if (user == -1) {
                                     //user 검색이 안되면 즉 discovery 필요
                                     user = DB.save_user("친구검색이필요합니다.", usermac);
-                                }else {
+                                } else {
                                     //user 검색 된다 discovery 불필요
                                 }
                                 String username = DB.get_user_name(user);
@@ -176,7 +206,7 @@ public class Service_btService extends Service {
                                 // addr 와 일치하는 room key 있는지 검색
                                 // 있으면 roomkey, 없으면 만들어서 리턴
                                 int ch = DB.get_net_Current_ch();
-                                room_key= DB.echo_room_key(username,user,usermac);
+                                room_key = DB.echo_room_key(username, user, usermac);
                                 int chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
 
                                 Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + room_key +
@@ -279,7 +309,7 @@ public class Service_btService extends Service {
                             Provider_SetCH.getInstance().post(new Provider_SetCHFunc(ch));
                             break;
                         case Service_Constants.MESSAGE_DISCOVERY:
-                            Log.d("DIscover:::", "받은 msg.org"+msg.obj);
+                            Log.d("DIscover:::", "받은 msg.org" + msg.obj);
                             discover((byte[]) msg.obj);
                             Log.d("DIscover:::", "bt Service 진입");
                             Provider_Discovery.getInstance().post(new Provider_DiscoveryFunc());
@@ -327,7 +357,7 @@ public class Service_btService extends Service {
         } else if (mChatService.mState != Service_BluetoothChatService.STATE_CONNECTED) {
             //Toast.makeText(getApplicationContext(), "h : 재연결 필요", Toast.LENGTH_LONG).show();
         }
-            //Toast.makeText(getApplicationContext(), " h : 이미 연결되어있습니다.", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), " h : 이미 연결되어있습니다.", Toast.LENGTH_LONG).show();
 
     }
 
@@ -354,8 +384,8 @@ public class Service_btService extends Service {
                 String BD = address.replaceAll(":", "");
                 Log.d("BD - reconnect : ", BD);
                 DB.save_bd(FuncGroup.hexStringToByteArray(BD));
-                Log.d("BD - reconnect", "connectedbd : "+FuncGroup.byteArrayToHexString(FuncGroup.hexStringToByteArray(BD)));
-                Log.d("BD - reconnect", " get set bd : "+FuncGroup.byteArrayToHexString( DB.get_set_bd()));
+                Log.d("BD - reconnect", "connectedbd : " + FuncGroup.byteArrayToHexString(FuncGroup.hexStringToByteArray(BD)));
+                Log.d("BD - reconnect", " get set bd : " + FuncGroup.byteArrayToHexString(DB.get_set_bd()));
 
             } catch (Exception e) {
                 //Toast.makeText(this, "error : " + e.toString(), Toast.LENGTH_SHORT).show();
@@ -389,20 +419,20 @@ public class Service_btService extends Service {
     public void discover(byte[] bytes) {
         // 8 : Addr / 20 : NI
         int addrLen = 28;
-        int num_user = (bytes.length-1) / addrLen;
-       // int num_user = bytes[0];
+        int num_user = (bytes.length - 1) / addrLen;
+        // int num_user = bytes[0];
         byte[] user = new byte[addrLen];
         DB.delete_user_All();
         Log.d("Discovery:::", "삭제후" + String.valueOf(DB.get_user_num()));
         Log.d("Discovery:::", "받은 bytearray" + FuncGroup.byteArrayToHexString(bytes));
-        Log.d("Discovery:::", "받은 bytearray 길이 " + bytes.length+"  받은 bytearray 길이2 " + bytes[0]);
+        Log.d("Discovery:::", "받은 bytearray 길이 " + bytes.length + "  받은 bytearray 길이2 " + bytes[0]);
         Log.d("Discovery:::", "num_user" + num_user);
 
-        int user_index=1;
-        while (user_index<num_user) {
+        int user_index = 1;
+        while (user_index < num_user) {
             int i = 0;
             while (i < addrLen) {
-                user[i] = bytes[i + user_index*addrLen];
+                user[i] = bytes[i + user_index * addrLen];
                 i++;
             }
             Log.d("user : ", FuncGroup.byteArrayToHexString(user));
@@ -423,7 +453,7 @@ public class Service_btService extends Service {
         for (; i < 8; i++) {
             addr_byte[i] = bytes[i];
         }
-        for (i=8; i < 20; i++) {
+        for (i = 8; i < 20; i++) {
             name_byte[i] = bytes[i];
         }
 
@@ -436,8 +466,8 @@ public class Service_btService extends Service {
         name = new String(name_byte);
         Log.d("addr", String.valueOf(addr));
 
-        Log.d("User - addr byte : ",  "\n name = " +addr);
-        Log.d("User - name byte : ",  "\n name = " + name);
+        Log.d("User - addr byte : ", "\n name = " + addr);
+        Log.d("User - name byte : ", "\n name = " + name);
         int key = DB.save_user(name, addr);
         Log.d("Discovery:::", String.valueOf(key));
         Log.d("Discovery:::", "으악 늘어난다" + String.valueOf(DB.get_user_num()));

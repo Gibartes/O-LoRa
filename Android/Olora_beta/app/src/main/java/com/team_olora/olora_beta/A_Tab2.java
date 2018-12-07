@@ -137,7 +137,7 @@ public class A_Tab2 extends Fragment {
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_list_cursor();
+        Cursor cursor = DB.get_all_list_cursor();
         Cursor cursor2 = DB.get_net_Current();
         adapter.clear();
         if (cursor2.moveToFirst()) {
@@ -153,9 +153,11 @@ public class A_Tab2 extends Fragment {
         if (cursor.moveToFirst()) {
             do {
                 String room_name = cursor.getString(2);
+                int ch_key = cursor.getInt(0);
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
-                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "yahoo" + room_key, room_key,user_key);
+                int ch = DB.get_net_ch(ch_key);
+                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, Integer.toString(ch) +"채널", room_key,user_key);
             } while (cursor.moveToNext());
         }
         adapter.notifyDataSetChanged();

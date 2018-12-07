@@ -537,12 +537,18 @@ public class C_DB extends SQLiteOpenHelper {
 
     Cursor get_list_cursor() {
         SQLiteDatabase db = getReadableDatabase();
+
         int current_netkey = 0;
         Cursor c = get_net_Current();
         if (c.moveToFirst()) {
             current_netkey = c.getInt(0);
         }
         return db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_netkey + " = " + current_netkey, null);
+    }
+    Cursor get_all_list_cursor() {
+        /*모든 리스트--mklee*/
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(SQL_SELECT_LIST , null);
     }
 
 

@@ -72,7 +72,6 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         Name = intent.getStringExtra("prev_Name");
 
         titleBar = findViewById(R.id.titleBarText);
-
         setBox = findViewById(R.id.setbox);
 
         setname = findViewById(R.id.txtSetList);
@@ -89,7 +88,6 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         DB = new C_DB(getApplicationContext());
 
         Provider_BusProvider.getInstance().register(this);
-        Log.d("개씨발", "씨빨련아: "+mode);
         switch (mode) {
             case 0:
                 set_Dclv.setVisibility(View.GONE);
@@ -110,7 +108,6 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 titleBar.setText("채팅방 이름 변경");
                 setname.setHint(userName);
                 setname.setText(Name); // 태그명 PrevName으로 변경
-
                 break;
             case 2:
                 set_Dclv.setVisibility(View.GONE);
@@ -119,7 +116,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 btnDel.setVisibility(View.VISIBLE);
 
                 titleBar.setText("친구 이름 변경");
-                setname.setText("친구 이름"); // 태그명 PrevName으로 변경
+                setname.setHint("친구 이름"); // 태그명 PrevName으로 변경
                 setname.setText(Name);
                 break;
             case 3:

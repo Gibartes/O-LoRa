@@ -1,13 +1,10 @@
 package com.team_olora.olora_beta;
 
-import java.lang.Math;
-
 public class FuncGroup {
 
     static String byteArrayToHexString(byte[] b) {
 
         // String Buffer can be used instead
-
         String hs = "";
         String stmp = "";
 
