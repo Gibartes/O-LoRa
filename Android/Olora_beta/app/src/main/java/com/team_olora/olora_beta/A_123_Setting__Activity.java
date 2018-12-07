@@ -185,14 +185,12 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         mod=1;
-
                                         byte[] name_send = new byte[952];
                                         Arrays.fill( name_send, (byte) 0 );
                                         for(int i = 0; i < name.length(); i ++)
                                         {
                                             name_send[i] = name.getBytes()[i];
                                         }
-
                                         setBox.setVisibility(View.GONE);
                                         progressBox.setVisibility(View.VISIBLE);
                                         btnSet.setVisibility(View.GONE);

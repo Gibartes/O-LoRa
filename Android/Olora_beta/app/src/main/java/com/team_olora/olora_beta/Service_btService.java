@@ -341,8 +341,8 @@ public class Service_btService extends Service {
                             if (((byte[]) msg.obj).length != 0) {
                                 byte[] mbuffer = (byte[]) msg.obj;
                                 Log.d("SETNI:::", "Set NI 결과" + mbuffer);
-                                byte[] Mac = Arrays.copyOfRange(mbuffer, 36, 44);
-                                byte[] NI = Arrays.copyOfRange(mbuffer, 44, packet.indexOfEOT(mbuffer) + 1);
+                                byte[] Mac = Arrays.copyOfRange(mbuffer, 56, 64);
+                                byte[] NI = Arrays.copyOfRange(mbuffer, 64, 1008);
                                 String myNI = new String(NI);
                                 Log.d("SETNI:::", "Set NI 결과" + myNI);
                                 Log.d("SETNI:::", "Set NI 결과" + Mac);
