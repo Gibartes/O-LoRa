@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import static java.lang.Boolean.TRUE;
 
@@ -334,16 +335,24 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             id[0] = (byte) (channel & 0x0003);
             id[1] = (byte) (channel & 0xFFF8);
             byte[] sendapacket = null;
+
+            byte[] message_send = new byte[952];
+            Arrays.fill( message_send, (byte) 0 );
+            for(int i = 0; i < message.length; i ++)
+            {
+                message_send[i] = message[i];
+            }
+
             if (room == 0) {
                 Log.d("MSGMSG:::", "브로드 캐스트 sendMessage dest: " + String.valueOf(useraddr));
-                sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, message);
+                sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, message_send);
             } else {
                 Log.d("MSGMSG:::", "유니 캐스트 user addr Lbuf: " + Lbuf);
                 Log.d("MSGMSG:::", "유니 캐스트 user addr useraddr: " + useraddr);
                 Log.d("MSGMSG:::", "유니 캐스트 s: " + s);
                 Log.d("MSGMSG:::", "유니 캐스트 d: " + d);
                 Log.d("MSGMSG:::", "유니 캐스트 msg: " + message);
-                sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, message);
+                sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, message_send);
             }
             mbtService.mChatService.write(sendapacket);
             Log.d("MSGMSG:::", "유니 캐스트 전체패킷: " + byte2hex(sendapacket));

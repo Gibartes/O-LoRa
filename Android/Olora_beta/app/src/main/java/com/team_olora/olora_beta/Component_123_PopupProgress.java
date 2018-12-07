@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
+import java.util.Arrays;
+
 public class Component_123_PopupProgress extends android.support.v4.app.DialogFragment {
 
     Button nayeonBtn;
@@ -78,10 +80,25 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
             Log.d("Discovery:::", "채널 입력 = " + ch);
 
             /** HP ID 순서대로 1 , 2바이트*/
-            A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, CH));
+            byte[] CH_send = new byte[952];
+            Arrays.fill( CH_send, (byte) 0 );
+
+            CH_send[0] = CH[0];
+            CH_send[1] = CH[1];
+            CH_send[2] = CH[2];
+
+            /** HP ID 순서대로 1 , 2바이트*/
+            A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, CH_send));
         } else if (callTab == 2) {
             ch = DB.get_net_Current_ch();
-            A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, IDbyte));
+
+            byte[] IDbyte_send = new byte[952];
+            Arrays.fill( IDbyte_send, (byte) 0 );
+
+            IDbyte_send[0] = IDbyte[0];
+            IDbyte_send[1] = IDbyte[1];
+
+            A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, IDbyte_send));
         }
 
         return view;
@@ -156,7 +173,10 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         Log.d("Discovery", "set ch ok");
 
         ch = DB.get_net_Current_ch();
-        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, null));
+        byte[] BB_send = new byte[952];
+        Arrays.fill( BB_send, (byte) 0 );
+
+        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, BB_send));
 
     }
 
