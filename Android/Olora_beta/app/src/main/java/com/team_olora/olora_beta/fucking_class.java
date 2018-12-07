@@ -4,4 +4,5 @@ public class fucking_class {
     //ㅇㄹ
     // 민수띠
     // ㅁㄱ띠
+    //기모띠 간바레!
 }
