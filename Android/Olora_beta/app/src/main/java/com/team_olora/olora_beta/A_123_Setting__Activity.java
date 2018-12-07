@@ -161,6 +161,9 @@ public class A_123_Setting__Activity extends AppCompatActivity {
     }
 
     private class Event implements View.OnClickListener {
+
+        String name = setname.getText().toString();
+
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -168,7 +171,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                     setname.setText("");
                     break;
                 case R.id.btn_set:
-                    String name = setname.getText().toString();
+
                     switch (mode) {
                         case 0:
                             final Service_packet packet = new Service_packet();
@@ -185,10 +188,25 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         mod=1;
+
+                                        byte[] name_send = new byte[952];
+                                        Arrays.fill( name_send, (byte) 0 );
+                                        for(int i = 0; i < name.length(); i ++)
+                                        {
+                                            name_send[i] = name.getBytes()[i];
+                                        }
+
                                         setBox.setVisibility(View.GONE);
                                         progressBox.setVisibility(View.VISIBLE);
                                         btnSet.setVisibility(View.GONE);
-                                        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "SET_NODEIDENTIFIER",FuncGroup.getCHbyte(ch)[0], FuncGroup.getIDbyte(ch), FuncGroup.getCHbyte(ch)));
+
+                                        byte[] temp_ch = FuncGroup.getCHbyte(ch);
+                                        byte hp = temp_ch[0];
+                                        byte[] temp_id = new byte[2];
+                                        temp_id[0] = temp_ch[0];
+                                        temp_id[1] = temp_ch[1];
+
+                                        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, name_send));
                                         time_run(6);
                                     }
                                 });

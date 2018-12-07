@@ -389,7 +389,7 @@ public class Service_BluetoothChatService implements Serializable {
         }
 
         public void run() {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[1008];
             int bytes;
 
             // Keep listening to the InputStream while connected
@@ -397,32 +397,13 @@ public class Service_BluetoothChatService implements Serializable {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-                    if (bytes == 1024) {
-                    } else if (bytes < 1024) {
 
-                        try {
-                            int vacancy = 1024 - bytes;
-                            byte[] buffer_2 = new byte[vacancy];
-                            int va = mmInStream.read(buffer_2);
-
-                            for (int i = 0; i < vacancy; i++) {
-                                buffer[1024 - i] = buffer_2[i - 1];
-                            }
-                        } catch (Exception e) {
-                            //Message msg_1 = mHandler.obtainMessage(Service_Constants.MESSAGE_TOAST);
-                            //Bundle bundle_1 = new Bundle();
-                            //bundle_1.putString(Service_Constants.TOAST, "1024 안감 : " + bytes);
-                           // msg_1.setData(bundle_1);
-                          //  mHandler.sendMessage(msg_1);
-                        }
-                    }
                     // 패킷변환해서 바로보냄
                     // send result 는 걸러내기
                     Log.d("getCH:", FuncGroup.byteArrayToHexString(buffer));
 
-                    byte[] cmd = new byte[2];
-                    cmd[0] = buffer[30];
-                    cmd[1] = buffer[31];
+                    byte[] param = new byte[1];
+                    param[0] = buffer[39];
 
                     long dest = 0;
                     for (int i = 0; i < 8; i++) {
@@ -431,9 +412,9 @@ public class Service_BluetoothChatService implements Serializable {
                     }
 
                     if (dest != 0) {
-                        Log.d("Discovery", "뭔가 받았어 btchatservice" + FuncGroup.byteArrayToHexString(cmd));
+                        Log.d("Discovery", "뭔가 받았어 btchatservice" + FuncGroup.byteArrayToHexString(param));
                         Log.d("Discovery", "뭔가 받았어 btchatservice" + String.valueOf(dest));
-                        int command = packet.getCmd(buffer[27], cmd);
+                        int command = packet.getCmd(buffer[39], param);
                         Log.d("Discovery", "뭔가 받았어 btchatservicecomd" + command);
 
                         switch (command) {
@@ -447,10 +428,10 @@ public class Service_BluetoothChatService implements Serializable {
                             case 3: // discovery
                                 Log.d("Discovery:::", FuncGroup.byteArrayToHexString(buffer));
                                 int NumOfDevice = 0;
-                                NumOfDevice |= buffer[36];
+                                NumOfDevice |= buffer[56];
                                 byte[] discoverData = new byte[28 * NumOfDevice];
-                                int EoD = 37 + 28 * NumOfDevice;
-                                discoverData = Arrays.copyOfRange(buffer, 37, EoD + 1);
+                                int EoD = 57 + 28 * NumOfDevice;
+                                discoverData = Arrays.copyOfRange(buffer, 57, EoD + 1);
 
                                 mHandler.obtainMessage(Service_Constants.MESSAGE_DISCOVERY, bytes, -1, discoverData).sendToTarget();
                                 // buffer = Arrays.copyOfRange(buffer, 0, 39);
@@ -464,39 +445,24 @@ public class Service_BluetoothChatService implements Serializable {
                                         .sendToTarget();
                                 break;
                             case 6: // set channel
+
                                 byte[] ch = new byte[3];
-                                ch = Arrays.copyOfRange(buffer, 36, 39);
+                                ch = Arrays.copyOfRange(buffer, 56, 59);
                                 Log.d("SET_CH:::", "result ch : " + FuncGroup.byteArrayToHexString(ch));
 
                                 mHandler.obtainMessage(Service_Constants.MESSAGE_CHANNELSET, bytes, -1, ch).sendToTarget();
                                 break;
+
                             case 7:
-                               // Message msg = mHandler.obtainMessage(Service_Constants.MESSAGE_TOAST);
-                              // // Bundle bundle = new Bundle();
-                              //  bundle.putString(Service_Constants.TOAST, "send result!!");
-                              //  msg.setData(bundle);
-                              //  mHandler.sendMessage(msg);
+                                Message msg = mHandler.obtainMessage(Service_Constants.MESSAGE_TOAST);
+                                Bundle bundle = new Bundle();
+                                bundle.putString(Service_Constants.TOAST, "send result!!");
+                                msg.setData(bundle);
+                                mHandler.sendMessage(msg);
                                 break;
-
                         }
-/*
-                    if (packet.getCmd(buffer[27], cmd) == 2) {
-                        int ch = 0;
-                        ch = (buffer[36] & 0x07) | ((buffer[37] & 0x7f) << 11) | (buffer[38] << 3);
-                        buffer = Arrays.copyOfRange(buffer, 0, 39);
-                        Log.d("getCH:", String.valueOf(ch));
-
-                    } else if (packet.getCmd(buffer[27], cmd) == 0) {
-                        mHandler.obtainMessage(Service_Constants.MESSAGE_READ, bytes, -1, packet.handleRead(buffer))
-                                .sendToTarget();
-                    } else if (packet.getCmd(buffer[27], cmd) == 1) {
                     }
-*/
 
-                        // Send the obtained bytes to the UI Activity
-                        //mHandler.obtainMessage(Service_Constants.MESSAGE_READ, bytes, -1, buffer)
-                        // .sendToTarget();
-                    }
                 } catch (IOException e) {
                     connectionLost();
 
