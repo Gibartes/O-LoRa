@@ -73,7 +73,11 @@ class ControlGate(Process):
                     pkt.parse()
                     if(pkt.parseinfo['SRC']==0 or pkt.parseinfo['DST']==0):
                         print(colored('[+] [GATE] Dropped. This is an internal packet.','yellow',attrs=['bold']))
-                        continue               
+                        continue
+                    if(self.debug):
+                        print("From BLE to XBEE")
+                        print(pkt.parseinfo)
+                        pkt.print_payload(256)
                     print(colored('[+] [GATE] BLE --> XBEE.','cyan',attrs=['bold']))
                     self.xbOut.write(packet)
                 else:
@@ -89,6 +93,10 @@ class ControlGate(Process):
                     if(pkt.parseinfo['SRC']==0 or pkt.parseinfo['DST']==0):
                         print(colored('[+] [GATE] Dropped. This is an internal packet.','yellow',attrs=['bold']))
                         continue
+                    if(self.debug):
+                        print("From XBEE to BLE")
+                        print(pkt.parseinfo)
+                        pkt.print_payload(256)
                     print(colored('[+] [GATE] XBEE --> BLE.','cyan',attrs=['bold']))
                     self.ntOut.write(packet)                 
                 else:
@@ -115,7 +123,7 @@ class ControlGate(Process):
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn.pipe)
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
-                
+
     def run(self):
         if(self.echo):
             self.__echoNT()
@@ -130,6 +138,6 @@ if __name__ == '__main__':
     signal.signal(signal.SIGPIPE,signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal_handler)
     
-    cg = ControlGate(False,False)
+    cg = ControlGate(True,False)
     cg.start()
     sys.exit(0)
