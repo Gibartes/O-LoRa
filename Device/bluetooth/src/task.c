@@ -301,6 +301,7 @@ static void *outputTask(void *param){
         }
         setPacketOffset(&msg,MASK_DST,0,tcb->sess->clientAddr,8);
         err = sendPacket(tcb->sess->sock,tcb->sess,&msg,&link,&data,len,tcb->sess->method);
+        hexPrint(&msg,256);
         if(err<=0){
             setMask(tcb,tcb->sig,STATUS_KILL);
             logWrite(tcb->Log,tcb->log,"[*] [Output] client disonnected. : ENO:[%d]-EC:[%d]-LEN:[%llu].",errno,err,len);
