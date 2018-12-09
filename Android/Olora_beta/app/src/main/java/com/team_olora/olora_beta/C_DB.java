@@ -292,7 +292,6 @@ public class C_DB extends SQLiteOpenHelper {
         values.put(KEY_username, name);
         values.put(KEY_useraddr, addr);
         int key = -1;
-        Log.d("addr_saveuser", String.valueOf(addr));
 
         if (get_isblack(addr) != 1) {
             SQLiteDatabase db = getWritableDatabase();
@@ -314,7 +313,6 @@ public class C_DB extends SQLiteOpenHelper {
     long get_user_addr(int user_key) {
         SQLiteDatabase db = getReadableDatabase();
         long addr = -2;
-        Log.d("MSGMSG: lstgetUserAddr", "user_key = " + user_key);
         Cursor c = db.rawQuery(SQL_SELECT_USER + " WHERE " + KEY_userkey + "= " + user_key, null);
         if (c.moveToFirst()) {
             addr = c.getLong(2);
@@ -478,7 +476,6 @@ public class C_DB extends SQLiteOpenHelper {
                 db.close();
             }
         } else {
-            Log.d("saveError", "Check the channel");
             // dummy chatting - mklee
             values.put(KEY_channel, 99);// net key
             values.put(KEY_roomname, name);
@@ -668,7 +665,7 @@ public class C_DB extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor c;
         if (room == 0) {
-            c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_channel + "= " + channel, null);
+            c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_channel + "= " + channel + " AND " + KEY_roomkey+ " = "+room, null);
         } else {
             c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_roomkey + " = " + room, null);
         }
@@ -676,9 +673,9 @@ public class C_DB extends SQLiteOpenHelper {
         return c;
     }
 
-    Cursor get_chat_cusorLast(int key) {
+    Cursor get_chat_cusorLast(int key,int roomkey) {
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_chatkey + " = " + key, null);
+        return db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_chatkey + " = " + key+" AND "+KEY_roomkey+ " = "+roomkey, null);
     }
 
 

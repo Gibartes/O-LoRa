@@ -400,7 +400,6 @@ public class Service_BluetoothChatService implements Serializable {
 
                     // 패킷변환해서 바로보냄
                     // send result 는 걸러내기
-                    Log.d("getCH:", FuncGroup.byteArrayToHexString(buffer));
 
                     byte[] param = new byte[1];
                     param[0] = buffer[39];
@@ -412,10 +411,7 @@ public class Service_BluetoothChatService implements Serializable {
                     }
 
                     if (dest != 0) {
-                        Log.d("Discovery", "뭔가 받았어 btchatservice" + FuncGroup.byteArrayToHexString(param));
-                        Log.d("Discovery", "뭔가 받았어 btchatservice" + String.valueOf(dest));
                         int command = packet.getCmd(buffer[39], param);
-                        Log.d("Discovery", "뭔가 받았어 btchatservicecomd" + command);
 
                         switch (command) {
                             case 0: //getNI
@@ -426,13 +422,31 @@ public class Service_BluetoothChatService implements Serializable {
                             case 2: // set Disc time
                                 break;
                             case 3: // discovery
-                                Log.d("Discovery:::", FuncGroup.byteArrayToHexString(buffer));
-                                int NumOfDevice = 0;
-                                NumOfDevice |= buffer[56];
-                                byte[] discoverData = new byte[28 * NumOfDevice];
-                                int EoD = 57 + 28 * NumOfDevice;
-                                discoverData = Arrays.copyOfRange(buffer, 57, EoD + 1);
+                                // 디스커버리 와드 1
 
+                                Log.d("finalTest", "--\n\n-----------------Start Read_Discovery Packet -----------------"
+                                        +"\n"+"msg send : "+packetHandler.byteArrayToHexString(buffer)
+                                        +"\n"+"src : "+packetHandler.getHeaderString(buffer,0,packetHandler.LEN_SRC)
+                                        +"\n"+"dest : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_DST,packetHandler.LEN_DST)
+                                        +"\n"+"cm : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_CM,packetHandler.LEN_CM)
+                                        +"\n"+"hp : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_HP,packetHandler.LEN_HP)
+                                        +"\n"+"proto : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
+                                        +"\n"+ "id : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_ID,packetHandler.LEN_ID)
+                                        +"\n"+ "flags : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
+                                        +"\n"+ "frag : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
+                                        +"\n"+ "seq : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
+                                        +"\n"+ "tms : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
+                                        +"\n"+ "len : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
+                                        +"\n"+ "ttl : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
+                                        +"\n"+ "param : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
+                                        +"\n"+ "dc : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_DC,packetHandler.LEN_DC)
+                                        +"\n"+ "#####################   END Read_Discovery Packet #################### \n\n");
+
+                                int dataLen=packetHandler.getMsgLen(buffer);
+                                Log.d("finalTest", "len2 : "+dataLen);
+                                Log.d("finalTest", "data : "+packetHandler.getHeaderString(buffer,packetHandler.MASK_DATA,dataLen));
+
+                                byte[] discoverData = packetHandler.getHeaderOffset(buffer,packetHandler.MASK_DATA,dataLen);
                                 mHandler.obtainMessage(Service_Constants.MESSAGE_DISCOVERY, bytes, -1, discoverData).sendToTarget();
                                 // buffer = Arrays.copyOfRange(buffer, 0, 39);
                                 break;
@@ -448,7 +462,6 @@ public class Service_BluetoothChatService implements Serializable {
 
                                 byte[] ch = new byte[3];
                                 ch = Arrays.copyOfRange(buffer, 56, 59);
-                                Log.d("SET_CH:::", "result ch : " + FuncGroup.byteArrayToHexString(ch));
 
                                 mHandler.obtainMessage(Service_Constants.MESSAGE_CHANNELSET, bytes, -1, ch).sendToTarget();
                                 break;

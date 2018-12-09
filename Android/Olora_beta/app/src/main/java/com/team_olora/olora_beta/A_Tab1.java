@@ -26,7 +26,7 @@ import com.squareup.otto.Subscribe;
 
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInterface.OnDismissListener{
+public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInterface.OnDismissListener {
 
     ///////////////////
     ///// 멤버
@@ -152,7 +152,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
             find_Text.setVisibility(View.VISIBLE);
             //Toast.makeText(getContext(), "blueon = " + A_MainActivity.RSP_Name, Toast.LENGTH_LONG).show();
         } else if (blueon == 3) {
-            if(A_MainActivity.RSP_Name.length()!=0)
+            if (A_MainActivity.RSP_Name.length() != 0)
                 show_name.setText(A_MainActivity.RSP_Name);
             connected_Xbee.setVisibility(View.VISIBLE);
             show_text.setVisibility(View.VISIBLE);
@@ -170,8 +170,8 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
         blueon = Service_BluetoothChatService.mState;
         if (blueon == 3) {
-            if(A_MainActivity.RSP_Name.length()!=0)
-               show_name.setText(A_MainActivity.RSP_Name);
+            if (A_MainActivity.RSP_Name.length() != 0)
+                show_name.setText(A_MainActivity.RSP_Name);
 
             connected_Xbee.setVisibility(View.VISIBLE);
             show_text.setVisibility(View.VISIBLE);
@@ -252,9 +252,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
                     try {
                         getActivity().unbindService(sconn);
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
 
                     }
 
@@ -279,14 +277,13 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                             //////////////////
                             //// 서비스 재시작
                             //////////////////
-                 //           Provider_BusProvider.getInstance().unregister(this);
+                            //           Provider_BusProvider.getInstance().unregister(this);
                             try {
                                 getActivity().unbindService(sconn);
+                            } catch (Exception e) {
                             }
-                            catch (Exception e)
-                            {}
                             getActivity().stopService(new Intent(getActivity(), Service_btService.class));
-                   //         Provider_BusProvider.getInstance().register(this);
+                            //         Provider_BusProvider.getInstance().register(this);
                             Intent intent_s2 = new Intent(getActivity(), Service_btService.class);
                             getActivity().startService(intent_s2);
 
@@ -335,7 +332,7 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
                     A_Tab1_BtDeviceList_connectingProgress bluetoothProgress = new A_Tab1_BtDeviceList_connectingProgress();
                     Bundle bundle = new Bundle(1);
-                    bundle.putString("BDNAME",name);
+                    bundle.putString("BDNAME", name);
                     bluetoothProgress.setArguments(bundle);
                     bluetoothProgress.setOnDismissListener(this);
                     bluetoothProgress.show(getActivity().getSupportFragmentManager(), "Progress");

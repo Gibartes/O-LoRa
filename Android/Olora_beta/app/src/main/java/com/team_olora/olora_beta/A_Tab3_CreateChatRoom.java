@@ -44,7 +44,6 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
         userName = getArguments().getString("userName");
         userKey = getArguments().getInt("userKey", 0);
         user.setText(userName);
-        Log.d("MSGMSG: - getbundle ","userName = "+userName+"   userKey = "+userKey);
 
         DB = new C_DB(getContext());
         return view;
@@ -58,8 +57,7 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
                 case R.id.chatConnect:
                     int key;
                     if ( (key = DB.save_list_private(userName, userKey))>0) {
-                        Log.d("MSGMSG: - makeRoom ", "userName = " + userName + "   userKey = " + userKey+"   key = "+key);
-                    }else{
+                      }else{
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
 

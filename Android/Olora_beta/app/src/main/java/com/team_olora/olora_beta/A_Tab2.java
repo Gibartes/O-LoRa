@@ -20,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+
 public class A_Tab2 extends Fragment {
 
     public C_DB DB = null;
@@ -59,9 +61,16 @@ public class A_Tab2 extends Fragment {
 
         DB = new C_DB(getContext());
         load_values();
+        Provider_RecvMsg.getInstance().register(this);
 
         return layout;
     }
+    @Override
+    public void onDestroy() {
+        Provider_RecvMsg.getInstance().unregister(this);
+        super.onDestroy();
+    }
+
 
     /*이 함수는 보통 사용자의 세션에서 유지되어야 하는 모든 변경사항을 저장하는 곳
      * 사용자가 프래그먼트를 떠나는 순간 시스템에서 호출한다.*/
@@ -87,8 +96,7 @@ public class A_Tab2 extends Fragment {
                     String userName="dummy user";
                     int userKey=999;
                     if ( (key = DB.save_list_private(userName, userKey))>0) {
-                        Log.d("MSGMSG: - makeRoom ", "userName = " + userName + "   userKey = " + userKey+"   key = "+key);
-                    }else{
+                            }else{
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
                     adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key,userKey);
@@ -142,6 +150,10 @@ public class A_Tab2 extends Fragment {
         }
     }
 
+    @Subscribe
+    public void receive_msg(Provider_RecvMsgFunc recvEvent) {
+        load_values();
+    }
     private void load_values() {
         Cursor cursor = DB.get_all_list_cursor();
         Cursor cursor2 = DB.get_ch_cursor_Current();

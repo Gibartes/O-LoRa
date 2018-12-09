@@ -46,8 +46,9 @@ public class A_MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(2).setCustomView(R.layout.tab_c);
         tabLayout.getTabAt(3).setCustomView(R.layout.tab_d);
     }
+
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 
@@ -60,7 +61,7 @@ public class A_MainActivity extends AppCompatActivity {
         adapter.addFragment(new A_Tab4(), "FOUR");
         viewPager.setAdapter(adapter);
         Intent intent = getIntent();
-        vp.setCurrentItem(intent.getIntExtra("Page",0));
+        vp.setCurrentItem(intent.getIntExtra("Page", 0));
     }
 
     private class pagerAdapter extends FragmentStatePagerAdapter {
@@ -88,7 +89,7 @@ public class A_MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

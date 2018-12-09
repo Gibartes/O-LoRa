@@ -72,20 +72,19 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
                         Bundle bundle = new Bundle(2);
                         bundle.putInt("dismiss", 2);
                         int key = DB.get_ch_Current();
-                        bundle.putInt("ChannelKey",key);
+                        bundle.putInt("ChannelKey", key);
 
                         popupProgress.setArguments(bundle);
                         popupProgress.show(getActivity().getSupportFragmentManager(), "Progress");
-                    }
-                    else{
-                        Toast.makeText(getContext(),"블루투스 연결이 필요합니다.",Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "블루투스 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
                     }
 
                     break;
                 case R.id.dumyCreateFriendList:
                     //dumy btn - mklee
-                    long dumyAddr = Math.round(Math.random()*100);
-                    int key = DB.save_user("dummy "+Long.toString(dumyAddr), dumyAddr);
+                    long dumyAddr = Math.round(Math.random() * 100);
+                    int key = DB.save_user("dummy " + Long.toString(dumyAddr), dumyAddr);
                     load_values();
             }
         }
@@ -99,7 +98,6 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
             Bundle bundle = new Bundle(3);
             bundle.putString("userName", name);
             bundle.putInt("userKey", key);
-            Log.d("MSGMSG: - putbundle ","userName = "+name+"   userKey = "+key);
             popupFriend.setArguments(bundle);
             popupFriend.show(getActivity().getSupportFragmentManager(), "Friend");
         }
@@ -111,13 +109,13 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_ch_cursor();
+        Cursor cursor = DB.get_ch_cursor_Current();
         Cursor cursor1 = DB.get_user_cursor();
         adapter.clear();
 
         if (cursor.moveToFirst()) {
             if (cursor.getString(1) == null) {
-                viewChannel.setText("채널 : (" + cursor.getString(0) + ")");
+                viewChannel.setText("채널 : (" + cursor.getInt(0) + ")");
             } else {
                 viewChannel.setText("채널 : " + cursor.getString(1));
             }
