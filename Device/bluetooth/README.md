@@ -11,6 +11,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * Internal command to exit current session 	:
   * Set flag as FLAG_FIN in the olora packet header.
   * It must be zero-fill that either source or destination address.
+  * Otherwise, the packet is dropped by the security rule. 
 * Verify integrity of the packet using MD5 digest.
 * The SRC field on the olora packet have to be setted as a bluetooth address of the client which is connected with oloraNT.
 * Both <olorastd.h> and oloapkt.so offer AES256-cbc and RSA encryption/decryption using openSSL.
