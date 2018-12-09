@@ -12,7 +12,7 @@ from olora.packet import *
 from olora.define import *
 
 class ControlGate(Process):
-    def __init__(self,debug=False,echo=False):
+    def __init__(self,debug=False,echo=False,collect=False):
         Process.__init__(self)
         setproctitle.setproctitle('oloraGT')
         self.debug      = debug
@@ -36,8 +36,8 @@ class ControlGate(Process):
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
         self.xbOut.open(os.O_WRONLY)
         self.xbIn.open(os.O_RDONLY)
-        print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
         self.readList.append(self.xbIn.pipe)
+        print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
         
     # Debugging Function
     def __echoNT(self):
@@ -112,13 +112,15 @@ class ControlGate(Process):
                 
     def __rebuildHandler(self,desc):
         if(desc==PRSS_LIST.OLORANT):
+            print(colored('[+] [GATE] Waiting for gates open.','yellow',attrs=['bold']))
             #os.system("sudo service olorant restart")
             self.ntOut.open(os.O_WRONLY)
             self.ntIn.open(os.O_RDONLY)
             self.readList.append(self.ntIn.pipe)
             print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
         elif(desc==PRSS_LIST.OLORANT):
-            os.system("sudo service oloraxb restart")
+            print(colored('[+] [GATE] Waiting for gates open.','yellow',attrs=['bold']))
+            #os.system("sudo service oloraxb restart")
             self.xbOut.open(os.O_WRONLY)
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn.pipe)
@@ -129,7 +131,6 @@ class ControlGate(Process):
             self.__echoNT()
         while(True):
             self.__selector()
-
 
 if __name__ == '__main__':
     def signal_handler(signal,frame):
