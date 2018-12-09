@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.lang.StringBuilder;
 import java.lang.Long;
 
+/* @ __Gibartes__ @ */
+
 /* 
 Usage Example :
     byte[] packet = new byte[56];
@@ -85,7 +87,7 @@ public class OloraPacket{
             default:return 0;
         }
     }
-    // @Overloading 최대 8바이트 중 특정 위치의 바이트 값 얻기 바랄 때  
+    // @Overloading. 최대 8바이트 중 특정 위치의 바이트 값 얻기 바랄 때  
     public long   getValue(byte[] value,int offset,int unit){
         ByteBuffer buffer = ByteBuffer.wrap(value);
         switch(unit){
