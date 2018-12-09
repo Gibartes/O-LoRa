@@ -160,6 +160,7 @@ int32_t recvPacket(int32_t fd,session_t *sess,struct PACKET_CHAIN *pkt,struct PA
 }
 
 int32_t inputCheckInside(session_t *sess,struct PACKET_LINK_LAYER *link){
+    if(link->src==0&&link->dst==0) {return ERR_ZEROFILL_PKT;}   // This is an internal packet
     if(link->src==link->dst){return ERR_LAND_STATE;}            // LAND
     if(link->src==0||link->dst==0) {return ERR_INTERNAL_PKT;}   // This is an internal packet
     if(link->src!=sess->clientAddr){return ERR_FALSE_ADDR;}

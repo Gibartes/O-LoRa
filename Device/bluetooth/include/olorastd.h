@@ -141,6 +141,7 @@
     #define ERR_ECRYPT_NONE      -10
     #define ERR_LAND_STATE       -11
     #define ERR_INTERNAL_PKT     -12
+    #define ERR_ZEROFILL_PKT     -13
 
     /* HCI SCAN CODE */
     #define NOSCAN                 0
