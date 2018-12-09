@@ -458,7 +458,6 @@ public class C_DB extends SQLiteOpenHelper {
         Cursor c = get_ch_cursor_Current();
 
 
-        //와드
         if (c.moveToFirst()) {
             key = change_room_ch(userkey);
             if (0 > key) {
