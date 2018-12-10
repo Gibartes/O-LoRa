@@ -4,6 +4,8 @@ import setproctitle
 import subprocess as sp
 import psutil
 import sys,signal
+import argparse
+
 from select import select
 from termcolor import *
 from multiprocessing import *
@@ -34,10 +36,11 @@ class ControlGate(Process):
         self.ntIn.open(os.O_RDONLY)
         self.readList.append(self.ntIn.pipe)        
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
-        self.xbOut.open(os.O_WRONLY)
-        self.xbIn.open(os.O_RDONLY)
-        self.readList.append(self.xbIn.pipe)
-        print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
+        if(self.echo):
+            self.xbOut.open(os.O_WRONLY)
+            self.xbIn.open(os.O_RDONLY)
+            self.readList.append(self.xbIn.pipe)
+            print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
         
     # Debugging Function
     def __echoNT(self):
@@ -139,6 +142,22 @@ if __name__ == '__main__':
     signal.signal(signal.SIGPIPE,signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal_handler)
     
-    cg = ControlGate(True,False)
+    echoMode  = False
+    debugMode = False
+    parser = argparse.ArgumentParser(description="select run mode")
+    parser.add_argument("-r",action="store",dest="mode",type=str,required=False)   
+    args = parser.parse_args()
+
+    mode = args.mode
+    if(mode=="help"):
+        print("""
+\tDescription about -r option
+\td : set debug flags - Print packet which passed by oloraGT
+\te : set echo flags  - Test for oloraNT
+        """)
+        sys.exit(0)
+    if('e' in mode):echoMode  = True
+    if('d' in mode):debugMode = True    
+    cg = ControlGate(debugMode,echoMode)
     cg.start()
     sys.exit(0)
