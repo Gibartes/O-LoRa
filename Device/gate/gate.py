@@ -152,7 +152,7 @@ if __name__ == '__main__':
     if(mode=="help"):
         print("""
 \tDescription about -r option
-\td : set debug flags - Print packet which passed by oloraGT
+\td : set debug flags - Print packets which passed by oloraGT
 \te : set echo flags  - Test for oloraNT
         """)
         sys.exit(0)
