@@ -51,9 +51,12 @@ class ControlGate(Process):
                 pkt.packet = packet
                 pkt.split()
                 pkt.parse()
+                if(self.debug):
+                    print(pkt.parseinfo)
+                    pkt.print_payload(256)
                 if(pkt.parseinfo['SRC']==pkt.parseinfo['DST']):
-                	print(colored('[+] [GATE] Client Broken.','green',attrs=['bold']))
-               	else:
+                    print(colored('[+] [GATE] Client Broken.','green',attrs=['bold']))
+                else:                    
                     print(colored('[+] [GATE] BLE --> BLE.','grey',attrs=['bold']))
                     self.ntOut.write(packet)
             else:
@@ -132,8 +135,10 @@ class ControlGate(Process):
     def run(self):
         if(self.echo):
             self.__echoNT()
+            return 0
         while(True):
             self.__selector()
+        return 0
 
 if __name__ == '__main__':
     def signal_handler(signal,frame):
