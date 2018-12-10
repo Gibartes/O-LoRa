@@ -36,7 +36,7 @@ class ControlGate(Process):
         self.ntIn.open(os.O_RDONLY)
         self.readList.append(self.ntIn.pipe)        
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
-        if(self.echo):
+        if(self.echo==False):
             self.xbOut.open(os.O_WRONLY)
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn.pipe)
@@ -145,19 +145,23 @@ if __name__ == '__main__':
     echoMode  = False
     debugMode = False
     parser = argparse.ArgumentParser(description="select run mode")
-    parser.add_argument("-r",action="store",dest="mode",type=str,required=False)   
+    parser.add_argument("-r",action="store",dest="mode",type=str,default='n',required=False)
     args = parser.parse_args()
 
     mode = args.mode
     if(mode=="help"):
         print("""
 \tDescription about -r option
-\td : set debug flags - Print packets which passed by oloraGT
-\te : set echo flags  - Test for oloraNT
+\td : set debug flags   - Print packets which passed by oloraGT
+\te : set echo flags    - Test for oloraNT
+\tn : set normal flags  - Normal state (default).
         """)
         sys.exit(0)
     if('e' in mode):echoMode  = True
-    if('d' in mode):debugMode = True    
+    if('d' in mode):debugMode = True
+    if('n' in mode):
+        echoMode  = False
+        debugMode = False 
     cg = ControlGate(debugMode,echoMode)
     cg.start()
     sys.exit(0)
