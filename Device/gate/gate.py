@@ -4,6 +4,8 @@ import setproctitle
 import subprocess as sp
 import psutil
 import sys,signal
+import argparse
+
 from select import select
 from termcolor import *
 from multiprocessing import *
@@ -34,10 +36,11 @@ class ControlGate(Process):
         self.ntIn.open(os.O_RDONLY)
         self.readList.append(self.ntIn.pipe)        
         print(colored('[+] [GATE] OloraNT is ready.','blue',attrs=['bold']))
-        self.xbOut.open(os.O_WRONLY)
-        self.xbIn.open(os.O_RDONLY)
-        self.readList.append(self.xbIn.pipe)
-        print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
+        if(self.echo==False):
+            self.xbOut.open(os.O_WRONLY)
+            self.xbIn.open(os.O_RDONLY)
+            self.readList.append(self.xbIn.pipe)
+            print(colored('[+] [GATE] OloraXB is ready.','blue',attrs=['bold']))
         
     # Debugging Function
     def __echoNT(self):
@@ -48,9 +51,12 @@ class ControlGate(Process):
                 pkt.packet = packet
                 pkt.split()
                 pkt.parse()
+                if(self.debug):
+                    print(pkt.parseinfo)
+                    pkt.print_payload(256)
                 if(pkt.parseinfo['SRC']==pkt.parseinfo['DST']):
-                	print(colored('[+] [GATE] Client Broken.','green',attrs=['bold']))
-               	else:
+                    print(colored('[+] [GATE] Client Broken.','green',attrs=['bold']))
+                else:                    
                     print(colored('[+] [GATE] BLE --> BLE.','grey',attrs=['bold']))
                     self.ntOut.write(packet)
             else:
@@ -129,8 +135,10 @@ class ControlGate(Process):
     def run(self):
         if(self.echo):
             self.__echoNT()
+            return 0
         while(True):
             self.__selector()
+        return 0
 
 if __name__ == '__main__':
     def signal_handler(signal,frame):
@@ -139,6 +147,26 @@ if __name__ == '__main__':
     signal.signal(signal.SIGPIPE,signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal_handler)
     
-    cg = ControlGate(True,False)
+    echoMode  = False
+    debugMode = False
+    parser = argparse.ArgumentParser(description="select run mode")
+    parser.add_argument("-r",action="store",dest="mode",type=str,default='n',required=False)
+    args = parser.parse_args()
+
+    mode = args.mode
+    if(mode=="help"):
+        print("""
+\tDescription about -r option
+\td : set debug flags   - Print packets which passed by oloraGT
+\te : set echo flags    - Test for oloraNT
+\tn : set normal flags  - Normal state (default).
+        """)
+        sys.exit(0)
+    if('e' in mode):echoMode  = True
+    if('d' in mode):debugMode = True
+    if('n' in mode):
+        echoMode  = False
+        debugMode = False 
+    cg = ControlGate(debugMode,echoMode)
     cg.start()
     sys.exit(0)

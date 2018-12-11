@@ -362,7 +362,7 @@ static void *inputTask(void *param){
         getPacketOffset(&msg,MASK_LEN,0,&len,2);
         res = inputCheckInside(tcb->sess,&link);
         if(len>DATA_LENGTH || res<0){
-		    if(res!=ERR_ZEROFILL_PKT){
+            if(res!=ERR_ZEROFILL_PKT){
                 logWrite(tcb->Log,tcb->log,"[*] [Input] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",res,len,link.src,link.dst);}
             continue;}    // IGNORE
         err = hashCompare(&msg,&data,DATA_LENGTH);
