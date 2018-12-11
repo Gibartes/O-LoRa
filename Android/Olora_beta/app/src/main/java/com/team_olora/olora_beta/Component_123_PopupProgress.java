@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 public class Component_123_PopupProgress extends android.support.v4.app.DialogFragment {
 
+    private int timer_sec = 10;
     Button nayeonBtn;
     private int callTab;
     private int ch;
@@ -53,7 +54,6 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
         nayeonBtn = view.findViewById(R.id.nayoenBtn);
         nayeonBtn.setOnClickListener(new Event());
- //       nayeonBtn.setVisibility(View.GONE);
         DB = new C_DB(getContext());
 
 /**

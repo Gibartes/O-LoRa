@@ -1,7 +1,13 @@
 package com.team_olora.olora_beta;
 
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,6 +17,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class A_MainActivity extends AppCompatActivity {
 
@@ -26,13 +36,18 @@ public class A_MainActivity extends AppCompatActivity {
     public static String s;
     public static String d;
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // 자기자신 주소 참조.
-        addr_self = android.provider.Settings.Secure.getString(this.getContentResolver(), "bluetooth_address");
+        // 와드
+        addr_self = android.provider.Settings.Secure.getString(this.getContentResolver(),"bluetooth_address");
+        if(addr_self==null)
+            addr_self = getBluetoothMacAddress();
 
+        Log.d("loglog", "onCreate: "+addr_self);
         setContentView(R.layout.main_);
 
         vp = findViewById(R.id.vp);
@@ -50,6 +65,24 @@ public class A_MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public String getBluetoothMacAddress(){
+
+        String bluetoothMacAddress= "";
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        try{
+            Field mServiceField = mBluetoothAdapter.getClass().getDeclaredField("mService");
+            mServiceField.setAccessible(true);
+            Object btManagerService = mServiceField.get(mBluetoothAdapter);
+            Method mMethod = btManagerService.getClass().getMethod("getAddress");
+            bluetoothMacAddress = (String) mMethod.invoke(btManagerService);
+        }catch (NoSuchFieldException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            Log.e("loge", "getBluetoothMacAddress: Failed to get Bluetooth address " + e.getMessage(), e);
+        }
+
+        return bluetoothMacAddress;
     }
 
 

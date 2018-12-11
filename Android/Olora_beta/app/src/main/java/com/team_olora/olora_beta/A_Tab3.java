@@ -44,6 +44,8 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         //dumy btn - lmk
         dummyFrieandBtn = layout.findViewById(R.id.dumyCreateFriendList);
         dummyFrieandBtn.setOnClickListener(new Event());
+        //dummyFrieandBtn.setVisibility(View.GONE);
+
         listview = layout.findViewById(R.id.List_friendView);
         listview.setAdapter(adapter);
         listview.setChoiceMode(listview.CHOICE_MODE_SINGLE);
