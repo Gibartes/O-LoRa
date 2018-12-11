@@ -87,7 +87,11 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
             Log.d("finalTest", "CH _ send "+packetHandler.byteArrayToHexString(CH_send));
             byte[] setCHpacket = null;
-            setCHpacket = packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, CH_send);
+
+            // get hash
+            byte[] hash = FuncGroup.getHash(CH_send);
+
+            setCHpacket = packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, hash, CH);
 
             Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
                     +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setCHpacket)
@@ -124,7 +128,11 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
             Log.d("finalTest", "IDByte _ send "+packetHandler.byteArrayToHexString(IDbyte_send));
             byte[] discoverypacket = null;
-            discoverypacket = packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, IDbyte_send);
+
+            // get hash
+            byte[] hash = FuncGroup.getHash(IDbyte_send);
+
+            discoverypacket = packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, hash, IDbyte);
 
             Log.d("finalTest", "--\n\n-----------------Start Discovery Packet -----------------"
                     +"\n"+"msg send : "+packetHandler.byteArrayToHexString(discoverypacket)
@@ -214,10 +222,14 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         /**셋 채널 성공시 아래 실행**/
         Toast.makeText(getContext(), "CHANNEL:" + setchannel, Toast.LENGTH_LONG).show();
 
+        byte BB[] = new byte[0];
         byte[] BB_send = new byte[952];
         Arrays.fill( BB_send, (byte) 0 );
 
-        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, BB_send));
+        // get hash
+        byte[] hash = FuncGroup.getHash(BB_send);
+
+        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, hash, BB));
 
     }
 

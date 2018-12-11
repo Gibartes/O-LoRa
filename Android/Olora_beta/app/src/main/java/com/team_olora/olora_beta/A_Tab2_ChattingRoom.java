@@ -327,10 +327,13 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
                 message_send[i] = message[i];
             }
 
+            // get hash
+            byte[] hash = FuncGroup.getHash(message_send);
+
             if (room == 0) {
-                sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, message_send);
+                sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, hash, message);
             } else {
-                sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, message_send);
+                sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, hash, message);
             }
             mbtService.mChatService.write(sendapacket);
 

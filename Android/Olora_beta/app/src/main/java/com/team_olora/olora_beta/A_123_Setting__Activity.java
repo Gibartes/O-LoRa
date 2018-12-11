@@ -180,10 +180,10 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         mod = 1;
-                                        byte[] name_send = new byte[952];
-                                        Arrays.fill(name_send, (byte) 0);
+                                        byte[] tmp_name = new byte[952];
+                                        Arrays.fill(tmp_name, (byte) 0);
                                         for (int i = 0; i < name.length(); i++) {
-                                            name_send[i] = name.getBytes()[i];
+                                            tmp_name[i] = name.getBytes()[i];
                                         }
                                         setBox.setVisibility(View.GONE);
                                         progressBox.setVisibility(View.VISIBLE);
@@ -195,9 +195,11 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                         temp_id[0] = temp_ch[0];
                                         temp_id[1] = temp_ch[1];
 
+                                        // get hash
+                                        byte[] hash = FuncGroup.getHash(tmp_name);
 
                                         byte[] setNIpacket = null;
-                                        setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, name_send);
+                                        setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, hash, name.getBytes());
 
                                         Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
                                                 +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setNIpacket)
@@ -275,9 +277,11 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     progressBox.setVisibility(View.VISIBLE);
                                     btnSet.setVisibility(View.GONE);
 
-
+                                    byte[] tmp_dclv = new byte[952];
                                     byte[] _dclv = new byte[1];
                                     _dclv[0] =  (byte)dclv;
+
+                                    tmp_dclv[0] = _dclv[0]; // ?? 이게 모징
 
                                     byte[] temp_ch = FuncGroup.getCHbyte(ch);
                                     byte hp = temp_ch[0];
@@ -285,8 +289,11 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     temp_id[0] = temp_ch[0];
                                     temp_id[1] = temp_ch[1];
 
+                                    // get hash
+                                    byte[] hash = FuncGroup.getHash(tmp_dclv);
+
                                     byte[] setDClvpacket = null;
-                                    setDClvpacket = packet.converted_packet(s, d, "SET_DISCOVERY_TIME", hp, temp_id, _dclv);
+                                    setDClvpacket = packet.converted_packet(s, d, "SET_DISCOVERY_TIME", hp, temp_id, hash, _dclv);
 
                                     Log.d("finalTest", "--\n\n-----------------Start SET_DISCOVERY_TIME Packet -----------------"
                                             +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setDClvpacket)
