@@ -90,7 +90,7 @@ public class Service_packet {
 
     // 패킷 패킹. 바로 보낼 수 있는 형태
     // id, hp 따로 - command 가 setId, setHp 아니면 hp, id 인자는 상관없음
-    public byte[] converted_packet(String s, byte[] t_a, String param, byte hp, byte[] id, byte[] msg) {
+    public byte[] converted_packet(String s, byte[] t_a, String param, byte hp, byte[] id, byte[] hash, byte[] msg) {
         byte[] s_a = converted_addr(s);
 
         // for header
@@ -164,6 +164,8 @@ public class Service_packet {
                 break;
         }
 
+
+        /*
         byte [] MD5 = new byte[16];
 
 
@@ -197,11 +199,13 @@ public class Service_packet {
             else
                 MD5[i] = temp_b[i - 8];
         }
+        */
 
         // md5
         for(int i = 0; i < 16; i++)
         {
-            packet[40 + i] = MD5[i];
+            //packet[40 + i] = MD5[i];
+            packet[40 + i] = hash[i];
         }
 
 

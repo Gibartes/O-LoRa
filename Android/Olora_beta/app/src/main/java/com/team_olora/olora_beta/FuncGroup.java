@@ -1,4 +1,7 @@
 package com.team_olora.olora_beta;
+import java.security.NoSuchAlgorithmException;
+
+import java.security.MessageDigest;
 
 public class FuncGroup {
 
@@ -64,6 +67,44 @@ public class FuncGroup {
         CH[2] = (byte) ID;
 
         return CH;
+    }
+
+    static byte[] getHash(byte[] msg)
+    {
+        byte [] MD5 = new byte[16];
+
+
+        try{
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            MD5 = md.digest(msg);
+        }
+        catch(NoSuchAlgorithmException e){
+
+            e.printStackTrace();
+            MD5 = null;
+        }
+
+        // endian swap for MD5
+        byte[] temp_f = new byte[8];
+        byte[] temp_b = new byte[8];
+        for(int i = 0; i < 8; i ++)
+        {
+            temp_f[7 - i] = MD5[i];
+        }
+
+        for(int i = 0; i < 8; i ++)
+        {
+            temp_b[7 - i] = MD5[8 + i];
+        }
+
+        for(int i = 0; i < 16; i ++)
+        {
+            if(i < 8)
+                MD5[i] = temp_f[i];
+            else
+                MD5[i] = temp_b[i - 8];
+        }
+        return MD5;
     }
 
 
