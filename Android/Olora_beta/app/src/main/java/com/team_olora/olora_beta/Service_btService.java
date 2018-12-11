@@ -1,6 +1,7 @@
 package com.team_olora.olora_beta;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,6 +11,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Binder;
@@ -177,7 +179,6 @@ public class Service_btService extends Service {
                             break;
 
                         case Service_Constants.MESSAGE_READ:
-                            Component_2_msgAdapter msgAdapter1 = new Component_2_msgAdapter();
                             /**받기*/
 
                             byte[] read = (byte[]) msg.obj;
@@ -187,12 +188,17 @@ public class Service_btService extends Service {
                             } catch (Exception e) {
                             }
 
+                            //dumy is not echo -- mklee
+                            if(Service_packet.isEcho==1)
+                                readLen=0;
+
                             if (readLen != 0) {
-                                String receivemsg = msgAdapter1.parse_msg((byte[]) msg.obj);
-                                int room_key;
+                                String receivemsg =   new String(read);
+                                Log.d("finalTest", "received msg = "+receivemsg);
+
                                 long usermac = Service_packet.macaddr; // 유저 mac addr
+                                int isPulic = Service_packet.isPublic;
                                 int user = DB.get_user_key(usermac); // 유저 키
-                                Log.d("Service", ": get user key = " + user);
                                 int black = DB.get_isblack(usermac);
 
                                 if (user == -1) {
@@ -201,36 +207,52 @@ public class Service_btService extends Service {
                                 } else {
                                     //user 검색 된다 discovery 불필요
                                 }
+
+                                int ch = DB.get_ch_Current();
                                 String username = DB.get_user_name(user);
-
-                                // addr 와 일치하는 room key 있는지 검색
-                                // 있으면 roomkey, 없으면 만들어서 리턴
-                                int ch = DB.get_net_Current_ch();
-                                room_key = DB.echo_room_key(username, user, usermac);
-                                int chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
-
-                                Log.d("Service::ROM", "저장된 chatkey:" + chatkey + " 저장된 채널 :" + ch + " 저장된 recieve :" + room_key +
-                                        "저장된 유저네임 : " + username + " 저장된 메시지 :" + receivemsg + " 저장된 유저 키: " + user);
+                                int chatkey;
+                                int room_key;
+                                if(isPulic==1)
+                                {
+                                    Log.d("finalTest", "퍼블릭 메시지야");
+                                    room_key=0;
+                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
+                                }else {
+                                    Log.d("finalTest", "프라이빗 메시지야");
+                                    // addr 와 일치하는 room key 있는지 검색
+                                    // 있으면 roomkey, 없으면 만들어서 리턴
+                                    room_key = DB.echo_room_key(username, user, usermac,ch);
+                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
+                                    //DB.save_list_recievekey(send_key, receive_key);
+                                }
                                 Provider_RecvMsg.getInstance().post(new Provider_RecvMsgFunc(chatkey));
-                                //DB.save_list_recievekey(send_key, receive_key);
+
 
                                 /** ** ** ** ** ** ** ** ** ** ** 푸시알람 ** ** ** ** ** ** ** ** ** ** ** */
                                 Boolean push = DB.get_set_push();
                                 Boolean vibe = DB.get_set_vibe();
                                 Boolean sound = DB.get_set_sound();
+                                Log.d("finalTest", "프라이빗 메시지야"+getApplicationContext());
 
                                 if (push) {
 
                                     NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
                                     Intent intent = new Intent(getApplicationContext(), A_Tab2_ChattingRoom.class);
-                                    Intent intent_ = new Intent(getApplicationContext(), Service_PushPop.class);
                                     String address = A_MainActivity.RSP_MacAddr.toString();
-                                    String time = DB.get_chat_time(ch, room_key, chatkey);
+                                    String time = DB.get_chat_time(chatkey);
+
+                                    int room_ch = DB.get_list_ch(room_key);
+                                    intent.putExtra("Room_ch",ch);
+                                    intent.putExtra("Room_key", room_key);
+                                    intent.putExtra("User_key",user);
+                                    intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
+
                                     intent.putExtra("device_address", address);
                                     intent.putExtra("Room_key", room_key);
 
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                                     PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
                                     PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
@@ -309,9 +331,8 @@ public class Service_btService extends Service {
                             Provider_SetCH.getInstance().post(new Provider_SetCHFunc(ch));
                             break;
                         case Service_Constants.MESSAGE_DISCOVERY:
-                            Log.d("DIscover:::", "받은 msg.org" + msg.obj);
+                            Log.d("finalTest", "discover 222 : "+packetHandler.byteArrayToHexString((byte[])msg.obj));
                             discover((byte[]) msg.obj);
-                            Log.d("DIscover:::", "bt Service 진입");
                             Provider_Discovery.getInstance().post(new Provider_DiscoveryFunc());
                             break;
                         case Service_Constants.MESSAGE_DEVICE_NAME:
@@ -340,12 +361,9 @@ public class Service_btService extends Service {
                             Service_packet packet = new Service_packet();
                             if (((byte[]) msg.obj).length != 0) {
                                 byte[] mbuffer = (byte[]) msg.obj;
-                                Log.d("SETNI:::", "Set NI 결과" + mbuffer);
                                 byte[] Mac = Arrays.copyOfRange(mbuffer, 56, 64);
                                 byte[] NI = Arrays.copyOfRange(mbuffer, 64, 1008);
                                 String myNI = new String(NI);
-                                Log.d("SETNI:::", "Set NI 결과" + myNI);
-                                Log.d("SETNI:::", "Set NI 결과" + Mac);
                                 ByteBuffer Lbuf = ByteBuffer.wrap(Mac);
                                 long myMac = Lbuf.getLong();
                                 Provider_BusProvider.getInstance().post(new Provider_BusProviderFunc(myNI, myMac));
@@ -382,10 +400,7 @@ public class Service_btService extends Service {
                 connectDevice(address, true);
                 Toast.makeText(getApplicationContext(), "connected : " + address, Toast.LENGTH_SHORT).show();
                 String BD = address.replaceAll(":", "");
-                Log.d("BD - reconnect : ", BD);
                 DB.save_bd(FuncGroup.hexStringToByteArray(BD));
-                Log.d("BD - reconnect", "connectedbd : " + FuncGroup.byteArrayToHexString(FuncGroup.hexStringToByteArray(BD)));
-                Log.d("BD - reconnect", " get set bd : " + FuncGroup.byteArrayToHexString(DB.get_set_bd()));
 
             } catch (Exception e) {
                 //Toast.makeText(this, "error : " + e.toString(), Toast.LENGTH_SHORT).show();
@@ -417,16 +432,14 @@ public class Service_btService extends Service {
 
 
     public void discover(byte[] bytes) {
+
+        Log.d("finalTest", "discover 222 : "+bytes.length);
         // 8 : Addr / 20 : NI
         int addrLen = 28;
-        int num_user = (bytes.length - 1) / addrLen;
+        int num_user = (bytes.length) / addrLen;
         // int num_user = bytes[0];
         byte[] user = new byte[addrLen];
         DB.delete_user_All();
-        Log.d("Discovery:::", "삭제후" + String.valueOf(DB.get_user_num()));
-        Log.d("Discovery:::", "받은 bytearray" + FuncGroup.byteArrayToHexString(bytes));
-        Log.d("Discovery:::", "받은 bytearray 길이 " + bytes.length + "  받은 bytearray 길이2 " + bytes[0]);
-        Log.d("Discovery:::", "num_user" + num_user);
 
         int user_index = 1;
         while (user_index < num_user) {
@@ -435,7 +448,6 @@ public class Service_btService extends Service {
                 user[i] = bytes[i + user_index * addrLen];
                 i++;
             }
-            Log.d("user : ", FuncGroup.byteArrayToHexString(user));
             parse(user);
             user_index++;
         }
@@ -460,18 +472,8 @@ public class Service_btService extends Service {
         ByteBuffer Lbuf = ByteBuffer.wrap(addr_byte);
         addr = Lbuf.getLong();
 
-        Log.d("User - addr byte : ", FuncGroup.byteArrayToHexString(addr_byte) + "\n name = " + new String(addr_byte));
-        Log.d("User - name byte : ", FuncGroup.byteArrayToHexString(name_byte) + "\n name = " + new String(name_byte));
-
         name = new String(name_byte);
-        Log.d("addr", String.valueOf(addr));
-
-        Log.d("User - addr byte : ", "\n name = " + addr);
-        Log.d("User - name byte : ", "\n name = " + name);
         int key = DB.save_user(name, addr);
-        Log.d("Discovery:::", String.valueOf(key));
-        Log.d("Discovery:::", "으악 늘어난다" + String.valueOf(DB.get_user_num()));
-
-    }
+     }
 
 }

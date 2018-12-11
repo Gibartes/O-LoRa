@@ -31,9 +31,9 @@ import java.util.TimerTask;
 public class A_123_Setting__Activity extends AppCompatActivity {
     InputMethodManager imm;
     int mode;
-    int mod=0;
+    int mod = 0;
     private int ch;
-    private int timer_sec=10;
+    private int timer_sec = 10;
     private TimerTask second;
     private TextView timer_text;
     private final Handler handler = new Handler();
@@ -77,9 +77,9 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         setname = findViewById(R.id.txtSetList);
         btnDel = findViewById(R.id.btnTextDel);
         set_Dclv = findViewById(R.id.setDclv);
-        set_Dclv_char =findViewById(R.id.setDclvchar);
+        set_Dclv_char = findViewById(R.id.setDclvchar);
 
-        progressBox=findViewById(R.id.progressbox);
+        progressBox = findViewById(R.id.progressbox);
         prog = findViewById(R.id.Prog);
         timer_text = findViewById(R.id.timer);
         progressBox.setVisibility(View.GONE);
@@ -104,9 +104,8 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 setname.setVisibility(View.VISIBLE);
                 btnDel.setVisibility(View.VISIBLE);
 
-                userName = DB.get_list_userName(Key);
                 titleBar.setText("채팅방 이름 변경");
-                setname.setHint(userName);
+                setname.setHint("채팅방 이름");
                 setname.setText(Name); // 태그명 PrevName으로 변경
                 break;
             case 2:
@@ -126,7 +125,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 set_Dclv_char.setVisibility(View.VISIBLE);
 
                 titleBar.setText("채널 탐색 시간 설정");
-                int prev_val=DB.get_set_dclv();
+                int prev_val = DB.get_set_dclv();
                 set_Dclv.setMinValue(6);
                 set_Dclv.setMaxValue(15);
                 set_Dclv.setWrapSelectorWheel(false);
@@ -134,7 +133,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                 set_Dclv.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                     @Override
                     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                        dclv=newVal;
+                        dclv = newVal;
                     }
                 });
 
@@ -158,24 +157,20 @@ public class A_123_Setting__Activity extends AppCompatActivity {
     }
 
     private class Event implements View.OnClickListener {
-
-        String name = setname.getText().toString();
-
         @Override
         public void onClick(View v) {
+            final String name = setname.getText().toString();
             switch (v.getId()) {
                 case R.id.btnTextDel:
                     setname.setText("");
                     break;
                 case R.id.btn_set:
-
+                    final Service_packet packet = new Service_packet();
+                    final String s = A_MainActivity.addr_self;
+                    final byte[] d = packet.converted_addr(A_MainActivity.RSP_MacAddr);
                     switch (mode) {
                         case 0:
-                            final Service_packet packet = new Service_packet();
-                            final String s = A_MainActivity.addr_self;
-                            final byte[] d = packet.converted_addr(A_MainActivity.RSP_MacAddr);
-
-                            ch=DB.get_net_Current_ch();
+                            ch = DB.get_ch_Current();
 
                             if (Service_BluetoothChatService.mState == 3) {
                                 final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(A_123_Setting__Activity.this);
@@ -184,11 +179,10 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                 alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        mod=1;
+                                        mod = 1;
                                         byte[] name_send = new byte[952];
-                                        Arrays.fill( name_send, (byte) 0 );
-                                        for(int i = 0; i < name.length(); i ++)
-                                        {
+                                        Arrays.fill(name_send, (byte) 0);
+                                        for (int i = 0; i < name.length(); i++) {
                                             name_send[i] = name.getBytes()[i];
                                         }
                                         setBox.setVisibility(View.GONE);
@@ -201,7 +195,35 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                         temp_id[0] = temp_ch[0];
                                         temp_id[1] = temp_ch[1];
 
-                                        A_MainActivity.mbtService.mChatService.write(packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, name_send));
+
+                                        byte[] setNIpacket = null;
+                                        setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, name_send);
+
+                                        Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
+                                                +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setNIpacket)
+                                                +"\n"+"src : "+packetHandler.getHeaderString(setNIpacket,0,packetHandler.LEN_SRC)
+                                                +"\n"+"dest : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
+                                                +"\n"+"cm : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
+                                                +"\n"+"hp : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
+                                                +"\n"+"proto : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
+                                                +"\n"+ "id : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
+                                                +"\n"+ "flags : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
+                                                +"\n"+ "frag : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
+                                                +"\n"+ "seq : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
+                                                +"\n"+ "tms : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
+                                                +"\n"+ "len : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
+                                                +"\n"+ "ttl : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
+                                                +"\n"+ "param : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
+                                                +"\n"+ "dc : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
+                                                +"\n"+ "#####################   END CH_set Packet #################### \n\n");
+                                        int dataLen=packetHandler.getMsgLen(setNIpacket);
+                                        Log.d("finalTest", "len2 : "+dataLen);
+                                        Log.d("finalTest", "data : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DATA,dataLen));
+
+                                        /****/
+
+
+                                        A_MainActivity.mbtService.mChatService.write(setNIpacket);
                                         time_run(6);
                                     }
                                 });
@@ -211,49 +233,83 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     }
                                 });
                                 alert.show();
-                            }
-                            else{
+                            } else {
                                 DB.get_user_Myname();
                                 DB.save_userMY(name, 0); // 본인 Xbee 맥 어드레스
-                                Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
-                                intent.putExtra("Page",0);
+                                Intent intent = new Intent(getApplicationContext(), A_MainActivity.class);
+                                intent.putExtra("Page", 0);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
-                             }
+                            }
                             break;
                         case 1:
-                            Log.d("setChatroomName", "name len = "+name.length());
-                            if(name.length()==0)
-                            {
-                                DB.update_list_name(userName,Key);
-                            }else{
+                            if (name.length() == 0) {
+                                DB.update_list_name(userName, Key);
+                            } else {
                                 DB.update_list_name(name, Key);
                             }
-                            Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
-                            intent.putExtra("Page",1);
+                            Intent intent = new Intent(getApplicationContext(), A_MainActivity.class);
+                            intent.putExtra("Page", 1);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             break;
                         case 2:
-                            DB.update_user(name,Key);
-                            Intent intent1 = new Intent(getApplicationContext(),A_MainActivity.class);
-                            intent1.putExtra("Page",2);
+                            DB.update_user(name, Key);
+                            Intent intent1 = new Intent(getApplicationContext(), A_MainActivity.class);
+                            intent1.putExtra("Page", 2);
                             intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent1);
                             break;
                         case 3:
+                            ch = DB.get_ch_Current();
+
                             final android.app.AlertDialog.Builder alert = new android.app.AlertDialog.Builder(A_123_Setting__Activity.this);
                             alert.setTitle("탐색 시간 조절");
                             alert.setMessage("채널 탐색시간을 조절하시겠습니까?\n(단말기와 동기화를 위해 잠시 작동이 제한됩니다.)");
                             alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    mod=4;
+                                    mod = 4;
                                     set_Dclv.setVisibility(View.GONE);
                                     set_Dclv_char.setVisibility(View.GONE);
                                     progressBox.setVisibility(View.VISIBLE);
                                     btnSet.setVisibility(View.GONE);
 
+
+                                    byte[] _dclv = new byte[1];
+                                    _dclv[0] =  (byte)dclv;
+
+                                    byte[] temp_ch = FuncGroup.getCHbyte(ch);
+                                    byte hp = temp_ch[0];
+                                    byte[] temp_id = new byte[2];
+                                    temp_id[0] = temp_ch[0];
+                                    temp_id[1] = temp_ch[1];
+
+                                    byte[] setDClvpacket = null;
+                                    setDClvpacket = packet.converted_packet(s, d, "SET_DISCOVERY_TIME", hp, temp_id, _dclv);
+
+                                    Log.d("finalTest", "--\n\n-----------------Start SET_DISCOVERY_TIME Packet -----------------"
+                                            +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setDClvpacket)
+                                            +"\n"+"src : "+packetHandler.getHeaderString(setDClvpacket,0,packetHandler.LEN_SRC)
+                                            +"\n"+"dest : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
+                                            +"\n"+"cm : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
+                                            +"\n"+"hp : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
+                                            +"\n"+"proto : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
+                                            +"\n"+ "id : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
+                                            +"\n"+ "flags : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
+                                            +"\n"+ "frag : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
+                                            +"\n"+ "seq : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
+                                            +"\n"+ "tms : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
+                                            +"\n"+ "len : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
+                                            +"\n"+ "ttl : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
+                                            +"\n"+ "param : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
+                                            +"\n"+ "dc : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
+                                            +"\n"+ "#####################   END SET_DISCOVERY_TIME Packet #################### \n\n");
+                                    int dataLen=packetHandler.getMsgLen(setDClvpacket);
+                                    Log.d("finalTest", "len2 : "+dataLen);
+                                    Log.d("finalTest", "data : "+packetHandler.getHeaderString(setDClvpacket,packetHandler.MASK_DATA,dataLen));
+
+                                    /****/
                                     // write ( set dclv )
                                     DB.save_dvlv(dclv);
                                     time_run(6);
@@ -277,8 +333,9 @@ public class A_123_Setting__Activity extends AppCompatActivity {
             }
         }
     }
-    protected void time_run(int default_time){
-        timer_sec=default_time;
+
+    protected void time_run(int default_time) {
+        timer_sec = default_time;
         timer_text.setVisibility(View.VISIBLE);
         second = new TimerTask() {
             @Override
@@ -288,45 +345,47 @@ public class A_123_Setting__Activity extends AppCompatActivity {
             }
         };
         Timer timer = new Timer();
-        timer.schedule(second,0,1000);
+        timer.schedule(second, 0, 1000);
     }
+
     protected void Update() {
         Runnable updater = new Runnable() {
             public void run() {
-                timer_text.setText("설정 대기시간\n"+timer_sec + "초");
-                if(timer_sec<2 & mod!=0){
-                    timer_sec=10;
+                timer_text.setText("설정 대기시간\n" + timer_sec + "초");
+                if (timer_sec < 2 & mod != 0) {
+                    timer_sec = 10;
                     Toast.makeText(A_123_Setting__Activity.this, "설정에 실패했습니다. \n연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
-                    intent.putExtra("Page",mod-1);
+                    Intent intent = new Intent(getApplicationContext(), A_MainActivity.class);
+                    intent.putExtra("Page", mod - 1);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    mod=0;
+                    mod = 0;
                     startActivity(intent);
                 }
             }
         };
         handler.post(updater);
     }
+
     @Subscribe
     public void receive_NI(Provider_BusProviderFunc bpf) {
-        mod=0;
+        mod = 0;
         String NI = bpf.getMyNI();
         long addr = bpf.getMyMac();
         byte[] ni = NI.getBytes();
         int nilen = ni.length;
-        byte[] naMe = Arrays.copyOfRange(ni, 0, nilen-3);
+        byte[] naMe = Arrays.copyOfRange(ni, 0, nilen - 3);
         NI = new String(naMe);
-        Log.d("SetNI final :", NI+addr);
         DB.save_userMY(NI, addr); // 본인 Xbee 맥 어드레스
 
-        Intent intent = new Intent(getApplicationContext(),A_MainActivity.class);
-        intent.putExtra("Page",0);
+        Intent intent = new Intent(getApplicationContext(), A_MainActivity.class);
+        intent.putExtra("Page", 0);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(mod!=0) {
+        if (mod != 0) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_BACK:
                     return true;

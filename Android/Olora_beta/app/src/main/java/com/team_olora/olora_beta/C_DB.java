@@ -17,26 +17,24 @@ import java.util.Date;
 
 public class C_DB extends SQLiteOpenHelper {
     private static final String DBFILE = "chatlist.db";
-    private static final int DB_VERSION = 25;
+    private static final int DB_VERSION = 26;
     /************************************* Net table ****************************************/
-    private static final String TBL_Net = "Net_T";
+    private static final String TBL_Ch = "Ch_T";
 
-    private static final String KEY_netkey = "net_key";
-    private static final String KEY_netid = "net_id";    // net address
-    private static final String KEY_netname = "net_name";
-    private static final String KEY_netcheck = "net_check";
+    private static final String KEY_channel = "ch_channel";    // net address
+    private static final String KEY_chname = "ch_name";
+    private static final String KEY_chcheck = "ch_check";
 
-    private static String SQL_CREATE_NET = "CREATE TABLE IF NOT EXISTS " + TBL_Net
+    private static String SQL_CREATE_NET = "CREATE TABLE IF NOT EXISTS " + TBL_Ch
             + "(" +
-            " " + KEY_netkey + " INTEGER PRIMARY KEY, " +
-            " " + KEY_netid + " INTEGER, " +
-            " " + KEY_netname + " TEXT, " +
-            " " + KEY_netcheck + " INTEGER" +
+            " " + KEY_channel + " INTEGER, " +
+            " " + KEY_chname + " TEXT, " +
+            " " + KEY_chcheck + " INTEGER" +
             ")";
-    private static final String SQL_DROP_NET = "DROP TABLE IF EXISTS " + TBL_Net;
-    private static final String SQL_SELECT_NET = "SELECT * FROM " + TBL_Net;
-    private static final String SQL_DELETE_NET = "DELETE FROM " + TBL_Net;
-    private static final String SQL_DELETE_NET_WHERE = "DELETE FROM " + TBL_Net + " WHERE ";
+    private static final String SQL_DROP_CH = "DROP TABLE IF EXISTS " + TBL_Ch;
+    private static final String SQL_SELECT_CH = "SELECT * FROM " + TBL_Ch;
+    private static final String SQL_DELETE_CH = "DELETE FROM " + TBL_Ch;
+    private static final String SQL_DELETE_CH_WHERE = "DELETE FROM " + TBL_Ch + " WHERE ";
     /************************************** User table ***************************************/
     private static final String TBL_User = "User_T";
 
@@ -63,7 +61,7 @@ public class C_DB extends SQLiteOpenHelper {
 
     private static String SQL_CREATE_LIST = "CREATE TABLE IF NOT EXISTS " + TBL_List
             + "(" +
-            " " + KEY_netkey + " INTEGER, " +
+            " " + KEY_channel + " INTEGER, " +
             " " + KEY_roomkey + " INTEGER PRIMARY KEY, " +
             " " + KEY_roomname + " TEXT, " +
             " " + KEY_userkey + " INTEGER, " +
@@ -85,7 +83,7 @@ public class C_DB extends SQLiteOpenHelper {
 
     private static String SQL_CREATE_CHAT = "CREATE TABLE IF NOT EXISTS " + TBL_Chat
             + "(" +
-            " " + KEY_netkey + " INTEGER, " +
+            " " + KEY_channel + " INTEGER, " +
             " " + KEY_roomkey + " INTEGER, " +
             " " + KEY_username + " TEXT, " +
             " " + KEY_chatmsg + " TEXT, " +
@@ -94,18 +92,14 @@ public class C_DB extends SQLiteOpenHelper {
             " " + KEY_userkey + " INTEGER," +
             " " + KEY_chatkey + " INTEGER PRIMARY KEY " +
             ")";
-
     private static final String SQL_DROP_CHAT = "DROP TABLE IF EXISTS " + TBL_Chat;
     public static final String SQL_SELECT_CHAT = "SELECT * FROM " + TBL_Chat;
     public static final String SQL_DELETE_CHAT = "DELETE FROM " + TBL_Chat;
     public static final String SQL_DELETE_CHAT_WHERE = "DELETE FROM " + TBL_Chat + " WHERE ";
-
     /******************************************************************************************/
     /************************************** Black table ***************************************/
     private static final String TBL_Black = "Black_T";
-
     private static final String KEY_blackkey = "black_key";
-
     private static String SQL_CREATE_BLACK = "CREATE TABLE IF NOT EXISTS " + TBL_Black
             + "(" +
             " " + KEY_blackkey + " INTEGER PRIMARY KEY ," +
@@ -117,11 +111,9 @@ public class C_DB extends SQLiteOpenHelper {
     public static final String SQL_SELECT_BLACK = "SELECT * FROM " + TBL_Black;
     public static final String SQL_DELETE_BLACK = "DELETE FROM " + TBL_Black;
     public static final String SQL_DELETE_CHAT_BLACK = "DELETE FROM " + TBL_Black + " WHERE ";
-
     /******************************************************************************************/
     /************************************** Set table ***************************************/
     private static final String TBL_Set = "Set_T";
-
     private static final String KEY_set = "set_set";
     private static final String KEY_set2 = "set_set2";
 
@@ -164,7 +156,7 @@ public class C_DB extends SQLiteOpenHelper {
     // 버전이 업데이트 되었을 때 다시 만들어주는 메소드
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DROP_NET);
+        db.execSQL(SQL_DROP_CH);
         db.execSQL(SQL_DROP_LIST);
         db.execSQL(SQL_DROP_USER);
         db.execSQL(SQL_DROP_CHAT);
@@ -179,70 +171,57 @@ public class C_DB extends SQLiteOpenHelper {
     }
 
 
-    /** *** **** **** **** **** **** **** **** ** Net table 메소드 * ******* **** **** **** **** **** **** **** **** **/
+    /**
+     * ** **** **** **** **** **** **** **** ** Net table 메소드 * ******* **** **** **** **** **** **** **** ****
+     **/
+
+    Cursor get_ch_cursor() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(SQL_SELECT_CH, null);
+    }
 
     /**
-     * Net table 에서 현재 채널(netcheck=1)을 현재 채널이 아니도록 설정하고 선택된 netkey의 net을 현재채널로 설정
+     * 현재 채널(chcheck=1)을 담은 커서 리턴
      **/
-    public void set_net(int check) {
+    Cursor get_ch_cursor_Current() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(SQL_SELECT_CH + " WHERE " + KEY_chcheck + "=1", null);
+    }
+
+    /**
+     * CH table 에서 현재 채널(chcheck=1)을 현재 채널이 아니도록 설정하고 선택된 netkey의 net을 현재채널로 설정
+     **/
+    public void set_current_ch(int ch) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " + TBL_Net + " SET " + KEY_netcheck + "=0" + " WHERE " + KEY_netcheck + "=1");
-        db.execSQL("UPDATE " + TBL_Net + " SET " + KEY_netcheck + "= 1" + " WHERE " + KEY_netkey + "=" + check);
+        db.execSQL("UPDATE " + TBL_Ch + " SET " + KEY_chcheck + "=0" + " WHERE " + KEY_chcheck + "=1");
+        db.execSQL("UPDATE " + TBL_Ch + " SET " + KEY_chcheck + "= 1" + " WHERE " + KEY_channel + "=" + ch);
         db.close();
     }
 
 
     /**
-     * Net table에 데이터 저장
+     * CH table에 데이터 저장
      **/
-    public int save_net(int id, String name) {
+    public int save_ch(int ch, String name) {
         ContentValues values = new ContentValues();
-        values.put(KEY_netid, id);
-        values.put(KEY_netname, name);
-        values.put(KEY_netcheck, 0);
+        values.put(KEY_channel, ch);
+        values.put(KEY_chname, name);
+        values.put(KEY_chcheck, 0);
 
-        int key = -1;
+        int ret = -1;
         SQLiteDatabase db = getWritableDatabase();
-        if (db.insert(TBL_Net, null, values) > 0) {
-            Cursor c = db.rawQuery(SQL_SELECT_NET, null);
+        if (db.insert(TBL_Ch, null, values) > 0) {
+            Cursor c = db.rawQuery(SQL_SELECT_CH, null);
             c.moveToLast();
-            key = c.getInt(0);
+            ret = c.getInt(0);
         }
         db.close();
-        return key;
+        return ret;
     }
 
-
-    Cursor get_net_cursor() {
-        SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_NET, null);
-    }
-
-    int get_net_ch(int key) {
-        SQLiteDatabase db = getReadableDatabase();
+    int get_ch_Current() {
         int ch = -1;
-        Cursor c = db.rawQuery(SQL_SELECT_NET + " WHERE " + KEY_netkey + " = " + key, null);
-        if (c.moveToFirst()) {
-            ch = c.getInt(1);
-        }
-        db.close();
-
-        return ch;
-    }
-
-
-    /**
-     * 현재 채널(netcheck=1)을 담은 커서 리턴
-     **/
-    Cursor get_net_Current() {
-        SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_NET + " WHERE " + KEY_netcheck + "=1", null);
-    }
-
-
-    int get_net_Current_key() {
-        int ch = 0;
-        Cursor c = get_net_Current();
+        Cursor c = get_ch_cursor_Current();
         if (c.moveToFirst()) {
             ch = c.getInt(0);
         }
@@ -250,25 +229,13 @@ public class C_DB extends SQLiteOpenHelper {
         return ch;
     }
 
-    int get_net_Current_ch() {
-        int ch = 0;
-        Cursor c = get_net_Current();
-        if (c.moveToFirst()) {
-            ch = c.getInt(1);
-        }
-        c.close();
-
-        return ch;
-    }
-
-
     /**
-     * 채널 address를 받아서 채널이 이미 존재하는지 아닌지 검출
+     * 채널을 받아서 채널이 이미 존재하는지 아닌지 검출
      */
     int get_channel_exists(int ch) {
         int A = 0;
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(SQL_SELECT_NET + " WHERE " + KEY_netid + " = " + ch, null);
+        Cursor cursor = db.rawQuery(SQL_SELECT_CH + " WHERE " + KEY_channel + " = " + ch, null);
         if (cursor.moveToFirst()) {
             A = 1;
         }
@@ -276,9 +243,9 @@ public class C_DB extends SQLiteOpenHelper {
         return A;
     }
 
-    public void delete_net_All() {
+    public void delete_ch_All() {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(SQL_DELETE_NET);
+        db.execSQL(SQL_DELETE_CH);
         db.close();
     }
 
@@ -286,7 +253,14 @@ public class C_DB extends SQLiteOpenHelper {
     /** *** **** **** **** **** **** **** **** ******* **** **** *** **** **** **** ******* **** **** **** **** **** **** **** **** **/
 
 
-    /** *** **** **** **** **** **** **** **** ** User table 메소드 * ******* **** **** **** **** **** **** **** **** **/
+    /**
+     * ** **** **** **** **** **** **** **** ** User table 메소드 * ******* **** **** **** **** **** **** **** ****
+     **/
+    Cursor get_user_cursor() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery(SQL_SELECT_USER + " WHERE " + KEY_userkey + " != 0", null);
+    }
+
     /**
      * User table에 데이터 저장
      **/
@@ -294,7 +268,7 @@ public class C_DB extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_userkey, 0);
         values.put(KEY_username, name);
-        values.put(KEY_useraddr, addr); // addr 데이터형 추후 협의
+        values.put(KEY_useraddr, addr);
 
         int key = -1;
         SQLiteDatabase db = getWritableDatabase();
@@ -318,7 +292,6 @@ public class C_DB extends SQLiteOpenHelper {
         values.put(KEY_username, name);
         values.put(KEY_useraddr, addr);
         int key = -1;
-        Log.d("addr_saveuser", String.valueOf(addr));
 
         if (get_isblack(addr) != 1) {
             SQLiteDatabase db = getWritableDatabase();
@@ -335,17 +308,11 @@ public class C_DB extends SQLiteOpenHelper {
         return key;
     }
 
-    Cursor get_user_cursor() {
-        SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_USER + " WHERE " + KEY_userkey + " != 0", null);
-    }
-
     /**
      */
     long get_user_addr(int user_key) {
         SQLiteDatabase db = getReadableDatabase();
         long addr = -2;
-        Log.d("MSGMSG: lstgetUserAddr","user_key = "+user_key);
         Cursor c = db.rawQuery(SQL_SELECT_USER + " WHERE " + KEY_userkey + "= " + user_key, null);
         if (c.moveToFirst()) {
             addr = c.getLong(2);
@@ -439,15 +406,13 @@ public class C_DB extends SQLiteOpenHelper {
      **/
     public int save_list_public() {
         ContentValues values = new ContentValues();
-        int current_netkey = 0;
-        int current_netaddr = 0;
-        Cursor c = get_net_Current();
+        int current_ch = 0;
+        Cursor c = get_ch_cursor_Current();
         if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
-            current_netaddr = c.getInt(1);
+            current_ch = c.getInt(0);
         }
-        values.put(KEY_netkey, current_netkey);// net key
-        values.put(KEY_roomname, current_netaddr + " 채널의 공개 채팅방");
+        values.put(KEY_channel, current_ch);
+        values.put(KEY_roomname, current_ch + " 채널의 전체 채팅방");
         values.put(KEY_roomkey, 0);
         values.put(KEY_receivekey, 0);
 
@@ -461,106 +426,111 @@ public class C_DB extends SQLiteOpenHelper {
         return key;
     }
 
+
+    /**
+     * user key를 받아서 해당 키로 만들어진 채팅방의 채널을
+     * 현재 채널로 변경 후 채팅방 키 반환 없으면 -1 반환
+     */
+    public int change_room_ch(int userkey) {
+        int ret = -1;
+        int cur_ch = get_ch_Current();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_userkey + " = " + userkey, null);
+        if (c.moveToFirst()) {
+            ret = c.getInt(1);
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_channel + " = " + cur_ch + " WHERE " + KEY_userkey + " = " + userkey);
+        } else {
+        }
+        return ret;
+    }
+
     /**
      * List table에 private 대화방 데이터 저장후 자신의 룸 키 반환
      * user key는 디스커버마다 바뀌니까 디스커버마다 유저어드레스랑 유저 키 동기화
      */
+
     public int save_list_private(String name, int userkey) {
         ContentValues values = new ContentValues();
-        int current_netkey = -1;
+        int current_ch = -1;
         int key = -1;
-        Cursor c = get_net_Current();
+        Cursor c = get_ch_cursor_Current();
+
+
         if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
-            long useraddr = get_user_addr(userkey);
-            values.put(KEY_netkey, current_netkey);// net key
-            values.put(KEY_roomname, name);
-            values.put(KEY_userkey, userkey);
-            values.put(KEY_useraddr, useraddr);
-            values.put(KEY_receivekey, 0);
-            SQLiteDatabase db = getWritableDatabase();
-            if (db.insert(TBL_List, null, values) > 0) {
-                c = get_list_cursor();
-                c.moveToLast();
-                key = c.getInt(1);
+            key = change_room_ch(userkey);
+            if (0 > key) {
+                current_ch = c.getInt(0);
+                long useraddr = get_user_addr(userkey);
+                values.put(KEY_channel, current_ch);// net key
+                values.put(KEY_roomname, name);
+                values.put(KEY_userkey, userkey);
+                values.put(KEY_useraddr, useraddr);
+                values.put(KEY_receivekey, 0);
+
+                SQLiteDatabase db = getWritableDatabase();
+                if (db.insert(TBL_List, null, values) > 0) {
+                    c = get_list_cursor();
+                    c.moveToLast();
+                    key = c.getInt(1);
+                }
+                db.close();
             }
-            db.close();
-        }else{
-            Log.d("saveError", "Check the channel");
+        } else {
             // dummy chatting - mklee
-            values.put(KEY_netkey, 999);// net key
+            values.put(KEY_channel, 99);// net key
             values.put(KEY_roomname, name);
             long useraddr = get_user_addr(userkey);
             values.put(KEY_userkey, userkey);
             values.put(KEY_useraddr, useraddr);
             values.put(KEY_receivekey, 0);
+
             SQLiteDatabase db = getWritableDatabase();
             if (db.insert(TBL_List, null, values) > 0) {
                 c = get_list_cursor();
                 c.moveToLast();
-                key = 999;
+                key = -1;
             }
             db.close();
         }
-
 
         return key;
     }// update 메소드 정의 해야함
 
-    /**
-     * 메시지를 받았을때 받은메시지의 send/ receive 순서대로 넣어주기
-     **/
-    public void save_list_recievekey(int sendkey, int receivekey) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE " + TBL_List + " SET " + KEY_receivekey + " = " + sendkey + " WHERE " + KEY_roomkey + " = " + receivekey);
-        Log.d("DB  :", "save list receive key : " + sendkey);
-        db.close();
-    }
-
-    /************** 나중에 다시 디버깅 **********/////////////
-    public int get_list_receivekey(int sendkey) {
-        SQLiteDatabase db = getReadableDatabase();
-        int current_netkey = 0;
-        Cursor c = get_net_Current();
-        if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
-        }
-        c = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_netkey + " = " + current_netkey + " AND " + KEY_roomkey + " = " + sendkey, null);
-        int key = 0;
-        if (c.moveToNext()) {
-            key = c.getInt(5);
-        }
-        Log.d("DB  :", "get list receive key : " + key);
-        c.close();
-        return key;
-    }
+    /************** 나중에 다시 디버깅 **********/
 
     Cursor get_list_cursor() {
         SQLiteDatabase db = getReadableDatabase();
 
-        int current_netkey = 0;
-        Cursor c = get_net_Current();
+        int current_ch = 0;
+        Cursor c = get_ch_cursor_Current();
         if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
+            current_ch = c.getInt(0);
         }
-        return db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_netkey + " = " + current_netkey, null);
+        return db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_channel + " = " + current_ch, null);
     }
+
     Cursor get_all_list_cursor() {
         /*모든 리스트--mklee*/
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_LIST , null);
+        return db.rawQuery(SQL_SELECT_LIST, null);
     }
+    int get_list_ch(int key) {
+        int channel=-1;
+        SQLiteDatabase db = getReadableDatabase();
 
+        Cursor cursor = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_roomkey + " = " + key, null);
+        if (cursor.moveToFirst())
+            channel = cursor.getInt(0);
+
+        db.close();
+        return channel;
+    }
 
     String get_list_name(int key) {
         String name = "";
         SQLiteDatabase db = getReadableDatabase();
-        int current_netkey = 0;
-        Cursor c = get_net_Current();
-        if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
-        }
-        Cursor cursor = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_netkey + " = " + current_netkey + " AND " + KEY_roomkey + " = " + key, null);
+
+        Cursor cursor = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_roomkey + " = " + key, null);
         if (cursor.moveToFirst())
             name = cursor.getString(2);
 
@@ -568,15 +538,6 @@ public class C_DB extends SQLiteOpenHelper {
         return name;
     }
 
-    String get_list_userName(int key) {
-        String name = "";
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor join = db.rawQuery("SELECT " + TBL_User + "." + KEY_username + " FROM " + TBL_User + " INNER JOIN " + TBL_List + " ON " + TBL_List + "." + KEY_userkey + "=" + TBL_User + "." + KEY_userkey, null);
-        if (join.moveToFirst())
-            name = join.getString(0);
-        db.close();
-        return name;
-    }
 
     /**
      * 디스커버 메소드에서 사용
@@ -594,32 +555,36 @@ public class C_DB extends SQLiteOpenHelper {
             do {
                 room = join.getInt(0);
                 key = join.getInt(1);
-                db.execSQL("UPDATE " + TBL_List + " SET " + KEY_userkey + " = " + key + " WHERE " + KEY_roomkey + " = " + room, null);
+                db.execSQL("UPDATE " + TBL_List + " SET " + KEY_userkey + " = " + key + " WHERE " + KEY_roomkey + " = " + room);
             } while (join.moveToNext());
     }
 
     /*** 메시지 receive시 사용
      * 받은 메시지에 대해  user mac 일치 검사
-     * 채팅방 있는 경우 roomkey
-     * 채팅방 없는 경우 생성한 후 리턴
+     *
+     * 채팅방 없는 경우 생성
+     * 채팅방 있는 경우 채널이 같은지 검사해서 채널이 다르면 현재 체널로 업뎃하고
+     * roomkey 리턴
      * */
-    public int echo_room_key(String username, int user_key, long useraddr) {
+    public int echo_room_key(String username, int user_key, long useraddr, int ch_current) {
         int room_ch = -1;
         int room_key = -1;
-        int ch_current = get_net_Current_key();
 
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_useraddr + " = " + useraddr, null);
 
         if (c.moveToFirst()) {
-            room_ch= c.getInt(0);
+            room_ch = c.getInt(0);
             room_key = c.getInt(1);
         }
 
-        if(room_key <0)
+        if (room_key < 0) {
             room_key = save_list_private(username, user_key);
-
+        } else if (room_ch != ch_current) {
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_channel + " = '" + ch_current + "'" +
+                    " WHERE " + KEY_useraddr + " = " + useraddr);
+        }
         db.close();
 
         return room_key;
@@ -630,14 +595,8 @@ public class C_DB extends SQLiteOpenHelper {
      */
     public void update_list_name(String _roomname, int _roomkey) {
         SQLiteDatabase db = getWritableDatabase();
-        int current_netkey = 0;
-        Cursor c = get_net_Current();
-        if (c.moveToFirst()) {
-            current_netkey = c.getInt(0);
-            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_roomname + " = '" + _roomname + "'" +
-                    " WHERE " + KEY_netkey + " = " + current_netkey + " AND " + KEY_roomkey + " = " + _roomkey);
-        }
-        c.close();
+        db.execSQL("UPDATE " + TBL_List + " SET " + KEY_roomname + " = '" + _roomname + "'" +
+                " WHERE " + KEY_roomkey + " = " + _roomkey);
     }
 
     public void delete_list(int key) {
@@ -661,12 +620,12 @@ public class C_DB extends SQLiteOpenHelper {
     /**
      * Chat table에 데이터 저장
      **/
-    public int save_chatmsg(int net_key, int room_key, String user_name, String msg, boolean sORr, int user_key) {
+    public int save_chatmsg(int ch, int room_key, String user_name, String msg, boolean sORr, int user_key) {
         ContentValues values = new ContentValues();
-        values.put(KEY_netkey, net_key);
+        values.put(KEY_channel, ch);
         values.put(KEY_roomkey, room_key);
         if (user_name.equals(""))
-            values.put(KEY_username, "(저장하는 곳에서 유저 이름 입력 안함)");
+            values.put(KEY_username, "(유저 이름 찾을 수 없음)");
         else
             values.put(KEY_username, user_name);
 
@@ -683,20 +642,17 @@ public class C_DB extends SQLiteOpenHelper {
         int key = -1;
         SQLiteDatabase db = getWritableDatabase();
         if (db.insert(TBL_Chat, null, values) > 0) {
-            Cursor c = get_chat_cursor(net_key, room_key);
+            Cursor c = get_chat_cursor(ch, room_key);
             c.moveToLast();
             key = c.getInt(7);
         }
-
-        Log.d("DBsavechat", "key::" + String.valueOf(key) + ":" + msg + "channel :" + net_key + "room :" + room_key);
-
         db.close();
         return key;
     }
 
-    public String get_chat_time(int channel, int room, int key) {
+    public String get_chat_time(int key) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_netkey + "= " + channel + " AND " + KEY_roomkey + " = " + room + " AND " + KEY_chatkey + " = " + key, null);
+        Cursor c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_chatkey + " = " + key, null);
         String time = "";
         if (c.moveToFirst()) {
             time = c.getString(4);
@@ -707,12 +663,19 @@ public class C_DB extends SQLiteOpenHelper {
 
     Cursor get_chat_cursor(int channel, int room) {
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_netkey + "= " + channel + " AND " + KEY_roomkey + " = " + room, null);
+        Cursor c;
+        if (room == 0) {
+            c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_channel + "= " + channel + " AND " + KEY_roomkey+ " = "+room, null);
+        } else {
+            c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_roomkey + " = " + room, null);
+        }
+
+        return c;
     }
 
-    Cursor get_chat_cusorLast(int channel, int room, int key) {
+    Cursor get_chat_cusorLast(int key,int roomkey) {
         SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_netkey + "= " + channel + " AND " + KEY_roomkey + " = " + room + " AND " + KEY_chatkey + " = " + key, null);
+        return db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_chatkey + " = " + key+" AND "+KEY_roomkey+ " = "+roomkey, null);
     }
 
 
@@ -725,11 +688,10 @@ public class C_DB extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void delete_net(int key) {
+    public void delete_ch(int ch) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL(SQL_DELETE_NET_WHERE + " " + KEY_netkey + "=" + key);
-        db.execSQL(SQL_DELETE_LIST_WHERE + " " + KEY_netkey + "=" + key);
-        db.execSQL(SQL_DELETE_CHAT_WHERE + " " + KEY_netkey + "=" + key);
+        db.execSQL(SQL_DELETE_CH_WHERE + " " + KEY_channel + "=" + ch);
+  //      db.execSQL(SQL_DELETE_LIST_WHERE + " " + KEY_channel + "=" + ch +" AND " + KEY_roomkey + " = "+ 0);
         db.close();
     }
 
@@ -890,19 +852,19 @@ public class C_DB extends SQLiteOpenHelper {
 
     public void save_bd(byte[] bd) {
         int bd1 = 0;
-        bd1 |= (0xff&bd[0]) << 8;
-        bd1 |= (0xff&bd[1]);
+        bd1 |= (0xff & bd[0]) << 8;
+        bd1 |= (0xff & bd[1]);
         int bd2 = 0;
-        bd2 |= (0xff&bd[2]) << 24;
-        bd2 |= (0xff&bd[3]) << 16;
-        bd2 |= (0xff&bd[4]) << 8;
-        bd2 |= (0xff&bd[5]);
+        bd2 |= (0xff & bd[2]) << 24;
+        bd2 |= (0xff & bd[3]) << 16;
+        bd2 |= (0xff & bd[4]) << 8;
+        bd2 |= (0xff & bd[5]);
 
         int a = get_setint(0);
         int b = 0;
         a = a & ~(bdMSK1);
-        a |= bdMSK1&bd1;
-        b |= bdMSK2&bd2;
+        a |= bdMSK1 & bd1;
+        b |= bdMSK2 & bd2;
 
         save_set_setting(a, b);
     }
@@ -938,8 +900,7 @@ public class C_DB extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             if ((c.getInt(0) & pushMSK) >> 23 == 1) {
                 set = true;
-            }
-            else
+            } else
                 set = false;
         }
         return set;

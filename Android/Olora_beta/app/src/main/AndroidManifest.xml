@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.team_olora.olora_beta">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -9,13 +10,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <!--android:debuggable="false"
+        등록용 sdk 만들 때 필요한 옵션
+    -->
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@drawable/sana_icon"
+        android:icon="@drawable/main_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="HardcodedDebugMode">
         <activity
             android:name=".A_Tab1_BtDeviceList"
             android:label="@string/select_device"

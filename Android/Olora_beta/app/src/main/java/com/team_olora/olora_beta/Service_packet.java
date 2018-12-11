@@ -10,6 +10,9 @@ import java.util.Arrays;
 public class Service_packet {
 
     public static long macaddr;
+    public static int isPublic;
+    // dumy echo no - mklee
+    public static int isEcho;
 
     public Service_packet() {
 
@@ -102,6 +105,7 @@ public class Service_packet {
         }
 
         // data length
+        Log.d("finalTest", "msg len : "+msg.length);
         if(msg.length < 256)
         {
             packet[37] = (byte)msg.length;
@@ -110,7 +114,8 @@ public class Service_packet {
         {
             int length = msg.length;
             packet[36] = (byte)(length >> 8);
-            packet[37] = (byte)(packet[36]*256);
+            //packet[37] = (byte)(packet[36]*256);
+            packet[37] = (byte)(length);
         }
 
         // reset command
@@ -122,7 +127,7 @@ public class Service_packet {
                 packet[39] = (byte) 0x00;
                 break;
             case "SET_DISCOVERY_TIME":
-
+                packet[39] = (byte) 0x0E;
                 break;
             case "SEND_BROADCAST":
                 packet[39] = (byte) 0x12;
@@ -153,7 +158,6 @@ public class Service_packet {
 
             case "SET_CH":
                 packet[39] = (byte) 0x13;
-                Log.d("SET_CH:::", "SET_Ch 커맨드 =" + byte2hex(Arrays.copyOfRange(packet, 39, 40)));
                 break;
 
             default:
@@ -227,6 +231,39 @@ public class Service_packet {
         byte[] command = new byte[1];
         byte[] dest_addr = new byte[8];
         byte[] datafield = null;
+
+        Log.d("finalTest", "--\n\n-----------------Start Recived Packet  -----------------"
+                +"\n"+"msg recieved : "+packetHandler.byteArrayToHexString(packet)
+                +"\n"+"src : "+packetHandler.getHeaderString(packet,0,packetHandler.LEN_SRC)
+                +"\n"+"dest : "+packetHandler.getHeaderString(packet,packetHandler.MASK_DST,packetHandler.LEN_DST)
+                +"\n"+"cm : "+packetHandler.getHeaderString(packet,packetHandler.MASK_CM,packetHandler.LEN_CM)
+                +"\n"+"hp : "+packetHandler.getHeaderString(packet,packetHandler.MASK_HP,packetHandler.LEN_HP)
+                +"\n"+"proto : "+packetHandler.getHeaderString(packet,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
+                +"\n"+ "id : "+packetHandler.getHeaderString(packet,packetHandler.MASK_ID,packetHandler.LEN_ID)
+                +"\n"+ "flags : "+packetHandler.getHeaderString(packet,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
+                +"\n"+ "frag : "+packetHandler.getHeaderString(packet,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
+                +"\n"+ "seq : "+packetHandler.getHeaderString(packet,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
+                +"\n"+ "tms : "+packetHandler.getHeaderString(packet,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
+                +"\n"+ "len : "+packetHandler.getHeaderString(packet,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
+                +"\n"+ "ttl : "+packetHandler.getHeaderString(packet,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
+                +"\n"+ "param : "+packetHandler.getHeaderString(packet,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
+                +"\n"+ "dc : "+packetHandler.getHeaderString(packet,packetHandler.MASK_DC,packetHandler.LEN_DC)
+                +"\n"+ "#####################   END Recived Packet #################### \n\n");
+
+        int dataLen=packetHandler.getMsgLen(packet);
+        Log.d("finalTest", "len2 : "+dataLen);
+        Log.d("finalTest", "data : "+packetHandler.getHeaderString(packet,packetHandler.MASK_DATA,dataLen));
+
+        if(16==packetHandler.getParam(packet)){
+            //is unicast dummy - mklee
+            isPublic=0;
+        }else
+            isPublic=1;
+        if(packetHandler.getFlags(packet)==191){
+            isEcho=1;
+        }else
+            isEcho=0;
+
 
         command[0] = packet[39];
 

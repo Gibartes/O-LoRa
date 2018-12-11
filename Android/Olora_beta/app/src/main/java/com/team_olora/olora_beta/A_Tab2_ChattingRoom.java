@@ -45,7 +45,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     private InputMethodManager imm;
     private Service_btService mbtService = null;
     private Service_packet packet = null;
-
+    private TextView ano_room;
     private TextView Public_msg;
 
     private int receive_key = 0;
@@ -56,7 +56,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     private int userKey;
     private String userName;
     private long useraddr;
-    private int channel, room;
+    private int cur_ch, room,ch;
 
 
     //////////////// 커넥션 객체
@@ -106,9 +106,9 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
+        ch =  intent.getIntExtra("Room_ch",0);
         room = intent.getIntExtra("Room_key", 0);
         userKey = intent.getIntExtra("User_key", 0);
-        Log.d("MSGMSG: - InRoom ","Room_key = "+room+"   User_key = "+userKey);
 
         if (room == 0)
             // pubic room ( for broadcast )
@@ -132,19 +132,16 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         m_ListView = findViewById(R.id.listView1);
         DB = new C_DB(this);
         userName = DB.get_user_name(userKey);
-        channel = DB.get_net_Current_ch();
+        cur_ch = DB.get_ch_Current();
 
         try {
-            Log.d("MSGMSG: - last key ","userKey = "+userKey);
             useraddr = DB.get_user_addr(userKey);
-            Log.d("MSGMSG: - last addr ","userAddr = "+useraddr);
         } catch (Exception e) {
-            Log.e("CHATTINGROOM:::", "NO_user key");
         }
 
         if (room == 0) {
             Public_msg = findViewById(R.id.public_msg);
-            Public_msg.setText(String.valueOf(channel) + " 채널의 전체 대화방입니다.");
+            Public_msg.setText(String.valueOf(cur_ch) + " 채널의 전체 대화방입니다.");
 
             Animation mAnimation = new AlphaAnimation(1, 0);
             mAnimation.setDuration(500);
@@ -164,6 +161,12 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 //        curText = findViewById(R.id.msgMax);
         chatMessage = findViewById(R.id.chatText);
         sendMessage = findViewById(R.id.chatSend);
+        ano_room= findViewById(R.id.anotherch_alarm);
+        if(DB.get_ch_Current() != ch){
+            chatMessage.setVisibility(View.GONE);
+            sendMessage.setVisibility(View.GONE);
+            ano_room.setVisibility(View.VISIBLE);
+        }
         imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);
         chatMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -192,28 +195,14 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Component_2_msgAdapter msgAdapter = new Component_2_msgAdapter();
                 /**send 버튼의 클릭 이벤트 **/
                 String msg = chatMessage.getText().toString();
                 if (msg.trim().length() != 0) {
                     imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);  // 키보드 내리기 or 내리지말기?
                     // send
-                    byte[] encodingmsg;
-                    receive_key = DB.get_list_receivekey(room);
+                    byte[] encodingmsg = msg.getBytes();
 
-                    if (room == 0) {
-                        // Broadcast msg send
-                        encodingmsg = msgAdapter.encoding_msg(msg, room, 0);
-                    } else {
-                        // Unicast msg send
-                        encodingmsg = msgAdapter.encoding_msg(msg, room, receive_key);
-                    }
-
-                    Log.d("MSGMSG", "여기서 보내는ch " + String.valueOf(channel));
-                    Log.d("MSGMSG", "여기서 보내는리시브 키 " + String.valueOf(receive_key));
-                    Log.d("MSGMSG", "여기서 보내는샌드 키 " + String.valueOf(room));
                     String strrrr = new String(encodingmsg);
-                    Log.d("MSGMSG", "여기서 보내는 메시지 " + strrrr);
 
                     int key = save_values("", msg, TRUE, 0);
                     load_in_chat(key);
@@ -246,11 +235,12 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private int save_values(String name, String msg, boolean type, int userKey) {
-        return DB.save_chatmsg(channel, room, name, msg, type, userKey);
+        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey);
     }
 
     private void load_values() {
-        Cursor cursor = DB.get_chat_cursor(channel, room);
+        Log.d("finalTest", "애미뒤진씨발"+room);
+        Cursor cursor = DB.get_chat_cursor(cur_ch, room);
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(2);
@@ -269,15 +259,12 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_in_chat(int key) {
-        Cursor cursor = DB.get_chat_cusorLast(channel, room, key);
+        Cursor cursor = DB.get_chat_cusorLast(key,room);
         if (cursor.moveToFirst()) {
             do {
-                Log.d("Chatting Key :", String.valueOf(key));
                 String name = cursor.getString(2);
                 String msg = cursor.getString(3);
-                Log.d("Chatting msg :", String.valueOf(msg));
                 boolean sORr = cursor.getInt(5) > 0;
-                Log.d("Chatting sORr :", String.valueOf(sORr));
                 String date = cursor.getString(4);
                 if (sORr) {
                     m_Adapter.add("", msg, 1, date);
@@ -294,15 +281,13 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     public void receive_msg(Provider_RecvMsgFunc recvEvent) {
         int key = recvEvent.getChatkey();
         load_in_chat(key);
-        Log.d("Chatting recvkey :", String.valueOf(key));
     }
 
 
     // send 함수
-    private void sendMessage(byte[] message) {
+    private void sendMessage(byte[] message){
 
         /*******/
-        Component_2_msgAdapter msgAdapter = new Component_2_msgAdapter();
         // 연결중과 연결 안되어있을 때 구분. 예외처리.
         // Check that we're actually connected before trying anything
         if (mbtService.mChatService.getState() == Service_BluetoothChatService.STATE_NONE) {
@@ -326,14 +311,13 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             Lbuf.putLong(useraddr);
             byte[] d = Lbuf.array();
 
-            Log.d("MSGMSG:::", "sendMessage sauce: " + useraddr);
 
             // send
             byte hp = 0x00;
             byte[] id = new byte[2];
-            hp = (byte) (channel & 0x0007);
-            id[0] = (byte) (channel & 0x0003);
-            id[1] = (byte) (channel & 0xFFF8);
+            hp = (byte) (cur_ch & 0x0007);
+            id[0] = (byte) (cur_ch & 0x0003);
+            id[1] = (byte) (cur_ch & 0xFFF8);
             byte[] sendapacket = null;
 
             byte[] message_send = new byte[952];
@@ -344,19 +328,37 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             }
 
             if (room == 0) {
-                Log.d("MSGMSG:::", "브로드 캐스트 sendMessage dest: " + String.valueOf(useraddr));
                 sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, message_send);
             } else {
-                Log.d("MSGMSG:::", "유니 캐스트 user addr Lbuf: " + Lbuf);
-                Log.d("MSGMSG:::", "유니 캐스트 user addr useraddr: " + useraddr);
-                Log.d("MSGMSG:::", "유니 캐스트 s: " + s);
-                Log.d("MSGMSG:::", "유니 캐스트 d: " + d);
-                Log.d("MSGMSG:::", "유니 캐스트 msg: " + message);
                 sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, message_send);
             }
             mbtService.mChatService.write(sendapacket);
-            Log.d("MSGMSG:::", "유니 캐스트 전체패킷: " + byte2hex(sendapacket));
+
+            Log.d("finalTest", "--\n\n-----------------Start Send Packet -----------------"
+                            +"\n"+"msg send : "+packetHandler.byteArrayToHexString(message_send)
+                            +"\n"+"src : "+packetHandler.getHeaderString(sendapacket,0,packetHandler.LEN_SRC)
+                            +"\n"+"dest : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
+                            +"\n"+"cm : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
+                            +"\n"+"hp : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
+                            +"\n"+"proto : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
+                            +"\n"+ "id : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
+                            +"\n"+ "flags : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
+                            +"\n"+ "frag : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
+                            +"\n"+ "seq : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
+                            +"\n"+ "tms : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
+                            +"\n"+ "len : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
+                            +"\n"+ "ttl : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
+                            +"\n"+ "param : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
+                            +"\n"+ "dc : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
+                            +"\n"+ "#####################   END Send Packet #################### \n\n");
+
+            int dataLen=packetHandler.getMsgLen(sendapacket);
+            Log.d("finalTest", "len2 : "+dataLen);
+            Log.d("finalTest", "data : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DATA,dataLen));
+
+
         } catch (Exception e) {
+            Log.d("finalTest", "send error");
             //Toast.makeText(this, "send 에러" + android.provider.Settings.Secure.getString(this.getContentResolver(), "bluetooth_address") + getIntent().getStringExtra("device_address"), Toast.LENGTH_SHORT).show();
         }
 

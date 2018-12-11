@@ -72,11 +72,11 @@ public class A_Tab2_SelectCh_CreateNewCh extends android.support.v4.app.DialogFr
                         Netaddr.setText("");
                     } else {
                         if (Name.trim().length() != 0) {
-                            DB.save_net(addr, Name);
+                            DB.save_ch(addr, Name);
                             listener.onDismiss(dialogInterface);
                             dismiss();
                         } else {
-                            DB.save_net(addr, null);
+                            DB.save_ch(addr, null);
                             listener.onDismiss(dialogInterface);
                             dismiss();
                         }

@@ -166,7 +166,6 @@ public class A_Tab1_BtDeviceList extends Activity {
      * Start device discover with the BluetoothAdapter
      */
     private void doDiscovery() {
-        Log.d("DeviceListActivity", "doDiscovery()");
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);

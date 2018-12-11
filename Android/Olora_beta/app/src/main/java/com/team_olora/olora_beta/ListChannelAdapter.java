@@ -49,9 +49,9 @@ public class ListChannelAdapter extends BaseAdapter {
 
         if (listChannelItem.getName() != null) {
             // 아이템 내 각 위젯에 데이터 반영
-            channelNameView.setText(listChannelItem.getKey()+":"+listChannelItem.getName());
+            channelNameView.setText(listChannelItem.getCh()+":"+listChannelItem.getName());
         } else {
-            channelNameView.setText(String.valueOf( listChannelItem.getAddr()));
+            channelNameView.setText(String.valueOf( listChannelItem.getCh()));
         }
 
         return convertView;
@@ -79,10 +79,9 @@ public class ListChannelAdapter extends BaseAdapter {
     }
 
     // 아이템 데이터 추가를 위한 함수. 원하는대로 작성 가능.
-    public void addItem(int key, int addr, String name) {
+    public void addItem(int ch, String name) {
         ListChannelBtnItem item = new ListChannelBtnItem();
-        item.setKey(key);
-        item.setAddr(addr);
+        item.setCh(ch);
         item.setName(name);
         listViewItemList.add(item);
     }
@@ -90,9 +89,7 @@ public class ListChannelAdapter extends BaseAdapter {
     public String getName(int position) {
         return listViewItemList.get(position).getName();
     }
-    public int getKEY(int position){
-        return listViewItemList.get(position).getKey();
-    }
+    public int getCh(int position){return listViewItemList.get(position).getCh();}
 
 }
 
