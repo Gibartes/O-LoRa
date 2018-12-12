@@ -36,6 +36,16 @@ public class Service_packet {
     // 주소 변환 함수
     // string -> byte
     public byte[] converted_addr(String addr) {
+
+        Log.d("loglog", "no addr"+addr.length());
+        if(addr.length()==0){
+            byte[] ret_addr = new byte[6];
+            Log.d("loglog", "no addr no addr");
+            Arrays.fill(ret_addr,(byte)0xFF);
+            Log.d("loglog", "no addr no addr"+ret_addr);
+            return ret_addr;
+        }
+
         byte[] ret_addr = new byte[8];
         String[] splited = addr.split(":");
         //Toast.makeText(getApplicationContext(), "byte" + splited[5], Toast.LENGTH_LONG).show();
@@ -92,11 +102,12 @@ public class Service_packet {
     // id, hp 따로 - command 가 setId, setHp 아니면 hp, id 인자는 상관없음
     public byte[] converted_packet(String s, byte[] t_a, String param, byte hp, byte[] id, byte[] hash, byte[] msg) {
         byte[] s_a = converted_addr(s);
+        int s_a_len = s_a.length;
 
         // for header
         byte[] packet = new byte[56];
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < s_a_len; i++) {
             packet[i] = s_a[i];
         }
 
@@ -263,8 +274,9 @@ public class Service_packet {
             isPublic=0;
         }else
             isPublic=1;
-        if(packetHandler.getFlags(packet)==191){
-            isEcho=1;
+        if(packetHandler.getFlags(packet)!=0){
+            //에코와드
+            //isEcho=1;
         }else
             isEcho=0;
 

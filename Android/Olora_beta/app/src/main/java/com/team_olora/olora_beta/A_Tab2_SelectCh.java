@@ -1,10 +1,12 @@
 package com.team_olora.olora_beta;
 
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -42,7 +44,17 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        setCancelable(false);
+        android.support.v4.app.FragmentManager fm = getFragmentManager();
+        fm.addOnBackStackChangedListener(new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                Intent intent = new Intent(getContext(), A_MainActivity.class);
+                intent.putExtra("Page", 1);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                getActivity().startActivity(intent);
+
+            }
+        });
 
         final View view = inflater.inflate(R.layout.popup_ch_select, container, false);
 
@@ -71,6 +83,7 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
         }
         return true;
     }
+
 
     private class Event implements DialogInterface.OnDismissListener, View.OnClickListener, AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
         @Override
@@ -132,6 +145,8 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
         @Override
         public void onDismiss(DialogInterface dialog) {
             load_values();
+
+            Log.d("dismisstest", "onDismiss: selectCh");
             if (dial == 1) {
                 listener.onDismiss(dialog);
                 dismiss();
@@ -150,6 +165,7 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
     }
 
     public void setOnDismissListener(DialogInterface.OnDismissListener $listener) {
+        Log.d("dismisstest", "onDismiss: selectCh2");
         listener = $listener;
     }
 

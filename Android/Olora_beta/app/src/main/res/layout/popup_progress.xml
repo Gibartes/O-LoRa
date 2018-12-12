@@ -24,12 +24,23 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:typeface="monospace" />
-
-        <ProgressBar
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center">
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+            <TextView
+                android:id="@+id/btConnectSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"/>
+
+
+        </RelativeLayout>
         <LinearLayout
             android:id="@+id/progLinear"
             android:layout_width="wrap_content"
@@ -48,7 +59,7 @@
                 android:typeface="monospace" />
 
             <TextView
-                android:id="@+id/progressSec"
+                android:id="@+id/discoverySec"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -67,7 +78,6 @@
                 android:textSize="15sp"
                 android:typeface="monospace" />
         </LinearLayout>
-
         <LinearLayout
             android:id="@+id/progLinear2"
             android:layout_width="300dp"

@@ -155,7 +155,6 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         Provider_BusProvider.getInstance().unregister(this);
         super.onDestroy();
     }
-
     private class Event implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -197,11 +196,11 @@ public class A_123_Setting__Activity extends AppCompatActivity {
 
                                         // get hash
                                         byte[] hash = FuncGroup.getHash(tmp_name);
-
+                                        // 다른기능이랑 똑같이 해시하는거같은데
                                         byte[] setNIpacket = null;
                                         setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, hash, name.getBytes());
 
-                                        Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
+                                        Log.d("finalTest", "--\n\n-----------------Start NI_set Packet -----------------"
                                                 +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setNIpacket)
                                                 +"\n"+"src : "+packetHandler.getHeaderString(setNIpacket,0,packetHandler.LEN_SRC)
                                                 +"\n"+"dest : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
@@ -217,7 +216,8 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                                 +"\n"+ "ttl : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
                                                 +"\n"+ "param : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
                                                 +"\n"+ "dc : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
-                                                +"\n"+ "#####################   END CH_set Packet #################### \n\n");
+                                                +"\n"+ "#####################   END NI_set Packet #################### \n\n");
+
                                         int dataLen=packetHandler.getMsgLen(setNIpacket);
                                         Log.d("finalTest", "len2 : "+dataLen);
                                         Log.d("finalTest", "data : "+packetHandler.getHeaderString(setNIpacket,packetHandler.MASK_DATA,dataLen));
@@ -378,10 +378,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
         mod = 0;
         String NI = bpf.getMyNI();
         long addr = bpf.getMyMac();
-        byte[] ni = NI.getBytes();
-        int nilen = ni.length;
-        byte[] naMe = Arrays.copyOfRange(ni, 0, nilen - 3);
-        NI = new String(naMe);
+
         DB.save_userMY(NI, addr); // 본인 Xbee 맥 어드레스
 
         Intent intent = new Intent(getApplicationContext(), A_MainActivity.class);

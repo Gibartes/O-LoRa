@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.logicalAnd;
 
 
 // 여기서 bingService
@@ -197,11 +198,13 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             public void onClick(View v) {
                 /**send 버튼의 클릭 이벤트 **/
                 String msg = chatMessage.getText().toString();
+                Log.d("sendMsg", "get text:"+msg);
                 if (msg.trim().length() != 0) {
                     imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);  // 키보드 내리기 or 내리지말기?
                     // send
                     byte[] encodingmsg = msg.getBytes();
 
+                    Log.d("sendMsg", "encoding text:"+packetHandler.byteArrayToHexString(encodingmsg));
                     String strrrr = new String(encodingmsg);
 
                     int key = save_values("", msg, TRUE, 0);
@@ -305,7 +308,8 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             //mbtService.mChatService.write(converted_packet(send));
 
             // 패킷 조작 클래스에서 handle
-            String s = android.provider.Settings.Secure.getString(this.getContentResolver(), "bluetooth_address");
+            // 와아드
+            String s = A_MainActivity.addr_self;
 
             ByteBuffer Lbuf = ByteBuffer.allocate(8);
             Lbuf.putLong(useraddr);
@@ -320,6 +324,9 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             id[1] = (byte) (cur_ch & 0xFFF8);
             byte[] sendapacket = null;
 
+            Log.d("sendMsg", "message :"+message);
+
+            Log.d("sendMsg", "message len :"+message.length);
             byte[] message_send = new byte[952];
             Arrays.fill( message_send, (byte) 0 );
             for(int i = 0; i < message.length; i ++)
@@ -362,6 +369,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 
         } catch (Exception e) {
             Log.d("finalTest", "send error");
+            Log.e("finalTest", "sendMessage: "+e.toString() );
             //Toast.makeText(this, "send 에러" + android.provider.Settings.Secure.getString(this.getContentResolver(), "bluetooth_address") + getIntent().getStringExtra("device_address"), Toast.LENGTH_SHORT).show();
         }
 

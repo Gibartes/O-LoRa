@@ -44,10 +44,15 @@ public class A_MainActivity extends AppCompatActivity {
         // 자기자신 주소 참조.
         // 와드
         addr_self = android.provider.Settings.Secure.getString(this.getContentResolver(),"bluetooth_address");
-        if(addr_self==null)
-            addr_self = getBluetoothMacAddress();
+        Log.d("loglog", "onCreate11: "+addr_self);
 
-        Log.d("loglog", "onCreate: "+addr_self);
+        if(addr_self==null) {
+            Log.d("loglog", "null addr");
+            addr_self = getBluetoothMacAddress();
+        }
+
+        Log.d("loglog", "not null addr");
+        Log.d("loglog", "onCreate22: "+addr_self);
         setContentView(R.layout.main_);
 
         vp = findViewById(R.id.vp);
