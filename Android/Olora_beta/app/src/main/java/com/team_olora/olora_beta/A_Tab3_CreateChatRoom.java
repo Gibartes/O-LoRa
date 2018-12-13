@@ -55,9 +55,9 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.chatConnect:
-                    int key;
-                    if ( (key = DB.save_list_private(userName, userKey))>0) {
-                      }else{
+                    int room_key;
+                    if ((room_key = DB.save_list_private(userName, userKey)) > 0) {
+                    } else {
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
 

@@ -58,7 +58,7 @@ public class A_Tab2 extends Fragment {
         //dumy btn - mklee
         dumy_make_chatlist = layout.findViewById(R.id.dumyCreateChatList);
         dumy_make_chatlist.setOnClickListener(new Event());
-        dumy_make_chatlist.setVisibility(View.GONE);
+        //dumy_make_chatlist.setVisibility(View.GONE);
 
         DB = new C_DB(getContext());
         load_values();

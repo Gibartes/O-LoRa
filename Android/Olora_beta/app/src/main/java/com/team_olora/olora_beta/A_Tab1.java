@@ -14,10 +14,12 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +39,8 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
     int view_ch;
     ImageButton edit_Name;
     ImageButton find_Xbee, connected_Xbee;
-    TextView myName, find_Text, show_text, show_name;
+    LinearLayout nameBox, bdBox;
+    TextView welcomeTitle,welcomeText,myName, find_Text, show_text, show_name;
     private C_DB DB = null;
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private int blueon;
@@ -124,6 +127,8 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
         find_Text = layout.findViewById(R.id.findText);
         show_name = layout.findViewById(R.id.showBDName);
         show_text = layout.findViewById(R.id.showText);
+        nameBox = layout.findViewById(R.id.NameLayout);
+        bdBox = layout.findViewById(R.id.BDLayout);
 
         clear_all = layout.findViewById(R.id.clearall);
         clear_all.setOnClickListener(new Event());
@@ -131,7 +136,8 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
         show_clear.setOnClickListener(new Event());
         clear_all.setVisibility(View.GONE);
 
-
+        welcomeTitle = layout.findViewById(R.id.welcome_title);
+        welcomeText = layout.findViewById(R.id.welcome_text);
         find_Xbee = layout.findViewById(R.id.findXbee);
         find_Xbee.setOnClickListener(new Event());
         connected_Xbee = layout.findViewById(R.id.connectedXbee);
@@ -145,9 +151,15 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
         view_ch = DB.get_ch_Current();
         blueon = Service_BluetoothChatService.mState;
+
         if (blueon == 0) {
             connected_Xbee.setVisibility(View.GONE);
             show_text.setVisibility(View.GONE);
+            nameBox.setVisibility(View.GONE);
+            bdBox.setVisibility(View.GONE);
+
+            welcomeTitle.setVisibility(View.VISIBLE);
+            welcomeText.setVisibility(View.VISIBLE);
             find_Xbee.setVisibility(View.VISIBLE);
             find_Text.setVisibility(View.VISIBLE);
             //Toast.makeText(getContext(), "blueon = " + A_MainActivity.RSP_Name, Toast.LENGTH_LONG).show();
@@ -156,6 +168,11 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                 show_name.setText(A_MainActivity.RSP_Name);
             connected_Xbee.setVisibility(View.VISIBLE);
             show_text.setVisibility(View.VISIBLE);
+            nameBox.setVisibility(View.VISIBLE);
+            bdBox.setVisibility(View.VISIBLE);
+
+            welcomeTitle.setVisibility(View.GONE);
+            welcomeText.setVisibility(View.GONE);
             find_Xbee.setVisibility(View.GONE);
             find_Text.setVisibility(View.GONE);
             //Toast.makeText(getContext(), "blueon = " + A_MainActivity.RSP_Name, Toast.LENGTH_LONG).show();
@@ -172,16 +189,19 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
         if (blueon == 3) {
             if (A_MainActivity.RSP_Name.length() != 0)
                 show_name.setText(A_MainActivity.RSP_Name);
-
+/*
             connected_Xbee.setVisibility(View.VISIBLE);
             show_text.setVisibility(View.VISIBLE);
             find_Text.setVisibility(View.GONE);
             find_Xbee.setVisibility(View.GONE);
+            */
         } else {
+            /*
             connected_Xbee.setVisibility(View.GONE);
             show_text.setVisibility(View.GONE);
             find_Text.setVisibility(View.VISIBLE);
             find_Xbee.setVisibility(View.VISIBLE);
+            */
         }
     }
 
@@ -256,7 +276,6 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
 
                     }
 
-
                     Provider_BusProvider.getInstance().register(this);
                     Intent intent_s = new Intent(getActivity(), Service_btService.class);
                     getActivity().startService(intent_s);
@@ -309,12 +328,15 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Provider_BlueOn.getInstance().register(this);
         Provider_BusProvider.getInstance().register(this);
     }
 
     @Override
     public void onDestroyView() {
         Provider_BusProvider.getInstance().unregister(this);
+        Provider_BlueOn.getInstance().unregister(this);
+
         super.onDestroyView();
     }
 
@@ -354,6 +376,37 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
     @Subscribe
     public void A(Provider_BusProviderFunc activityResultEvent) {
         myName.setText(DB.get_user_Myname());
+    }
+
+    @Subscribe
+    public void isBlueOn(Provider_BlueOnFunc isblue) {
+
+        int Bo = isblue.getIsBlueOn();
+
+        if (Bo == 1) {
+            connected_Xbee.setVisibility(View.VISIBLE);
+            show_text.setVisibility(View.VISIBLE);
+            nameBox.setVisibility(View.VISIBLE);
+            bdBox.setVisibility(View.VISIBLE);
+
+            welcomeTitle.setVisibility(View.GONE);
+            welcomeText.setVisibility(View.GONE);
+            find_Xbee.setVisibility(View.GONE);
+            find_Text.setVisibility(View.GONE);
+            Toast.makeText(getContext(), "OLora에 연결됐습니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            connected_Xbee.setVisibility(View.GONE);
+            show_text.setVisibility(View.GONE);
+            nameBox.setVisibility(View.GONE);
+            bdBox.setVisibility(View.GONE);
+
+            welcomeTitle.setVisibility(View.VISIBLE);
+            welcomeText.setVisibility(View.VISIBLE);
+            find_Xbee.setVisibility(View.VISIBLE);
+            find_Text.setVisibility(View.VISIBLE);
+            Toast.makeText(getContext(), "OLora 연결이 끊어졌습니다.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void load_values() {

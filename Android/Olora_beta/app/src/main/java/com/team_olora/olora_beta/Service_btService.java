@@ -161,7 +161,7 @@ public class Service_btService extends Service {
                                     Toast.makeText(getApplicationContext(), "h : 장치에 연결 중..", Toast.LENGTH_SHORT).show();
 
                                 case Service_BluetoothChatService.STATE_NONE:
-                                    Toast.makeText(getApplicationContext(), "h : 장치와 연결이 끊어졌습니다.\n다시 연결해주세요.", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "h : 장치와 연결이 끊어졌습니다.\n다시 연결해주세요.", Toast.LENGTH_SHORT).show();
                                     Provider_BlueOn.getInstance().post(new Provider_BlueOnFunc(0));
                                     DB.save_blueon(0);
                                     String nullbd = "000000000000";
