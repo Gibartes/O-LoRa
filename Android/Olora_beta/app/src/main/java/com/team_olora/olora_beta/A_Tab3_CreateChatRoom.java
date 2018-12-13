@@ -55,17 +55,25 @@ public class A_Tab3_CreateChatRoom extends android.support.v4.app.DialogFragment
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.chatConnect:
-                    int room_key;
-                    if ((room_key = DB.save_list_private(userName, userKey)) > 0) {
+                    int room_key=DB.save_list_private(userName,userKey);
+                    if (room_key > 0) {
                     } else {
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
 
-                    Intent intent = new Intent(getContext(), A_MainActivity.class);
-                    intent.putExtra("Page", 1);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
+                    int ch = DB.get_list_ch(room_key);
+                    intent.putExtra("Room_ch", ch);
+                    intent.putExtra("Room_key", room_key);
+                    intent.putExtra("User_key", userKey);
+                    intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
 
-                    getActivity().startActivity(intent);
+                    try {
+                        getActivity().startActivity(intent);
+                    } catch (Exception e) {
+                        Toast.makeText(getActivity(), "대화방에 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
+
                     break;
                 case R.id.chatIgnore:
                     DB.save_black(userKey);

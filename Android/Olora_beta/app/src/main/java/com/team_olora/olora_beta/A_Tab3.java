@@ -117,9 +117,9 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
 
         if (cursor.moveToFirst()) {
             if (cursor.getString(1) == null) {
-                viewChannel.setText("채널 : (" + cursor.getInt(0) + ")");
+                viewChannel.setText("현재 채널 : (" + cursor.getInt(0) + ")");
             } else {
-                viewChannel.setText("채널 : " + cursor.getString(1));
+                viewChannel.setText("현재 채널 : " + cursor.getString(1));
             }
         } else {
             viewChannel.setText("(채널을 설정해주세요.)");

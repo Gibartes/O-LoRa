@@ -117,13 +117,13 @@
                 android:layout_width="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bluetoothoff"/>
+                android:background="@drawable/blue_off_bg"/>
             <ImageButton
                 android:id="@+id/connectedXbee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/bluetoothon"/>
+                android:background="@drawable/blue_on_bg"/>
             <TextView
                 android:id="@+id/findText"
                 android:layout_width="wrap_content"

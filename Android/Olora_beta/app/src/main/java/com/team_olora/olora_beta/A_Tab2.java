@@ -66,6 +66,7 @@ public class A_Tab2 extends Fragment {
 
         return layout;
     }
+
     @Override
     public void onDestroy() {
         Provider_RecvMsg.getInstance().unregister(this);
@@ -93,14 +94,14 @@ public class A_Tab2 extends Fragment {
 
                 case R.id.dumyCreateChatList:
                     //dumy btn - mklee
-                    int key;
-                    String userName="dummy user";
-                    int userKey=999;
-                    if ( (key = DB.save_list_private(userName, userKey))>0) {
-                            }else{
+                    String userName = "dummy user";
+                    int userKey = 999;
+                    int key = DB.save_list_private(userName, userKey);
+                    if (key > 0) {
+                    } else {
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
-                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key,userKey);
+                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key, userKey);
                     adapter.notifyDataSetChanged();
                     break;
             }
@@ -114,16 +115,15 @@ public class A_Tab2 extends Fragment {
             Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
             int roomkey = adapter.getRoomkey(position);
             int ch = DB.get_list_ch(roomkey);
-            intent.putExtra("Room_ch",ch);
+            intent.putExtra("Room_ch", ch);
             intent.putExtra("Room_key", roomkey);
-            intent.putExtra("User_key",adapter.getUserkey(position));
+            intent.putExtra("User_key", adapter.getUserkey(position));
             intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
 
-            try
-            {getActivity().startActivity(intent);}
-            catch (Exception e)
-            {
-                Toast.makeText(getActivity(), "연결할 장치를 선택해주세요", Toast.LENGTH_SHORT).show();
+            try {
+                getActivity().startActivity(intent);
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), "대화방에 들어갈 수 없습니다.", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -156,15 +156,16 @@ public class A_Tab2 extends Fragment {
     public void receive_msg(Provider_RecvMsgFunc recvEvent) {
         load_values();
     }
+
     private void load_values() {
         Cursor cursor = DB.get_all_list_cursor();
         Cursor cursor2 = DB.get_ch_cursor_Current();
         adapter.clear();
         if (cursor2.moveToFirst()) {
             if (cursor2.getString(1) == null) {
-                channel.setText("채널 : (" + cursor2.getString(0) + ")");
+                channel.setText("현재 채널 : (" + cursor2.getString(0) + ")");
             } else {
-                channel.setText("채널 : " + cursor2.getString(1));
+                channel.setText("현재 채널 : " + cursor2.getString(1));
             }
         } else {
             channel.setText("(채널을 설정해주세요.)");
@@ -176,7 +177,7 @@ public class A_Tab2 extends Fragment {
                 int ch = cursor.getInt(0);
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
-                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, Integer.toString(ch) +"채널", room_key,user_key);
+                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key);
             } while (cursor.moveToNext());
         }
         adapter.notifyDataSetChanged();

@@ -53,12 +53,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/Pop_Progress_2"
+                android:text= "@string/Pop_Progress_2"
                 android:textColor="@color/dialog_sub_color"
                 android:textSize="15sp"
                 android:typeface="monospace" />
 
             <TextView
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
                 android:id="@+id/discoverySec"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

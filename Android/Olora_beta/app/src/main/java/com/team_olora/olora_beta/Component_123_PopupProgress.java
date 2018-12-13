@@ -23,7 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Component_123_PopupProgress extends android.support.v4.app.DialogFragment {
-
+    private int dc_timeout;
     private int timer_sec = 10;
     private TimerTask second;
     private TextView DiscoverySeconds;
@@ -72,8 +72,8 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
 
 
         discoveryRunning = 1;
-        DB.get_set_dclv();
-        time_run(6);
+        dc_timeout = DB.get_set_dclv();
+        time_run(dc_timeout);
 
 /**
  *

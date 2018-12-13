@@ -1,6 +1,9 @@
 package com.team_olora.olora_beta;
 
+import android.app.AlertDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -23,8 +26,8 @@ import android.widget.Toast;
 public class A_Tab4 extends Fragment {
     public static char setting = 0;
     Switch set_push, set_vibration, set_sound;
-    Button set_blockList, set_DcLv,set_DataLv, set_orolaReboot;
-    C_DB DB =null;
+    Button set_blockList, set_DcLv, set_DataLv, set_orolaReboot;
+    C_DB DB = null;
 
     public A_Tab4() {
     }
@@ -106,13 +109,29 @@ public class A_Tab4 extends Fragment {
 
     private class Event implements View.OnClickListener {
         @Override
-        public void onClick(View v) {
-            switch (v.getId())
-            {
+        public void onClick(final View v) {
+            switch (v.getId()) {
                 case R.id.setOloraReboot:
-                    Toast.makeText(getActivity(), "서비스가 종료되었습니다.\n재연결을 원하시면 새로운 기기를 찾아주세요.", Toast.LENGTH_LONG).show();
-                    Intent stop = new Intent(v.getContext(), Service_btService.class);
-                    getActivity().stopService(stop);
+
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                    alert.setTitle("OLora Reboot");
+                    alert.setMessage("OLora 단말기와의 블루투스 연결을 초기화합니다.");
+                    alert.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getActivity(), "서비스가 종료되었습니다.\n재연결을 원하시면 새로운 기기를 찾아주세요.", Toast.LENGTH_LONG).show();
+                            Intent stop = new Intent(v.getContext(), Service_btService.class);
+                            getActivity().stopService(stop);
+                        }
+                    });
+                    alert.setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                        }
+                    });
+                    alert.show();
+
+
                     break;
                 case R.id.setBlockList:
                     Intent blacklist = new Intent(v.getContext(), A_Tab4_BlackList.class);
