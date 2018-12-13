@@ -180,9 +180,10 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         mod = 1;
                                         byte[] tmp_name = new byte[952];
+                                        byte[] nameByte = name.getBytes();
                                         Arrays.fill(tmp_name, (byte) 0);
-                                        for (int i = 0; i < name.length(); i++) {
-                                            tmp_name[i] = name.getBytes()[i];
+                                        for (int i = 0; i < nameByte.length; i++) {
+                                            tmp_name[i] = nameByte[i];
                                         }
                                         setBox.setVisibility(View.GONE);
                                         progressBox.setVisibility(View.VISIBLE);
@@ -198,7 +199,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                                         byte[] hash = FuncGroup.getHash(tmp_name);
                                         // 다른기능이랑 똑같이 해시하는거같은데
                                         byte[] setNIpacket = null;
-                                        setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, hash, name.getBytes());
+                                        setNIpacket = packet.converted_packet(s, d, "SET_NODEIDENTIFIER", hp, temp_id, hash, nameByte);
 
                                         Log.d("finalTest", "--\n\n-----------------Start NI_set Packet -----------------"
                                                 +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setNIpacket)

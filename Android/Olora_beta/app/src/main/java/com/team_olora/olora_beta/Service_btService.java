@@ -361,10 +361,10 @@ public class Service_btService extends Service {
                             Service_packet packet = new Service_packet();
                             if (((byte[]) msg.obj).length != 0) {
                                 byte[] mbuffer = (byte[]) msg.obj;
-                                //와드와드
                                 int dataLen=packetHandler.getMsgLen(mbuffer);
-                                byte[] Mac = Arrays.copyOfRange(mbuffer, 56, 64);
-                                byte[] NI = Arrays.copyOfRange(mbuffer, 64, 64+dataLen);
+                                //setNI 와드
+                                byte[] Mac = Arrays.copyOfRange(mbuffer, packetHandler.MASK_SRC, packetHandler.LEN_SRC);
+                                byte[] NI = Arrays.copyOfRange(mbuffer, packetHandler.MASK_DATA, packetHandler.MASK_DATA+dataLen);
 
                                 Log.d("finalTest", "NISet_recieve : "+packetHandler.byteArrayToHexString(NI)+"\nNISet_len :"+dataLen);
                                 Log.d("finalTest", "NISet_MACrecieve : "+packetHandler.byteArrayToHexString(Mac)+"\nNISet_len :"+dataLen);

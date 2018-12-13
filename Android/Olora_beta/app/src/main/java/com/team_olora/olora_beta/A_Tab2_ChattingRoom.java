@@ -205,7 +205,6 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
                     byte[] encodingmsg = msg.getBytes();
 
                     Log.d("sendMsg", "encoding text:"+packetHandler.byteArrayToHexString(encodingmsg));
-                    String strrrr = new String(encodingmsg);
 
                     int key = save_values("", msg, TRUE, 0);
                     load_in_chat(key);
