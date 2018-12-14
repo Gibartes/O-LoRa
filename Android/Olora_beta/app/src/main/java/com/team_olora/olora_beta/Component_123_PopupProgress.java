@@ -75,107 +75,68 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         dc_timeout = DB.get_set_dclv();
         time_run(dc_timeout);
 
+
 /**
  *
  *   여기서 ch 파싱해서 명령어로
  *
  * */
-        if (callTab == 1) {
-            // 파싱.
-            HP = ch & 0x00000007;
-            ID = ch & 0x0003FFF8;
-            ID >>= 3;
-            HPbyte[0] = (byte) HP;
-            IDbyte[0] = (byte) (ID >> 8);
-            IDbyte[1] = (byte) ID;
-            byte[] CH = new byte[3];
-            CH[0] = (byte) HP;
-            CH[1] = (byte) (ID >> 8);
-            CH[2] = (byte) ID;
-            // 셋 파라미터 명령어 실행.
-            // HPbyte / IDbyte
+
+        // 파싱.
+        HP = ch & 0x00000007;
+        ID = ch & 0x0003FFF8;
+        ID >>= 3;
+        HPbyte[0] = (byte) HP;
+        IDbyte[0] = (byte) (ID >> 8);
+        IDbyte[1] = (byte) ID;
+        byte[] CH = new byte[3];
+        CH[0] = (byte) HP;
+        CH[1] = (byte) (ID >> 8);
+        CH[2] = (byte) ID;
+        // 셋 파라미터 명령어 실행.
+        // HPbyte / IDbyte
 
 
-            /** HP ID 순서대로 1 , 2바이트*/
-            byte[] CH_send = new byte[952];
-            Arrays.fill( CH_send, (byte) 0 );
+        /** HP ID 순서대로 1 , 2바이트*/
+        byte[] CH_send = new byte[952];
+        Arrays.fill(CH_send, (byte) 0);
 
-            CH_send[0] = CH[0];
-            CH_send[1] = CH[1];
-            CH_send[2] = CH[2];
+        CH_send[0] = CH[0];
+        CH_send[1] = CH[1];
+        CH_send[2] = CH[2];
 
-            Log.d("finalTest", "CH _ send "+packetHandler.byteArrayToHexString(CH_send));
-            byte[] setCHpacket = null;
+        Log.d("finalTest", "CH _ send " + packetHandler.byteArrayToHexString(CH_send));
 
-            // get hash
-            byte[] hash = FuncGroup.getHash(CH_send);
+        // get hash
+        byte[] hash = FuncGroup.getHash(CH_send);
+        byte[] setCHpacket = null;
+        setCHpacket = packet.converted_packet(s, d, "SET_CH", HPbyte[0], IDbyte, hash, CH);
 
-            setCHpacket = packet.converted_packet(s,d , "SET_CH", HPbyte[0], IDbyte, hash, CH);
+        Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
+                + "\n" + "msg send : " + packetHandler.byteArrayToHexString(setCHpacket)
+                + "\n" + "src : " + packetHandler.getHeaderString(setCHpacket, 0, packetHandler.LEN_SRC)
+                + "\n" + "dest : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_DST, packetHandler.LEN_DST)
+                + "\n" + "cm : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_CM, packetHandler.LEN_CM)
+                + "\n" + "hp : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_HP, packetHandler.LEN_HP)
+                + "\n" + "proto : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_PROTO, packetHandler.LEN_PROTO)
+                + "\n" + "id : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_ID, packetHandler.LEN_ID)
+                + "\n" + "flags : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_FLAGS, packetHandler.LEN_FLAGS)
+                + "\n" + "frag : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_FRAG, packetHandler.LEN_FRAG)
+                + "\n" + "seq : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_SEQ, packetHandler.LEN_SEQ)
+                + "\n" + "tms : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_TMS, packetHandler.LEN_TMS)
+                + "\n" + "len : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_LEN, packetHandler.LEN_LEN)
+                + "\n" + "ttl : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_TTL, packetHandler.LEN_TTL)
+                + "\n" + "param : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_PARAM, packetHandler.LEN_PARAM)
+                + "\n" + "dc : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_DC, packetHandler.LEN_DC)
+                + "\n" + "#####################   END CH_set Packet #################### \n\n");
+        int dataLen = packetHandler.getMsgLen(setCHpacket);
+        Log.d("finalTest", "len2 : " + dataLen);
+        Log.d("finalTest", "data : " + packetHandler.getHeaderString(setCHpacket, packetHandler.MASK_DATA, dataLen));
 
-            Log.d("finalTest", "--\n\n-----------------Start CH_set Packet -----------------"
-                    +"\n"+"msg send : "+packetHandler.byteArrayToHexString(setCHpacket)
-                    +"\n"+"src : "+packetHandler.getHeaderString(setCHpacket,0,packetHandler.LEN_SRC)
-                    +"\n"+"dest : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
-                    +"\n"+"cm : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
-                    +"\n"+"hp : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
-                    +"\n"+"proto : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
-                    +"\n"+ "id : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
-                    +"\n"+ "flags : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
-                    +"\n"+ "frag : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
-                    +"\n"+ "seq : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
-                    +"\n"+ "tms : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
-                    +"\n"+ "len : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
-                    +"\n"+ "ttl : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
-                    +"\n"+ "param : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
-                    +"\n"+ "dc : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
-                    +"\n"+ "#####################   END CH_set Packet #################### \n\n");
-            int dataLen=packetHandler.getMsgLen(setCHpacket);
-            Log.d("finalTest", "len2 : "+dataLen);
-            Log.d("finalTest", "data : "+packetHandler.getHeaderString(setCHpacket,packetHandler.MASK_DATA,dataLen));
+        /****/
 
-            /****/
-
-            /** HP ID 순서대로 1 , 2바이트*/
-            A_MainActivity.mbtService.mChatService.write(setCHpacket);
-        } else if (callTab == 2) {
-            byte[] IDbyte_send = new byte[952];
-            Arrays.fill( IDbyte_send, (byte) 0 );
-
-            IDbyte_send[0] = IDbyte[0];
-            IDbyte_send[1] = IDbyte[1];
-
-
-            Log.d("finalTest", "IDByte _ send "+packetHandler.byteArrayToHexString(IDbyte_send));
-            byte[] discoverypacket = null;
-
-            // get hash
-            byte[] hash = FuncGroup.getHash(IDbyte_send);
-
-            discoverypacket = packet.converted_packet(s, d, "START_DISCOVERY", HPbyte[0], IDbyte, hash, IDbyte);
-
-            Log.d("finalTest", "--\n\n-----------------Start Discovery Packet -----------------"
-                    +"\n"+"msg send : "+packetHandler.byteArrayToHexString(discoverypacket)
-                    +"\n"+"src : "+packetHandler.getHeaderString(discoverypacket,0,packetHandler.LEN_SRC)
-                    +"\n"+"dest : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
-                    +"\n"+"cm : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
-                    +"\n"+"hp : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
-                    +"\n"+"proto : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
-                    +"\n"+ "id : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
-                    +"\n"+ "flags : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
-                    +"\n"+ "frag : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
-                    +"\n"+ "seq : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
-                    +"\n"+ "tms : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
-                    +"\n"+ "len : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
-                    +"\n"+ "ttl : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
-                    +"\n"+ "param : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
-                    +"\n"+ "dc : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
-                    +"\n"+ "#####################   END Discovery Packet #################### \n\n");
-
-            int dataLen=packetHandler.getMsgLen(discoverypacket);
-            Log.d("finalTest", "len2 : "+dataLen);
-            Log.d("finalTest", "data : "+packetHandler.getHeaderString(discoverypacket,packetHandler.MASK_DATA,dataLen));
-            A_MainActivity.mbtService.mChatService.write(discoverypacket);
-        }
+        /** HP ID 순서대로 1 , 2바이트*/
+        A_MainActivity.mbtService.mChatService.write(setCHpacket);
 
         return view;
     }
@@ -193,9 +154,9 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
         public void onClick(View v) {
             if (callTab == 1) {
                 goToTab2();
-            }else
+            } else
                 discoveryRunning = 0;
-                dismiss();
+            dismiss();
         }
 
     }
@@ -222,11 +183,10 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
     public void isChSet(Provider_SetCHFunc scf) {
         int setchannel = scf.getChannel();
         /**셋 채널 성공시 아래 실행**/
-        Toast.makeText(getContext(), "CHANNEL:" + setchannel, Toast.LENGTH_LONG).show();
 
         byte BB[] = new byte[0];
         byte[] BB_send = new byte[952];
-        Arrays.fill( BB_send, (byte) 0 );
+        Arrays.fill(BB_send, (byte) 0);
 
         // get hash
         byte[] hash = FuncGroup.getHash(BB_send);
@@ -237,25 +197,26 @@ public class Component_123_PopupProgress extends android.support.v4.app.DialogFr
     @Subscribe
     public void dodiscovery(Provider_DiscoveryFunc dcf) {
         /**디스커버리 성공시 아래 실행**/
-        if(discoveryRunning ==1) {
+        if (discoveryRunning == 1) {
             if (callTab == 1) {
                 goToTab2();
             } else
                 discoveryRunning = 0;
-                dismiss();
+            dismiss();
         }
     }
 
-    public void goToTab2(){
+    public void goToTab2() {
         discoveryRunning = 0;
         Intent intent1 = new Intent(getContext(), A_MainActivity.class);
         intent1.putExtra("Page", 1);
 
         Intent intent = new Intent(getContext(), A_Tab2_ChattingRoom.class);
-        intent.putExtra("Room_ch",ch);
+        intent.putExtra("Room_ch", ch);
         intent.putExtra("Room_key", 0);
         intent.putExtra("User_key", 0);
         intent.putExtra("device_address", A_MainActivity.RSP_MacAddr);
+
         getActivity().startActivity(intent1);
 
         try {

@@ -2,164 +2,208 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="20dp"
+    android:background="#88000000"
     android:paddingLeft="20dp"
-    android:paddingBottom="100dp"
-    android:background="#88000000">
+    android:paddingRight="20dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:background="#BB000000">
+        android:background="#BB000000"
+        android:orientation="vertical">
+
         <ImageButton
             android:id="@+id/call_manual"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/question"
-            android:layout_gravity="left"/>
+            android:layout_gravity="left"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/question" />
+
         <LinearLayout
+            android:id="@+id/NameLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/NameLayout"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:orientation="horizontal">
+            android:paddingTop="20dp">
+
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:text="내 이름"
-                android:textSize="15dp"
                 android:textAlignment="center"
-                android:layout_gravity="center"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp" />
+
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
                 android:id="@+id/showMyName"
-                android:textSize="15dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:textAlignment="center"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp" />
+
             <ImageButton
+                android:id="@+id/editMyName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/editMyName"
                 android:layout_gravity="center"
-                android:background="@drawable/pen"/>
+                android:background="@drawable/pen" />
         </LinearLayout>
+
         <LinearLayout
+            android:id="@+id/BDLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/BDLayout"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:orientation="horizontal">
+            android:paddingTop="20dp">
+
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="연결된 블루투스 장치"
-                android:textSize="15dp"
                 android:textAlignment="center"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp" />
+
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
                 android:id="@+id/showBDName"
-                android:textSize="15dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1"
                 android:text="(연결되지 않음)"
                 android:textAlignment="center"
-                android:maxLines="1"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp" />
         </LinearLayout>
-        <TextView
+
+        <LinearLayout
             android:id="@+id/welcome_title"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorWhite"
-            android:textStyle="bold"
-            android:textSize="30dp"
-            android:text="@string/welcome_title"/>
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WELCOME"
+                android:textAlignment="center"
+                android:textColor="@color/colorOLora"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" - O"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lo"
+                android:textAlignment="center"
+                android:textColor="@color/colorOLora"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ra!"
+                android:textAlignment="center"
+                android:textColor="@color/colorWhite"
+                android:textSize="30dp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/welcome_text"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            android:text="@string/welcome_text"
+            android:textAlignment="center"
             android:textColor="@color/colorWhite"
-            android:textSize="15dp"
-            android:text="@string/welcome_text"/>
+            android:textSize="15dp" />
 
         <RelativeLayout
-            android:paddingTop="20dp"
-            android:paddingBottom="50dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            android:paddingBottom="50dp"
+            android:paddingTop="20dp">
+
             <ImageButton
                 android:id="@+id/findXbee"
                 android:layout_width="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content"
-                android:background="@drawable/blue_off_bg"/>
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/blue_off_bg" />
+
             <ImageButton
                 android:id="@+id/connectedXbee"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/blue_on_bg"/>
+                android:background="@drawable/blue_on_bg" />
+
             <TextView
                 android:id="@+id/findText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/findXbee"
-                android:textSize="20dp"
                 android:text="OLora 단말기와 연결하기"
                 android:textColor="@color/colorWhite"
-                android:textStyle="bold"/>
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/showText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/connectedXbee"
                 android:layout_centerHorizontal="true"
-                android:textSize="20dp"
                 android:text="WELCOME-OLora!"
                 android:textColor="@color/colorWhite"
-                android:textStyle="bold"/>
+                android:textSize="20dp"
+                android:textStyle="bold" />
         </RelativeLayout>
-
-
     </LinearLayout>
 
     <ImageButton
+        android:id="@+id/clearall"
         android:layout_width="50sp"
         android:layout_height="50sp"
-        android:id="@+id/clearall"
-        android:background="@drawable/sana_icon"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/sana_icon" />
 
     <ImageButton
-        android:layout_width="50sp"
-        android:layout_height="50sp"
         android:id="@+id/showAllclear"
-        android:background="@color/colorInvisible"
-        android:layout_alignParentBottom="true"/>
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorInvisible" />
 
 </RelativeLayout>

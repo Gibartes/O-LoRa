@@ -363,8 +363,8 @@ public class Service_btService extends Service {
                                 byte[] mbuffer = (byte[]) msg.obj;
                                 int dataLen=packetHandler.getMsgLen(mbuffer);
                                 //setNI 와드
-                                byte[] Mac = Arrays.copyOfRange(mbuffer, packetHandler.MASK_SRC, packetHandler.LEN_SRC);
-                                byte[] NI = Arrays.copyOfRange(mbuffer, packetHandler.MASK_DATA, packetHandler.MASK_DATA+dataLen);
+                                byte[] Mac = Arrays.copyOfRange(mbuffer, packetHandler.MASK_DATA, packetHandler.MASK_DATA+8);
+                                byte[] NI = Arrays.copyOfRange(mbuffer, packetHandler.MASK_DATA+8, packetHandler.MASK_DATA+dataLen);
 
                                 Log.d("finalTest", "NISet_recieve : "+packetHandler.byteArrayToHexString(NI)+"\nNISet_len :"+dataLen);
                                 Log.d("finalTest", "NISet_MACrecieve : "+packetHandler.byteArrayToHexString(Mac)+"\nNISet_len :"+dataLen);
@@ -407,7 +407,6 @@ public class Service_btService extends Service {
 
             try {
                 connectDevice(address, true);
-                Toast.makeText(getApplicationContext(), "connected : " + address, Toast.LENGTH_SHORT).show();
                 String BD = address.replaceAll(":", "");
                 DB.save_bd(FuncGroup.hexStringToByteArray(BD));
 
@@ -419,10 +418,8 @@ public class Service_btService extends Service {
 
             }
         } else if (mChatService.mState != Service_BluetoothChatService.STATE_CONNECTED) {
-            Toast.makeText(getApplicationContext(), "재연결 필요", Toast.LENGTH_LONG).show();
 
-        } else
-            Toast.makeText(getApplicationContext(), "이미 연결되어있습니다.", Toast.LENGTH_LONG).show();
+        }
     }
 
     // 기존함수에서 인자값을 string 으로 떄려박았다.
@@ -442,12 +439,13 @@ public class Service_btService extends Service {
 
     public void discover(byte[] bytes) {
 
-        Log.d("finalTest", "discover 222 : "+bytes.length);
         // 8 : Addr / 20 : NI
         int addrLen = 28;
         int num_user = (bytes.length) / addrLen;
         // int num_user = bytes[0];
         byte[] user = new byte[addrLen];
+
+        Log.d("discoverTest", "discover length: "+bytes.length);
         DB.delete_user_All();
 
         int user_index = 1;
@@ -482,6 +480,9 @@ public class Service_btService extends Service {
         addr = Lbuf.getLong();
 
         name = new String(name_byte);
+
+        Log.d("discoverTest", "discover name: "+name);
+        Log.d("discoverTest", "discover addr: "+addr);
         int key = DB.save_user(name, addr);
      }
 

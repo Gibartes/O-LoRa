@@ -76,7 +76,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/sana_icon"/>
+        android:background="@color/colorInvisible"/>
 
 </RelativeLayout>
 

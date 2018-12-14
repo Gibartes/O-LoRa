@@ -66,7 +66,7 @@ public class A_Tab2 extends Fragment {
         //dumy btn - mklee
         dumy_make_chatlist = layout.findViewById(R.id.dumyCreateChatList);
         dumy_make_chatlist.setOnClickListener(new Event());
-        //dumy_make_chatlist.setVisibility(View.GONE);
+        dumy_make_chatlist.setVisibility(View.GONE);
 
         DB = new C_DB(getContext());
         load_values();
@@ -107,18 +107,22 @@ public class A_Tab2 extends Fragment {
                     final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
 
                     int dclv = DB.get_set_dclv();
+                    Log.d("dclv", "after DB" + dclv);
                     alert.setTitle("채널 탐색");
-                    alert.setMessage("같은 채널을 사용하는 유저를 탐색합니다.\n약 "+dclv+"초가 소요됩니다.");
+                    alert.setMessage("같은 채널을 사용하는 유저를 탐색합니다.\n약 " + dclv + "초가 소요됩니다.");
                     alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (Service_BluetoothChatService.mState == 3) {
+                                int ch = DB.get_ch_Current();
+                                //dummy chset -- lmk
+                                DB.set_current_ch(ch);
+                                DB.save_list_public();
+                                //
                                 Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
                                 Bundle bundle = new Bundle(2);
                                 bundle.putInt("dismiss", 2);
-                                int key = DB.get_ch_Current();
-                                bundle.putInt("ChannelKey", key);
-
+                                bundle.putInt("ChannelKey", ch);
                                 popupProgress.setArguments(bundle);
                                 popupProgress.show(getActivity().getSupportFragmentManager(), "Progress");
                             } else {
@@ -144,7 +148,7 @@ public class A_Tab2 extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
-                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key, userKey,9);
+                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.chat), "이창환", "최근 대화한 채널 : 2채널", key, 5, 999);
                     adapter.notifyDataSetChanged();
                     break;
             }
@@ -200,15 +204,15 @@ public class A_Tab2 extends Fragment {
         load_values();
     }
 
-    private void load_values(){
+    private void load_values() {
         Cursor cursor = DB.get_all_list_cursor();
         Cursor cursor2 = DB.get_ch_cursor_Current();
         adapter.clear();
         if (cursor2.moveToFirst()) {
             if (cursor2.getString(1) == null) {
-                channel.setText(cursor2.getString(0)+" 채널");
+                channel.setText(cursor2.getString(0) + " 채널");
             } else {
-                channel.setText(cursor2.getString(1)+" 채널");
+                channel.setText(cursor2.getString(1) + " 채널");
             }
         } else {
             channel.setText("(채널을 설정해주세요.)");
@@ -221,7 +225,7 @@ public class A_Tab2 extends Fragment {
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
                 int nonRead = cursor.getInt(5);
-                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key,nonRead);
+                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.chat), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key, nonRead);
             } while (cursor.moveToNext());
         }
         adapter.notifyDataSetChanged();

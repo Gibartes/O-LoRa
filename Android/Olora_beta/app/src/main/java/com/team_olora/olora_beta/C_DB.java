@@ -17,7 +17,7 @@ import java.util.Date;
 
 public class C_DB extends SQLiteOpenHelper {
     private static final String DBFILE = "chatlist.db";
-    private static final int DB_VERSION = 29;
+    private static final int DB_VERSION = 31;
     /************************************* Net table ****************************************/
     private static final String TBL_Ch = "Ch_T";
 
@@ -126,11 +126,12 @@ public class C_DB extends SQLiteOpenHelper {
     private static final int blueonMSK = 0x00010000;
     private static final int bdMSK1 = 0x0000FFFF;
     private static final int bdMSK2 = 0xFFFFFFFF;
+    private static final int def_set = pushMSK+vibeMSK+soundMSK+dclvMSK;
 
     private static String SQL_CREATE_SET = "CREATE TABLE IF NOT EXISTS " + TBL_Set
             + "(" +
-            " " + KEY_set + " INTEGER," +
-            " " + KEY_set2 + " INTEGER " +
+            " " + KEY_set + " INTEGER DEFAULT " + def_set+
+            ", " + KEY_set2 + " INTEGER " +
             ")";
 
     private static final String SQL_DROP_SET = "DROP TABLE IF EXISTS " + TBL_Set;
@@ -164,7 +165,6 @@ public class C_DB extends SQLiteOpenHelper {
         db.execSQL(SQL_DROP_CHAT);
         db.execSQL(SQL_DROP_BLACK);
         db.execSQL(SQL_DROP_SET);
-
         onCreate(db);
     }
 
@@ -354,7 +354,7 @@ public class C_DB extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             name = cursor.getString(1);
         } else {
-            name = "(설정되지 않음)";
+            name = "(이름 설정되지 않음)";
         }
         db.close();
         return name;
@@ -937,6 +937,8 @@ public class C_DB extends SQLiteOpenHelper {
             a = a | blueonMSK;
         else
             a = a & ~(blueonMSK);
+        Log.d("dclv", "save_blueon"+Integer.toHexString(a)+"  "+Integer.toHexString(b));
+
         save_set_setting(a, b);
     }
 
@@ -952,10 +954,12 @@ public class C_DB extends SQLiteOpenHelper {
 
         int a = get_setint(0);
         int b = 0;
+
         a = a & ~(bdMSK1);
         a |= bdMSK1 & bd1;
         b |= bdMSK2 & bd2;
 
+        Log.d("dclv", "save_bd"+Integer.toHexString(a)+"  "+Integer.toHexString(b));
         save_set_setting(a, b);
     }
 
@@ -965,7 +969,7 @@ public class C_DB extends SQLiteOpenHelper {
         int r = 0;
         switch (i) {
             case 0:
-                r = 0x00C90000; // default = 0000 0000 111 0 100 1 000...
+                r = 0xFFFE0000;
                 break;
             case 1:
                 r = 0; // default = 0
@@ -973,6 +977,7 @@ public class C_DB extends SQLiteOpenHelper {
         }
         if (c.moveToFirst()) {
             r = c.getInt(i);
+            Log.d("dclv", "default set "+ Integer.toHexString(r));
         }
         return r;
     }
@@ -1026,7 +1031,7 @@ public class C_DB extends SQLiteOpenHelper {
     public int get_set_dclv() {
         Cursor c = get_set_cursor();
 
-        int set = 4;
+        int set = 15;
         if (c.moveToFirst()) {
             set = (c.getInt(0) & dclvMSK) >> 17;
         }

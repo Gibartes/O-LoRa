@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".A_manual">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dialog_main_color">
+
+        <TextView
+            android:id="@+id/first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:text="OLora 메뉴얼"
+            android:textColor="@color/colorWhite"
+            android:textSize="25dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/page_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:layout_toRightOf="@+id/first"
+            android:textColor="@color/colorWhite"
+            android:textSize="17dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/prevBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/invisible_btn"
+                android:text="이전"
+                android:textColor="@color/colorWhite"
+                android:textSize="17dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/slash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="/"
+                android:textColor="@color/colorWhite"
+                android:textSize="17dp"
+                android:visibility="gone" />
+
+
+            <Button
+                android:id="@+id/nextBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/invisible_btn"
+                android:text="다음"
+                android:textColor="@color/colorWhite"
+                android:textSize="17dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6">
+
+        <RelativeLayout
+            android:id="@+id/m0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#AA000000">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OLora에서 여러분은 세 단계를 거쳐 통신하게 됩니다."
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="15dp"/>
+
+                <LinearLayout
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1. OLora 단말기와 스마트폰을 "
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="연결"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorRed"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="시킵니다."
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2. 임의의 "
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="채널"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorRed"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="을 생성하고 설정합니다."
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3. 같은 채널을 설정한 사용자들과 "
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="채팅"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorRed"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="합니다."
+                        android:textAlignment="center"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="20dp"
+                        android:textStyle="bold"/>
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:text="우측 상단의 '다음'을 누르시면 간단한 사용법을 보실 수 있습니다!"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/m1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/manual_1"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/m2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/manual_2"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/m3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/manual_3"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/m4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/manual_4"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/m5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/manual_5"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</LinearLayout>

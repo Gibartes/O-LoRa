@@ -229,11 +229,11 @@ public class A_Tab1_BtDeviceList extends Activity {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
                 title.setText(R.string.select_device);
-                prog.setVisibility(View.GONE);
+                prog.setVisibility(View.GONE);/*
                 if (mNewDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     mNewDevicesArrayAdapter.add(noDevices);
-                }
+                }*/
             }
         }
     };

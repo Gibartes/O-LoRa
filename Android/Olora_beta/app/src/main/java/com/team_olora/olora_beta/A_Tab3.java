@@ -49,7 +49,7 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         //dumy btn - lmk
         dummyFrieandBtn = layout.findViewById(R.id.dumyCreateFriendList);
         dummyFrieandBtn.setOnClickListener(new Event());
-        //dummyFrieandBtn.setVisibility(View.GONE);
+        dummyFrieandBtn.setVisibility(View.GONE);
 
         listview = layout.findViewById(R.id.List_friendView);
         listview.setAdapter(adapter);
@@ -121,7 +121,7 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
                 case R.id.dumyCreateFriendList:
                     //dumy btn - mklee
                     long dumyAddr = Math.round(Math.random() * 100);
-                    int key = DB.save_user("dummy " + Long.toString(dumyAddr), dumyAddr);
+                    int key = DB.save_user("이민재", dumyAddr);
                     load_values();
             }
         }
@@ -174,7 +174,7 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
                 int user_key = cursor1.getInt(0);
                 String user_name = cursor1.getString(1);
                 String user_desc = cursor1.getString(2);
-                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.nayeon_icon), user_name, user_desc, user_key);
+                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.friend), user_name, user_desc, user_key);
             } while (cursor1.moveToNext());
         }
         adapter.notifyDataSetChanged();

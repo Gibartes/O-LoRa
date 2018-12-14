@@ -33,14 +33,15 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
     ///////////////////
     ///// 멤버
     ///////////////////
+    ImageButton callManual;
     ImageButton clear_all;
     ImageButton show_clear;
     int mod = 0;
     int view_ch;
     ImageButton edit_Name;
     ImageButton find_Xbee, connected_Xbee;
-    LinearLayout nameBox, bdBox;
-    TextView welcomeTitle,welcomeText,myName, find_Text, show_text, show_name;
+    LinearLayout nameBox, bdBox,welcomeTitle;
+    TextView welcomeText, myName, find_Text, show_text, show_name;
     private C_DB DB = null;
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private int blueon;
@@ -96,7 +97,6 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
                 return false;
             }
         } else {
-            Toast.makeText(getActivity(), "External Storage Permission is Grant", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -122,6 +122,9 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.main_a_connect, container, false);
+
+        callManual = layout.findViewById(R.id.call_manual);
+        callManual.setOnClickListener(new Event());
         edit_Name = layout.findViewById(R.id.editMyName);
         edit_Name.setOnClickListener(new Event());
         find_Text = layout.findViewById(R.id.findText);
@@ -177,6 +180,8 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
             find_Text.setVisibility(View.GONE);
             //Toast.makeText(getContext(), "blueon = " + A_MainActivity.RSP_Name, Toast.LENGTH_LONG).show();
         }
+
+
         load_values();
 
         return layout;
@@ -211,6 +216,10 @@ public class A_Tab1 extends android.support.v4.app.Fragment implements DialogInt
             String _name = myName.getText().toString();
 
             switch (v.getId()) {
+                case R.id.call_manual:
+                    Intent manual = new Intent(getContext(), A_manual.class);
+                    startActivity(manual);
+                    break;
                 case R.id.showAllclear:
                     mod++;
                     switch (mod) {

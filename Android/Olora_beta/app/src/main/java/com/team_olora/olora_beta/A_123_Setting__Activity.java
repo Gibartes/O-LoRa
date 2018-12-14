@@ -268,7 +268,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
 
 
                             A_MainActivity.mbtService.mChatService.write(setNIpacket);
-                            time_run(6);
+                            time_run(10);
                         }
                     });
                     alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -367,7 +367,7 @@ public class A_123_Setting__Activity extends AppCompatActivity {
                         /****/
                         // write ( set dclv )
                         DB.save_dvlv(dclv);
-                        time_run(6);
+                        time_run(10);
                                     /*
                                     DB.save_dvlv(dclv);
                                     Intent intent2 = new Intent(getApplicationContext(),A_MainActivity.class);

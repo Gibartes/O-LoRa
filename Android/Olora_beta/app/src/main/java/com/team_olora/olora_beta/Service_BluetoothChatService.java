@@ -247,11 +247,6 @@ public class Service_BluetoothChatService implements Serializable {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(Service_Constants.MESSAGE_TOAST);
-        Bundle bundle = new Bundle();
-        bundle.putString(Service_Constants.TOAST, "Unable to connect device");
-        msg.setData(bundle);
-        mHandler.sendMessage(msg);
 
         mState = STATE_NONE;
 
@@ -264,14 +259,6 @@ public class Service_BluetoothChatService implements Serializable {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
-        mHandler.obtainMessage(Service_Constants.MESSAGE_STATE_CHANGE, Service_BluetoothChatService.STATE_NONE, -1).sendToTarget();
-
-        Message msg = mHandler.obtainMessage(Service_Constants.MESSAGE_TOAST);
-        Bundle bundle = new Bundle();
-        bundle.putString(Service_Constants.TOAST, "Device connection was lost");
-        msg.setData(bundle);
-        mHandler.sendMessage(msg);
-
         mState = STATE_NONE;
 
         // Start the service over to restart listening mode

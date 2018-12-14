@@ -57,7 +57,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     private int userKey;
     private String userName;
     private long useraddr;
-    private int cur_ch, room,ch;
+    private int cur_ch, room, ch;
 
 
     //////////////// 커넥션 객체
@@ -107,7 +107,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        ch =  intent.getIntExtra("Room_ch",0);
+        ch = intent.getIntExtra("Room_ch", 0);
         room = intent.getIntExtra("Room_key", 0);
         userKey = intent.getIntExtra("User_key", 0);
 
@@ -162,8 +162,8 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 //        curText = findViewById(R.id.msgMax);
         chatMessage = findViewById(R.id.chatText);
         sendMessage = findViewById(R.id.chatSend);
-        ano_room= findViewById(R.id.anotherch_alarm);
-        if(DB.get_ch_Current() != ch){
+        ano_room = findViewById(R.id.anotherch_alarm);
+        if (DB.get_ch_Current() != ch) {
             chatMessage.setVisibility(View.GONE);
             sendMessage.setVisibility(View.GONE);
             ano_room.setVisibility(View.VISIBLE);
@@ -197,19 +197,23 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             @Override
             public void onClick(View v) {
                 /**send 버튼의 클릭 이벤트 **/
-                String msg = chatMessage.getText().toString();
-                Log.d("sendMsg", "get text:"+msg);
-                if (msg.trim().length() != 0) {
-                    imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);  // 키보드 내리기 or 내리지말기?
-                    // send
-                    byte[] encodingmsg = msg.getBytes();
+                if (mbtService.mChatService.mState == Service_BluetoothChatService.STATE_CONNECTED) {
+                    String msg = chatMessage.getText().toString();
+                    Log.d("sendMsg", "get text:" + msg);
+                    if (msg.trim().length() != 0) {
+                        imm.hideSoftInputFromWindow(chatMessage.getWindowToken(), 0);  // 키보드 내리기 or 내리지말기?
+                        // send
+                        byte[] encodingmsg = msg.getBytes();
 
-                    Log.d("sendMsg", "encoding text:"+packetHandler.byteArrayToHexString(encodingmsg));
+                        Log.d("sendMsg", "encoding text:" + packetHandler.byteArrayToHexString(encodingmsg));
 
-                    int key = save_values("", msg, TRUE, 0);
-                    load_in_chat(key);
-                    chatMessage.setText("");
-                    sendMessage(encodingmsg);
+                        int key = save_values("", msg, TRUE, 0);
+                        load_in_chat(key);
+                        chatMessage.setText("");
+                        sendMessage(encodingmsg);
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "OLora 단말기와 연결되지 않았습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -237,11 +241,11 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private int save_values(String name, String msg, boolean type, int userKey) {
-        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey,true);
+        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey, true);
     }
 
     private void load_values() {
-        DB.reset_nonReadMsg(cur_ch,room);
+        DB.reset_nonReadMsg(cur_ch, room);
         Cursor cursor = DB.get_chat_cursor(cur_ch, room);
         if (cursor.moveToFirst()) {
             do {
@@ -261,8 +265,8 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_in_chat(int key) {
-        DB.reset_nonReadMsg(cur_ch,room);
-        Cursor cursor = DB.get_chat_cusorLast(key,room);
+        DB.reset_nonReadMsg(cur_ch, room);
+        Cursor cursor = DB.get_chat_cusorLast(key, room);
         if (cursor.moveToFirst()) {
             do {
                 String name = cursor.getString(2);
@@ -288,7 +292,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
 
 
     // send 함수
-    private void sendMessage(byte[] message){
+    private void sendMessage(byte[] message) {
 
         /*******/
         // 연결중과 연결 안되어있을 때 구분. 예외처리.
@@ -324,13 +328,12 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             id[1] = (byte) (cur_ch & 0xFFF8);
             byte[] sendapacket = null;
 
-            Log.d("sendMsg", "message :"+message);
+            Log.d("sendMsg", "message :" + message);
 
-            Log.d("sendMsg", "message len :"+message.length);
+            Log.d("sendMsg", "message len :" + message.length);
             byte[] message_send = new byte[952];
-            Arrays.fill( message_send, (byte) 0 );
-            for(int i = 0; i < message.length; i ++)
-            {
+            Arrays.fill(message_send, (byte) 0);
+            for (int i = 0; i < message.length; i++) {
                 message_send[i] = message[i];
             }
 
@@ -338,6 +341,15 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             byte[] hash = FuncGroup.getHash(message_send);
 
             if (room == 0) {
+                // dummy dest_ xbee랑 겹치지만 않음
+                d[0] = (byte) 0xFF;
+                d[1] = (byte) 0xFF;
+                d[2] = (byte) 0xFF;
+                d[3] = (byte) 0xFF;
+                d[4] = (byte) 0xFF;
+                d[5] = (byte) 0xFF;
+                d[6] = (byte) 0xFF;
+                d[7] = (byte) 0xFE;
                 sendapacket = packet.converted_packet(s, d, "SEND_BROADCAST", hp, id, hash, message);
             } else {
                 sendapacket = packet.converted_packet(s, d, "SEND_UNICAST", hp, id, hash, message);
@@ -345,31 +357,31 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
             mbtService.mChatService.write(sendapacket);
 
             Log.d("finalTest", "--\n\n-----------------Start Send Packet -----------------"
-                            +"\n"+"msg send : "+packetHandler.byteArrayToHexString(message_send)
-                            +"\n"+"src : "+packetHandler.getHeaderString(sendapacket,0,packetHandler.LEN_SRC)
-                            +"\n"+"dest : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DST,packetHandler.LEN_DST)
-                            +"\n"+"cm : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_CM,packetHandler.LEN_CM)
-                            +"\n"+"hp : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_HP,packetHandler.LEN_HP)
-                            +"\n"+"proto : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_PROTO,packetHandler.LEN_PROTO)
-                            +"\n"+ "id : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_ID,packetHandler.LEN_ID)
-                            +"\n"+ "flags : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_FLAGS,packetHandler.LEN_FLAGS)
-                            +"\n"+ "frag : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_FRAG,packetHandler.LEN_FRAG)
-                            +"\n"+ "seq : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_SEQ,packetHandler.LEN_SEQ)
-                            +"\n"+ "tms : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_TMS,packetHandler.LEN_TMS)
-                            +"\n"+ "len : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_LEN,packetHandler.LEN_LEN)
-                            +"\n"+ "ttl : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_TTL,packetHandler.LEN_TTL)
-                            +"\n"+ "param : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_PARAM,packetHandler.LEN_PARAM)
-                            +"\n"+ "dc : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DC,packetHandler.LEN_DC)
-                            +"\n"+ "#####################   END Send Packet #################### \n\n");
+                    + "\n" + "msg send : " + packetHandler.byteArrayToHexString(message_send)
+                    + "\n" + "src : " + packetHandler.getHeaderString(sendapacket, 0, packetHandler.LEN_SRC)
+                    + "\n" + "dest : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_DST, packetHandler.LEN_DST)
+                    + "\n" + "cm : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_CM, packetHandler.LEN_CM)
+                    + "\n" + "hp : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_HP, packetHandler.LEN_HP)
+                    + "\n" + "proto : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_PROTO, packetHandler.LEN_PROTO)
+                    + "\n" + "id : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_ID, packetHandler.LEN_ID)
+                    + "\n" + "flags : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_FLAGS, packetHandler.LEN_FLAGS)
+                    + "\n" + "frag : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_FRAG, packetHandler.LEN_FRAG)
+                    + "\n" + "seq : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_SEQ, packetHandler.LEN_SEQ)
+                    + "\n" + "tms : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_TMS, packetHandler.LEN_TMS)
+                    + "\n" + "len : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_LEN, packetHandler.LEN_LEN)
+                    + "\n" + "ttl : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_TTL, packetHandler.LEN_TTL)
+                    + "\n" + "param : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_PARAM, packetHandler.LEN_PARAM)
+                    + "\n" + "dc : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_DC, packetHandler.LEN_DC)
+                    + "\n" + "#####################   END Send Packet #################### \n\n");
 
-            int dataLen=packetHandler.getMsgLen(sendapacket);
-            Log.d("finalTest", "len2 : "+dataLen);
-            Log.d("finalTest", "data : "+packetHandler.getHeaderString(sendapacket,packetHandler.MASK_DATA,dataLen));
+            int dataLen = packetHandler.getMsgLen(sendapacket);
+            Log.d("finalTest", "len2 : " + dataLen);
+            Log.d("finalTest", "data : " + packetHandler.getHeaderString(sendapacket, packetHandler.MASK_DATA, dataLen));
 
 
         } catch (Exception e) {
             Log.d("finalTest", "send error");
-            Log.e("finalTest", "sendMessage: "+e.toString() );
+            Log.e("finalTest", "sendMessage: " + e.toString());
             //Toast.makeText(this, "send 에러" + android.provider.Settings.Secure.getString(this.getContentResolver(), "bluetooth_address") + getIntent().getStringExtra("device_address"), Toast.LENGTH_SHORT).show();
         }
 
