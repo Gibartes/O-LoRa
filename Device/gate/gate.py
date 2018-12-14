@@ -123,14 +123,14 @@ class ControlGate(Process):
             self.ntOut.open(os.O_WRONLY)
             self.ntIn.open(os.O_RDONLY)
             self.readList.append(self.ntIn.pipe)
-            print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
+            print(colored('[!] [GATE] {REBUILDED}.','green',attrs=['bold']))
         elif(desc==PRSS_LIST.OLORANT):
             print(colored('[+] [GATE] Waiting for gates open.','yellow',attrs=['bold']))
             #os.system("sudo service oloraxb restart")
             self.xbOut.open(os.O_WRONLY)
             self.xbIn.open(os.O_RDONLY)
             self.readList.append(self.xbIn.pipe)
-            print(colored('[!] [GATE] {REBUILDED}.'.format(sock),'green',attrs=['bold']))
+            print(colored('[!] [GATE] {REBUILDED}.','green',attrs=['bold']))
 
     def run(self):
         if(self.echo):
