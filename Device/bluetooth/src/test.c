@@ -52,7 +52,11 @@ int32_t main(int argc,char **argv){
     link.dst  = rem_addr;
     pnc.ttl   = 30;
     pnc.param = 2;
+    #if defined __amd64__ || defined __x86_64__
+    printf("[*] Connection success at %016lX\n",rem_addr);
+	#else
     printf("[*] Connection success at %016llX\n",rem_addr);
+	#endif
     printf("STATUS : %d",status);
     
     uint64_t tst  = 0;
