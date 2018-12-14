@@ -149,7 +149,7 @@
     #define PSCAN                  2
     #define PISCAN                 3
 
-    #define LOGPATH              (uint8_t*)"./service.log"
+    #define LOGPATH              (uint8_t*)"/var/log/olora.service.log"
 
     /* STATUS MASK */
     #define STATUS_KILL          128
