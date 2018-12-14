@@ -17,7 +17,7 @@ import java.util.Date;
 
 public class C_DB extends SQLiteOpenHelper {
     private static final String DBFILE = "chatlist.db";
-    private static final int DB_VERSION = 28;
+    private static final int DB_VERSION = 29;
     /************************************* Net table ****************************************/
     private static final String TBL_Ch = "Ch_T";
 
@@ -59,7 +59,7 @@ public class C_DB extends SQLiteOpenHelper {
 
     private static final String KEY_roomkey = "room_key";
     private static final String KEY_roomname = "room_name";
-    private static final String KEY_receivekey = "room_receivekey";
+    private static final String KEY_nonReadMsg = "room_nonReadMsg";
 
     private static String SQL_CREATE_LIST = "CREATE TABLE IF NOT EXISTS " + TBL_List
             + "(" +
@@ -68,7 +68,7 @@ public class C_DB extends SQLiteOpenHelper {
             " " + KEY_roomname + " TEXT, " +
             " " + KEY_userkey + " INTEGER, " +
             " " + KEY_useraddr + " LONG, " +
-            " " + KEY_receivekey + " INTEGER" +
+            " " + KEY_nonReadMsg + " INTEGER" +
             ")";
     private static final String SQL_DROP_LIST = "DROP TABLE IF EXISTS " + TBL_List;
     private static final String SQL_SELECT_LIST = "SELECT * FROM " + TBL_List;
@@ -82,7 +82,6 @@ public class C_DB extends SQLiteOpenHelper {
     private static final String KEY_chatsORr = "chat_sORr";
     private static final String KEY_chattime = "chat_time";
     private static final String KEY_chatkey = "chat_key";
-    private static final String KEY_chatIsRead = "chat_isRead";
 
     private static String SQL_CREATE_CHAT = "CREATE TABLE IF NOT EXISTS " + TBL_Chat
             + "(" +
@@ -93,8 +92,7 @@ public class C_DB extends SQLiteOpenHelper {
             " " + KEY_chattime + " DATE," +
             " " + KEY_chatsORr + " BOOLEAN, " +
             " " + KEY_userkey + " INTEGER," +
-            " " + KEY_chatkey + " INTEGER PRIMARY KEY, " +
-            " " + KEY_chatIsRead + " BOOLEAN" +
+            " " + KEY_chatkey + " INTEGER PRIMARY KEY " +
             ")";
     private static final String SQL_DROP_CHAT = "DROP TABLE IF EXISTS " + TBL_Chat;
     public static final String SQL_SELECT_CHAT = "SELECT * FROM " + TBL_Chat;
@@ -426,15 +424,17 @@ public class C_DB extends SQLiteOpenHelper {
      **/
     public int save_list_public() {
         ContentValues values = new ContentValues();
-        int current_ch = 0;
+        int current_ch = get_ch_Current();
+        /*
         Cursor c = get_ch_cursor_Current();
         if (c.moveToFirst()) {
             current_ch = c.getInt(0);
         }
+        */
         values.put(KEY_channel, current_ch);
         values.put(KEY_roomname, current_ch + " 채널의 전체 채팅방");
         values.put(KEY_roomkey, 0);
-        values.put(KEY_receivekey, 0);
+        values.put(KEY_nonReadMsg, 0);
 
         int key = -1;
         SQLiteDatabase db = getWritableDatabase();
@@ -461,6 +461,7 @@ public class C_DB extends SQLiteOpenHelper {
             db.execSQL("UPDATE " + TBL_List + " SET " + KEY_channel + " = " + cur_ch + " WHERE " + KEY_useraddr + " = " + useraddr);
         } else {
         }
+        //db.close();
         return ret;
     }
 
@@ -484,8 +485,7 @@ public class C_DB extends SQLiteOpenHelper {
                 values.put(KEY_roomname, name);
                 values.put(KEY_userkey, userkey);
                 values.put(KEY_useraddr, useraddr);
-                values.put(KEY_receivekey, 0);
-
+                values.put(KEY_nonReadMsg, 0);
                 SQLiteDatabase db = getWritableDatabase();
                 if (db.insert(TBL_List, null, values) > 0) {
                     c = get_list_cursor();
@@ -503,7 +503,7 @@ public class C_DB extends SQLiteOpenHelper {
                 values.put(KEY_roomname, name);
                 values.put(KEY_userkey, userkey);
                 values.put(KEY_useraddr, useraddr);
-                values.put(KEY_receivekey, 0);
+                values.put(KEY_nonReadMsg, 0);
 
                 SQLiteDatabase db = getWritableDatabase();
                 if (db.insert(TBL_List, null, values) > 0) {
@@ -639,6 +639,7 @@ public class C_DB extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("UPDATE " + TBL_List + " SET " + KEY_roomname + " = '" + _roomname + "'" +
                 " WHERE " + KEY_roomkey + " = " + _roomkey);
+        db.close();
     }
 
     public void delete_list(int key) {
@@ -655,6 +656,43 @@ public class C_DB extends SQLiteOpenHelper {
         db.close();
     }
 
+
+    public void update_nonReadMsg(int curr_ch, int room_key) {
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c;
+        int nonRead = 0;
+        if (room_key == 0)
+            c = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_roomkey + " = " + room_key + " AND " + KEY_channel + " = " + curr_ch, null);
+        else
+            c = db.rawQuery(SQL_SELECT_LIST + " WHERE " + KEY_roomkey + " = " + room_key, null);
+
+        if (c.moveToFirst()) {
+            nonRead = c.getInt(5);
+        }
+
+        nonRead=nonRead+1;
+        Log.d("sibbal", "nonRead: "+nonRead);
+
+        if (room_key == 0)
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_nonReadMsg + " = " + nonRead +
+                    " WHERE " + KEY_roomkey + " = " + room_key + " AND " + KEY_channel + " = " + curr_ch);
+        else
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_nonReadMsg + " = " + nonRead +
+                    " WHERE " + KEY_roomkey + " = " + room_key);
+        db.close();
+    }
+
+    public void reset_nonReadMsg(int curr_ch, int room_key) {
+        SQLiteDatabase db = getWritableDatabase();
+        if (room_key == 0)
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_nonReadMsg + " = " + 0 +
+                    " WHERE " + KEY_roomkey + " = " + room_key + " AND " + KEY_channel + " = " + curr_ch);
+        else
+            db.execSQL("UPDATE " + TBL_List + " SET " + KEY_nonReadMsg + " = " + 0 +
+                    " WHERE " + KEY_roomkey + " = " + room_key);
+        db.close();
+    }
+
     /** *** **** **** **** **** **** **** **** ******* **** **** *** **** **** **** ******* **** **** **** **** **** **** **** **** **/
 
 
@@ -662,7 +700,7 @@ public class C_DB extends SQLiteOpenHelper {
     /**
      * Chat table에 데이터 저장
      **/
-    public int save_chatmsg(int ch, int room_key, String user_name, String msg, boolean sORr, int user_key) {
+    public int save_chatmsg(int ch, int room_key, String user_name, String msg, boolean sORr, int user_key, boolean isRead) {
         ContentValues values = new ContentValues();
         values.put(KEY_channel, ch);
         values.put(KEY_roomkey, room_key);
@@ -680,7 +718,16 @@ public class C_DB extends SQLiteOpenHelper {
         values.put(KEY_chattime, time);
         values.put(KEY_chatsORr, sORr);
         values.put(KEY_userkey, user_key);
-        values.put(KEY_chatIsRead,false);
+
+        Log.d("sibbal", "before isRead: " + isRead);
+        if (isRead)
+            //아무것도안함
+            isRead = false;
+        else {
+            Log.d("sibbal", "ch: " + ch + "\nroome_key"+room_key);
+            update_nonReadMsg(ch, room_key);
+        }//하드코딩으로 +1
+        isRead = false;
 
         int key = -1;
         SQLiteDatabase db = getWritableDatabase();
@@ -704,26 +751,6 @@ public class C_DB extends SQLiteOpenHelper {
         return time;
     }
 
-    public int get_chat_nonRead(int cur_channle, int roomkey){
-        Cursor c = get_chat_cursor(cur_channle,roomkey);
-
-        int ret = 0;
-
-        if(c.moveToFirst()){
-            ret+=1;
-            while(c.moveToNext())
-                ret+=1;
-        }
-        return ret;
-    }
-    public void update_chat_isRead(int cur_channel,int roomkey){
-        SQLiteDatabase db = getWritableDatabase();
-        if(roomkey==0)
-            db.execSQL("UPDATE " + TBL_Chat + " SET " + KEY_chatIsRead + "= "+ true + " WHERE " + KEY_roomkey + " = " + roomkey + " AND " + KEY_channel + " = "+cur_channel);
-        else
-            db.execSQL("UPDATE " + TBL_Chat + " SET " + KEY_chatIsRead + "= "+ true + " WHERE " + KEY_roomkey + " = " + roomkey);
-        db.close();
-    }
     Cursor get_chat_cursor(int channel, int room) {
         // 전체채팅방일 때만 현재 채널의 메시지 띄움
         SQLiteDatabase db = getReadableDatabase();

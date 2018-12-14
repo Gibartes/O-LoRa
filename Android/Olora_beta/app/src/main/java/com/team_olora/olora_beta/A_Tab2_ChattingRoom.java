@@ -237,11 +237,11 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private int save_values(String name, String msg, boolean type, int userKey) {
-        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey);
+        return DB.save_chatmsg(cur_ch, room, name, msg, type, userKey,true);
     }
 
     private void load_values() {
-//        DB.update_chat_isRead(cur_ch,room);
+        DB.reset_nonReadMsg(cur_ch,room);
         Cursor cursor = DB.get_chat_cursor(cur_ch, room);
         if (cursor.moveToFirst()) {
             do {
@@ -261,7 +261,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_in_chat(int key) {
-  //      DB.update_chat_isRead(cur_ch,room);
+        DB.reset_nonReadMsg(cur_ch,room);
         Cursor cursor = DB.get_chat_cusorLast(key,room);
         if (cursor.moveToFirst()) {
             do {

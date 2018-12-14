@@ -44,5 +44,13 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="16dp" />
         </LinearLayout>
+        <TextView
+            android:id="@+id/nonRead"
+            android:textColor="@color/colorWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

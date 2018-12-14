@@ -144,7 +144,7 @@ public class A_Tab2 extends Fragment {
                     } else {
                         Toast.makeText(getContext(), "채널이 설정되어 있는지 확인해주세요.", Toast.LENGTH_LONG).show();
                     }
-                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key, userKey);
+                    adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), "dummy room", "yahoo" + key, key, userKey,9);
                     adapter.notifyDataSetChanged();
                     break;
             }
@@ -200,7 +200,7 @@ public class A_Tab2 extends Fragment {
         load_values();
     }
 
-    private void load_values() {
+    private void load_values(){
         Cursor cursor = DB.get_all_list_cursor();
         Cursor cursor2 = DB.get_ch_cursor_Current();
         adapter.clear();
@@ -220,8 +220,8 @@ public class A_Tab2 extends Fragment {
                 int ch = cursor.getInt(0);
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
-                //int nonRead = DB.get_chat_nonRead(ch,room_key);
-                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key);
+                int nonRead = cursor.getInt(5);
+                adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key,nonRead);
             } while (cursor.moveToNext());
         }
         adapter.notifyDataSetChanged();

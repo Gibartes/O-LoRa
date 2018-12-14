@@ -216,13 +216,13 @@ public class Service_btService extends Service {
                                 {
                                     Log.d("finalTest", "퍼블릭 메시지야");
                                     room_key=0;
-                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
+                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user,false);
                                 }else {
                                     Log.d("finalTest", "프라이빗 메시지야");
                                     // addr 와 일치하는 room key 있는지 검색
                                     // 있으면 roomkey, 없으면 만들어서 리턴
                                     room_key = DB.echo_room_key(username, user, usermac,ch);
-                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user);
+                                    chatkey = DB.save_chatmsg(ch, room_key, username, receivemsg, false, user,false);
                                     //DB.save_list_recievekey(send_key, receive_key);
                                 }
                                 Provider_RecvMsg.getInstance().post(new Provider_RecvMsgFunc(chatkey));

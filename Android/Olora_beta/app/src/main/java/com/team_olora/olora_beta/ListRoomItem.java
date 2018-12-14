@@ -10,6 +10,7 @@ public class ListRoomItem {
     private String descStr ;
     private int roomnum;
     private int userkey;
+    private int nonRead;
 
     public void setIcon(Drawable icon) {
         iconDrawable = icon ;
@@ -22,6 +23,7 @@ public class ListRoomItem {
     }
     public void setRoomnum(int num){roomnum = num;}
     public void setUserkey(int num){userkey = num;}
+    public void setNonRead(int num){nonRead = num;}
 
     public Drawable getIcon() {
         return this.iconDrawable ;
@@ -34,4 +36,5 @@ public class ListRoomItem {
     }
     public int getRoomnum(){return this.roomnum;}
     public int getUserkey(){return this.userkey;}
+    public int getNonRead(){return this.nonRead;}
 }

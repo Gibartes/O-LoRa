@@ -18,6 +18,7 @@ public class ListRoomAdapter extends BaseAdapter {
     private ImageView iconImageView;
     private TextView titleTextView;
     private TextView descTextView;
+    private TextView nonReadView;
     private CustomHolder holder;
     // ListViewAdapter의 생성자
     public ListRoomAdapter() {
@@ -43,17 +44,20 @@ public class ListRoomAdapter extends BaseAdapter {
             iconImageView = convertView.findViewById(R.id.imageView1);
             titleTextView = convertView.findViewById(R.id.textView1);
             descTextView = convertView.findViewById(R.id.textView2);
+            nonReadView = convertView.findViewById(R.id.nonRead);
 
             holder = new CustomHolder();
             holder.h_iconImageView = iconImageView;
             holder.h_titleTextView=titleTextView;
             holder.h_desc=descTextView;
+            holder.h_nonRead =nonReadView;
             convertView.setTag(holder);
         }else{
             holder = (CustomHolder)convertView.getTag();
             iconImageView = holder.h_iconImageView;
             titleTextView = holder.h_titleTextView;
             descTextView=holder.h_desc;
+            nonReadView=holder.h_nonRead;
         }
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
@@ -63,6 +67,7 @@ public class ListRoomAdapter extends BaseAdapter {
         iconImageView.setImageDrawable(listViewItem.getIcon());
         titleTextView.setText(listViewItem.getTitle());
         descTextView.setText(listViewItem.getDesc());
+        nonReadView.setText(Integer.toString(listViewItem.getNonRead()));
          return convertView;
     }
 
@@ -95,8 +100,10 @@ public class ListRoomAdapter extends BaseAdapter {
 
     public int getUserkey(int position){return listViewItemList.get(position).getUserkey();}
 
+    public int getNonread(int position){return listViewItemList.get(position).getNonRead();}
+
     // 아이템 데이터 추가를 위한 함수. 원하는대로 작성 가능.
-    public void addItem(Drawable icon, String title, String desc, int send, int userkey) {
+    public void addItem(Drawable icon, String title, String desc, int send, int userkey, int nonRead) {
         ListRoomItem item = new ListRoomItem();
 
         item.setIcon(icon);
@@ -104,6 +111,7 @@ public class ListRoomAdapter extends BaseAdapter {
         item.setDesc(desc);
         item.setRoomnum(send);
         item.setUserkey(userkey);
+        item.setNonRead(nonRead);
 
         listViewItemList.add(item);
     }
@@ -116,7 +124,7 @@ public class ListRoomAdapter extends BaseAdapter {
         ImageView h_iconImageView;
         TextView h_titleTextView;
         TextView h_desc;
-        ImageButton h_btnDelete;
+        TextView h_nonRead;
     }
 
 }

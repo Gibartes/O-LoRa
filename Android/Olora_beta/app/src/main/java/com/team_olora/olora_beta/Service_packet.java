@@ -276,7 +276,7 @@ public class Service_packet {
             isPublic=1;
         if(packetHandler.getFlags(packet)!=0){
             //에코와드
-            //isEcho=1;
+            isEcho=1;
         }else
             isEcho=0;
 
