@@ -49,6 +49,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * The SRC field on the olora packet have to be setted as a bluetooth address of the client which is connected with oloraNT.
 * Both <olorastd.h> and oloapkt.so offer AES256-cbc and RSA encryption/decryption using openSSL.
 * Supports python3 library which is able to handle olora packets with C back-end code.
+* The path of log file is /var/log/olora.service.log which is recorded event concerning status of the connection or errors.
 ---------------------------------------
 ### How to build oloraNT?
 1. chage directory to ./src
