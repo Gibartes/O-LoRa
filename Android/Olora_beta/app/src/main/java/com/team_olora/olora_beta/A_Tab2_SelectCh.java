@@ -22,7 +22,7 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
     Button BtnConnect, BtnDel;
     ImageButton BtnClose;
     FloatingActionButton BtnPop;
-
+    int callTab = 2;
     int dial = 0;
     C_DB DB = null;
 
@@ -44,7 +44,9 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        /*
         android.support.v4.app.FragmentManager fm = getFragmentManager();
+
         fm.addOnBackStackChangedListener(new android.support.v4.app.FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
@@ -54,9 +56,11 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
                 getActivity().startActivity(intent);
 
             }
-        });
+        });*/
+        setCancelable(false);
 
         final View view = inflater.inflate(R.layout.popup_ch_select, container, false);
+        callTab = getArguments().getInt("callTab");
 
         BtnConnect = (Button) view.findViewById(R.id.channelConnect);
         BtnConnect.setOnClickListener(new Event());
@@ -133,11 +137,17 @@ public class A_Tab2_SelectCh extends android.support.v4.app.DialogFragment {
                     break;
 
                 case R.id.channellistClose:
-                    Intent intent = new Intent(getContext(), A_MainActivity.class);
-                    intent.putExtra("Page", 1);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    getActivity().startActivity(intent);
-
+                    if(callTab==2) {
+                        Intent intent = new Intent(getContext(), A_MainActivity.class);
+                        intent.putExtra("Page", 1);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        getActivity().startActivity(intent);
+                    }else if(callTab==3){
+                        Intent intent = new Intent(getContext(), A_MainActivity.class);
+                        intent.putExtra("Page", 2);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        getActivity().startActivity(intent);
+                    }
                     break;
             }
         }

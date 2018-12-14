@@ -1,5 +1,7 @@
 package com.team_olora.olora_beta;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -20,7 +22,10 @@ import static android.content.ContentValues.TAG;
 
 public class A_Tab3 extends android.support.v4.app.Fragment {
     private TextView viewChannel;
-    private ImageButton reset;
+
+    private ImageButton btnChannel;
+    private ImageButton btnReset;
+
     // dumy btn - lmk
     ImageButton dummyFrieandBtn;
     private C_DB DB = null;
@@ -53,8 +58,10 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         listview.setOnItemClickListener(new Event());
         listview.setOnItemLongClickListener(new Event());
 
-        reset = layout.findViewById(R.id.button_discovery);
-        reset.setOnClickListener(new Event());
+        btnChannel = layout.findViewById(R.id.button_channel);
+        btnReset = layout.findViewById(R.id.button_discovery);
+        btnChannel.setOnClickListener(new Event());
+        btnReset.setOnClickListener(new Event());
 
         viewChannel = layout.findViewById(R.id.viewCH);
         DB = new C_DB(getContext());
@@ -63,24 +70,52 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         return layout;
     }
 
-    private class Event implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+    private class Event implements DialogInterface.OnDismissListener, View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.button_channel:
+                    A_Tab2_SelectCh PopupChannel = new A_Tab2_SelectCh();
+                    Bundle bundle_ch = new Bundle(1);
+                    bundle_ch.putInt("callTab", 3);
+                    PopupChannel.setOnDismissListener(this);
+                    PopupChannel.setArguments(bundle_ch);
+                    PopupChannel.show(getActivity().getSupportFragmentManager(), "A_Tab3_SelectCh");
+                    break;
+
+
                 case R.id.button_discovery:
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
 
-                    if (Service_BluetoothChatService.mState == 3) {
-                        Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
-                        Bundle bundle = new Bundle(2);
-                        bundle.putInt("dismiss", 2);
-                        int key = DB.get_ch_Current();
-                        bundle.putInt("ChannelKey", key);
+                    int dclv = DB.get_set_dclv();
+                    alert.setTitle("채널 탐색");
+                    alert.setMessage("같은 채널을 사용하는 유저를 탐색합니다.\n약 "+dclv+"초가 소요됩니다.");
+                    alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (Service_BluetoothChatService.mState == 3) {
+                                Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
+                                Bundle bundle = new Bundle(2);
+                                bundle.putInt("dismiss", 2);
+                                int key = DB.get_ch_Current();
+                                bundle.putInt("ChannelKey", key);
 
-                        popupProgress.setArguments(bundle);
-                        popupProgress.show(getActivity().getSupportFragmentManager(), "Progress");
-                    } else {
-                        Toast.makeText(getContext(), "블루투스 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
-                    }
+                                popupProgress.setArguments(bundle);
+                                popupProgress.show(getActivity().getSupportFragmentManager(), "Progress");
+                            } else {
+                                Toast.makeText(getContext(), "블루투스 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+                    alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                        }
+                    });
+                    alert.show();
+
 
                     break;
                 case R.id.dumyCreateFriendList:
@@ -108,7 +143,15 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
             return false;
         }
+
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            Log.d("dismisstest", "onDismiss: tab3");
+            load_values();
+        }
     }
+
 
     private void load_values() {
         Cursor cursor = DB.get_ch_cursor_Current();
@@ -117,9 +160,9 @@ public class A_Tab3 extends android.support.v4.app.Fragment {
 
         if (cursor.moveToFirst()) {
             if (cursor.getString(1) == null) {
-                viewChannel.setText("현재 채널 : (" + cursor.getInt(0) + ")");
+                viewChannel.setText( cursor.getInt(0) + " 채널");
             } else {
-                viewChannel.setText("현재 채널 : " + cursor.getString(1));
+                viewChannel.setText(cursor.getString(1)+ " 채널");
             }
         } else {
             viewChannel.setText("(채널을 설정해주세요.)");

@@ -241,7 +241,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_values() {
-        Log.d("finalTest", "애미뒤진씨발"+room);
+//        DB.update_chat_isRead(cur_ch,room);
         Cursor cursor = DB.get_chat_cursor(cur_ch, room);
         if (cursor.moveToFirst()) {
             do {
@@ -261,6 +261,7 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
     }
 
     private void load_in_chat(int key) {
+  //      DB.update_chat_isRead(cur_ch,room);
         Cursor cursor = DB.get_chat_cusorLast(key,room);
         if (cursor.moveToFirst()) {
             do {
@@ -375,25 +376,5 @@ public class A_Tab2_ChattingRoom extends AppCompatActivity implements AdapterVie
         // Reset out string buffer to zero and clear the edit text field
         mbtService.mOutStringBuffer.setLength(0);
         chatMessage.setText(mbtService.mOutStringBuffer);
-    }
-
-    public String byte2hex(byte[] b) {
-        // String Buffer can be used instead
-        String hs = "";
-        String stmp = "";
-        for (int n = 0; n < b.length; n++) {
-            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
-            if (stmp.length() == 1) {
-                hs = hs + "0" + stmp;
-            } else {
-                hs = hs + stmp;
-            }
-
-            if (n < b.length - 1) {
-                hs = hs + "";
-            }
-        }
-
-        return hs;
     }
 }

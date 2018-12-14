@@ -17,7 +17,7 @@ import java.util.Date;
 
 public class C_DB extends SQLiteOpenHelper {
     private static final String DBFILE = "chatlist.db";
-    private static final int DB_VERSION = 27;
+    private static final int DB_VERSION = 28;
     /************************************* Net table ****************************************/
     private static final String TBL_Ch = "Ch_T";
 
@@ -82,6 +82,7 @@ public class C_DB extends SQLiteOpenHelper {
     private static final String KEY_chatsORr = "chat_sORr";
     private static final String KEY_chattime = "chat_time";
     private static final String KEY_chatkey = "chat_key";
+    private static final String KEY_chatIsRead = "chat_isRead";
 
     private static String SQL_CREATE_CHAT = "CREATE TABLE IF NOT EXISTS " + TBL_Chat
             + "(" +
@@ -92,7 +93,8 @@ public class C_DB extends SQLiteOpenHelper {
             " " + KEY_chattime + " DATE," +
             " " + KEY_chatsORr + " BOOLEAN, " +
             " " + KEY_userkey + " INTEGER," +
-            " " + KEY_chatkey + " INTEGER PRIMARY KEY " +
+            " " + KEY_chatkey + " INTEGER PRIMARY KEY, " +
+            " " + KEY_chatIsRead + " BOOLEAN" +
             ")";
     private static final String SQL_DROP_CHAT = "DROP TABLE IF EXISTS " + TBL_Chat;
     public static final String SQL_SELECT_CHAT = "SELECT * FROM " + TBL_Chat;
@@ -678,6 +680,7 @@ public class C_DB extends SQLiteOpenHelper {
         values.put(KEY_chattime, time);
         values.put(KEY_chatsORr, sORr);
         values.put(KEY_userkey, user_key);
+        values.put(KEY_chatIsRead,false);
 
         int key = -1;
         SQLiteDatabase db = getWritableDatabase();
@@ -701,7 +704,28 @@ public class C_DB extends SQLiteOpenHelper {
         return time;
     }
 
+    public int get_chat_nonRead(int cur_channle, int roomkey){
+        Cursor c = get_chat_cursor(cur_channle,roomkey);
+
+        int ret = 0;
+
+        if(c.moveToFirst()){
+            ret+=1;
+            while(c.moveToNext())
+                ret+=1;
+        }
+        return ret;
+    }
+    public void update_chat_isRead(int cur_channel,int roomkey){
+        SQLiteDatabase db = getWritableDatabase();
+        if(roomkey==0)
+            db.execSQL("UPDATE " + TBL_Chat + " SET " + KEY_chatIsRead + "= "+ true + " WHERE " + KEY_roomkey + " = " + roomkey + " AND " + KEY_channel + " = "+cur_channel);
+        else
+            db.execSQL("UPDATE " + TBL_Chat + " SET " + KEY_chatIsRead + "= "+ true + " WHERE " + KEY_roomkey + " = " + roomkey);
+        db.close();
+    }
     Cursor get_chat_cursor(int channel, int room) {
+        // 전체채팅방일 때만 현재 채널의 메시지 띄움
         SQLiteDatabase db = getReadableDatabase();
         Cursor c;
         if (room == 0) {
@@ -709,7 +733,6 @@ public class C_DB extends SQLiteOpenHelper {
         } else {
             c = db.rawQuery(SQL_SELECT_CHAT + " WHERE " + KEY_roomkey + " = " + room, null);
         }
-
         return c;
     }
 

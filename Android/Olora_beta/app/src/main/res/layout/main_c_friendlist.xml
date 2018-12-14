@@ -2,55 +2,74 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#88000000"
-    >
+    android:orientation="vertical">
+
     <RelativeLayout
-        android:paddingTop="20dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
         android:id="@+id/RL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="@color/colorInvisible"
-        >
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="20dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_toLeftOf="@+id/button_channel"
-            android:layout_height="wrap_content"
-            android:background="@color/colorInvisible"
+            android:layout_marginLeft="10dp"
             android:id="@+id/viewCH"
-            android:textColor="@color/colorWhite"
-            android:typeface="sans"
-            android:paddingRight="10dp"
-            android:text="(채널을 설정해주세요.)"
-            android:textSize="20dp"/>
-        <ImageButton
-            android:id="@+id/button_discovery"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorInvisible"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:text="(채널을 설정해주세요.)"
+            android:textColor="@color/colorWhite"
+            android:textSize="20dp"/>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:background="@drawable/reset"
-            android:layout_alignParentRight="true"/>
-       </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_marginEnd="20dp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/button_channel"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/arrow_bg" />
+
+            <ImageButton
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/button_discovery"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/reset_bg" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/List_friendView"
-        android:layout_below="@+id/RL"
         style="@style/ListView_Style"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RL">
         <!-- 선택했을 때 다른화면을 덧씌우는 옵션. 색상줄때 하면될듯 -->
     </ListView>
+
     <ImageButton
         android:id="@+id/dumyCreateFriendList"
-        android:layout_alignParentBottom="true"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/nayeon_icon"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/nayeon_icon" />
 
 </RelativeLayout>
 

@@ -1,6 +1,7 @@
 package com.team_olora.olora_beta;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,7 +30,10 @@ public class A_Tab2 extends Fragment {
     public ListRoomAdapter adapter = new ListRoomAdapter();
     InputMethodManager imm;
     TextView channel;
+
     ImageButton btnChannel;
+    ImageButton btnReset;
+
     //dumy btn - mklee
     ImageButton dumy_make_chatlist;
 
@@ -46,8 +50,12 @@ public class A_Tab2 extends Fragment {
         final RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.main_b_chatlist, container, false);
         channel = layout.findViewById(R.id.viewChannel);
         imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         btnChannel = layout.findViewById(R.id.button_channel);
+        btnReset = layout.findViewById(R.id.button_discovery);
         btnChannel.setOnClickListener(new Event());
+        btnReset.setOnClickListener(new Event());
+
         listview = layout.findViewById(R.id.List_listView);
         listview.setAdapter(adapter);
         listview.setChoiceMode(listview.CHOICE_MODE_SINGLE);
@@ -88,10 +96,45 @@ public class A_Tab2 extends Fragment {
             switch (v.getId()) {
                 case R.id.button_channel:
                     A_Tab2_SelectCh PopupChannel = new A_Tab2_SelectCh();
+                    Bundle bundle_ch = new Bundle(1);
+                    bundle_ch.putInt("callTab", 2);
                     PopupChannel.setOnDismissListener(this);
-                    PopupChannel.show(getActivity().getSupportFragmentManager(), "A_Tab2_SelectCh");
+                    PopupChannel.setArguments(bundle_ch);
+                    PopupChannel.show(getActivity().getSupportFragmentManager(), "A_Tab3_SelectCh");
                     break;
 
+                case R.id.button_discovery:
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+
+                    int dclv = DB.get_set_dclv();
+                    alert.setTitle("채널 탐색");
+                    alert.setMessage("같은 채널을 사용하는 유저를 탐색합니다.\n약 "+dclv+"초가 소요됩니다.");
+                    alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (Service_BluetoothChatService.mState == 3) {
+                                Component_123_PopupProgress popupProgress = new Component_123_PopupProgress();
+                                Bundle bundle = new Bundle(2);
+                                bundle.putInt("dismiss", 2);
+                                int key = DB.get_ch_Current();
+                                bundle.putInt("ChannelKey", key);
+
+                                popupProgress.setArguments(bundle);
+                                popupProgress.show(getActivity().getSupportFragmentManager(), "Progress");
+                            } else {
+                                Toast.makeText(getContext(), "블루투스 연결이 필요합니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                        }
+                    });
+                    alert.show();
+
+                    break;
                 case R.id.dumyCreateChatList:
                     //dumy btn - mklee
                     String userName = "dummy user";
@@ -163,9 +206,9 @@ public class A_Tab2 extends Fragment {
         adapter.clear();
         if (cursor2.moveToFirst()) {
             if (cursor2.getString(1) == null) {
-                channel.setText("현재 채널 : (" + cursor2.getString(0) + ")");
+                channel.setText(cursor2.getString(0)+" 채널");
             } else {
-                channel.setText("현재 채널 : " + cursor2.getString(1));
+                channel.setText(cursor2.getString(1)+" 채널");
             }
         } else {
             channel.setText("(채널을 설정해주세요.)");
@@ -177,6 +220,7 @@ public class A_Tab2 extends Fragment {
                 int ch = cursor.getInt(0);
                 int room_key = cursor.getInt(1);
                 int user_key = cursor.getInt(3);
+                //int nonRead = DB.get_chat_nonRead(ch,room_key);
                 adapter.addItem(ContextCompat.getDrawable(getContext(), R.drawable.tzui_icon), room_name, "최근 대화한 채널 : " + Integer.toString(ch) + "채널", room_key, user_key);
             } while (cursor.moveToNext());
         }
