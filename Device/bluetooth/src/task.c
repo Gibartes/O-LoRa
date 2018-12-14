@@ -605,10 +605,8 @@ static int32_t mainTask(uint8_t channel){
         remAddr = batoui64(src);
         sem_wait(tcb->sess->slock);
         sess.clientAddr = remAddr;
-        #if (OLORA_DEBUG_FLAG == 1)
         int32_t flags = fcntl(tcb->in,F_GETFL,0);
         fcntl(clientfd,F_SETFL,flags|O_NONBLOCK);
-        #endif
         sess.sock = clientfd;
         sem_post(tcb->sess->slock);	    
         enableScan(hciSock,di.dev_id,NOSCAN);  /* Hide */
@@ -653,9 +651,6 @@ int32_t main(void){
     printf("[*]     Author  : Gibartes                              [*]\n");
     printf("[*]_____________________________________________________[*]\n");
     printf("[*] Start Olora Bluetooth Lower Network Bridge Service. [*]\n");
-    #if (OLORA_DEBUG_FLAG == 1)
-    printf("[*] Debug features set.                                 [*]\n");
-    #endif
     #if (OLORA_BETA_FLAG == 1)
     printf("[*] Beta features set.                                  [*]\n");
     #endif    
