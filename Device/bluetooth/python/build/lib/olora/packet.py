@@ -45,6 +45,7 @@ class PACKET_HEADER_CONFIG(object):
     FLAG_FIN        =  32
     FLAG_ENCRYPT    =  16
     FLAG_QUERY      =   8
+    FLAG_ERROR      =   4
     FLAG_ERROR      =   2
     FLAG_RESP       =   1
 
