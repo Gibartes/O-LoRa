@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name 		= 'pyolora',
-    version 	= '1.0.2',
+    version 	= '1.1.0',
     description	= 'python wrapper for olorapkt',
     author		= 'gibartes',
     url			= 'https://github.com/Gibartes/O-LoRa',
