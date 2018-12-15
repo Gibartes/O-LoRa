@@ -195,7 +195,7 @@ O-LoRa Android application collaborating with Myeongeun and MinSu
 
 ---------------------------------------
 
-- Components :
+- You can download lastest olora android application in google [play store](https://play.google.com/store/apps/details?id=com.team_olora.olora_beta).
 
 
 ---------------------------------------
