@@ -106,6 +106,7 @@ public class A_manual extends AppCompatActivity {
                 pageNum.setVisibility(View.GONE);
                 Intent intent = new Intent(this, A_MainActivity.class);
                 intent.putExtra("Page", 0);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
         }
