@@ -84,7 +84,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	for i in buffer:
 		pkt.put_seq_data(i)
 ```
-* I'd recommend third case to fill data. Or alternatively,
+* I'd recommend the third case to fill data. Or alternatively,
 ```python
 	buffer = obp.recv()
 	if(buffer!=0 and buffer!=b''):
@@ -156,6 +156,36 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	if(writeCNT<=0):
 		# handling error
 ```
+
+#### 3. Sqlite helper class
+* PyOlora has universial sqlite helper class to handle some database. To use sqlite helper, you have to import a package in pyolora as follows :
+
+```python
+	from olora.database import *
+	TableName = SomeDataBaseTableName
+	db = DataBaseQuerry(TableName)
+```
+
+* Methods defined in DataBaseQuerry class 
+  1. connect(path)
+    * Connect a database file in designated path, and create a database handle. This job has to be executed at the first time.
+  2. close()
+    * Close the database hanlde.
+  3. build(table)
+    * Build a database table. It is required that a list of columns which consist of the table.
+  4. delete(primaryKey)
+    * Delete a item with primary key in the database. If this method success, it returns True. Otherwise it returns False.
+  5. insert(row)
+    * Insert one item to the database. It cannot be overlapped a primary key in the row in the same database.
+  6. read(primaryKey)
+    * Return a row in the database which contented with the primary key. If this method success, it returns that row. Otherwise it returns False.
+  7. readByCol(primaryKey,column)
+    * Return a row in the database which satisfied with the specific column on the primary key. If this method success, it returns that row. Otherwise it returns False.
+  8. modify(primaryKey,column,value)
+    * Update a row which gratified with the primary key in the database. If this method success, it returns True. Otherwise it returns False.
+  9. getTop()
+    * Get the first row in the current connected database. If this method success, it returns that row. Otherwise it returns False.
+
 ---------------------------------------
 
 ## O-LoRa - Gate - oloraGT
