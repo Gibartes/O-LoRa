@@ -43,7 +43,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * Named pipe for output to bluetooth client	: /tmp/.olora.in
 * Internal command to exit current session 	:
   * Set flag as FLAG_FIN in the olora packet header.
-  * It must be zero-fill that either source or destination address.
+  * Source address must be zero-fill and destination address must be this host bluetooth address.
   * Otherwise, the packet is dropped by the security rule.
 * Verify integrity of the packet using MD5 digest. 
 * The SRC field on the olora packet have to be setted as a bluetooth address of the client which is connected with oloraNT.
@@ -170,7 +170,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
   1. connect(path)
     * Connect a database file in designated path, and create a database handle. This job has to be executed at the first time.
   2. close()
-    * Close the database hanlde.
+    * Close the database handle.
   3. build(table)
     * Build a database table. It is required that a list of columns which consist of the table.
   4. delete(primaryKey)

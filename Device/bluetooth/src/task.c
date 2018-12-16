@@ -266,7 +266,7 @@ static void *outputTask(void *param){
         }
         getHeaderLinkLayer(&msg,&link);
         err = inputCheckOutside(tcb->sess,&link);
-        if(err==ERR_FALSE_ADDR){
+        if(err==ERR_INTERNAL_PKT){
             getPacketOffset(&msg,MASK_FLAGS,0,&flag,1);
             if(flag&FLAG_FIN){
                 setMask(tcb,tcb->sig,STATUS_KILL);
@@ -274,7 +274,7 @@ static void *outputTask(void *param){
             }continue;
         }
         else if(err<1){
-            if(err!=ERR_INTERNAL_PKT){
+            if(err!=ERR_ZEROFILL_PKT){
                 logWrite(tcb->Log,tcb->log,"[*] [Output] packet drop : [%d]-LEN:[%llu]-SRC:[%llu]-DST:[%llu].",err,len,link.src,link.dst);
             }continue;
         }
