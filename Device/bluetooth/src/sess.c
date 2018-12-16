@@ -171,7 +171,7 @@ int32_t inputCheckInside(session_t *sess,struct PACKET_LINK_LAYER *link){
 int32_t inputCheckOutside(session_t *sess,struct PACKET_LINK_LAYER *link){
     if(link->src==0&&link->dst==0) {return ERR_ZEROFILL_PKT;}   // This is an internal packet   
     if(link->src==link->dst){return ERR_LAND_STATE;}            // LAND
-    if(link->src==0||link->dst==src->hostAddr){return ERR_INTERNAL_PKT;}
+    if(link->src==0&&link->dst==src->hostAddr){return ERR_INTERNAL_PKT;}
     return 1;
 }
 
@@ -192,6 +192,8 @@ static inline int32_t __recv(int32_t fd,struct PACKET_CHAIN *pkt){
 static inline int32_t __send(int32_t fd,struct PACKET_CHAIN *pkt){
     return write(fd,&(pkt->packet),BUFFER_SIZE);
 }
+
+/* The following functions are untested feature. */
 
 int32_t RSA_pubkeyInquiry(int32_t fd,session_t *sess){
     struct PACKET_LINK_LAYER link;
