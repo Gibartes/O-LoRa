@@ -97,6 +97,8 @@ elif [ "$1" = "make" ]; then
 			sudo dnf update
 			sudo dnf install -y bluez bluez-libs
 			sudo dnf install -y openssl-devel
+			sudo dnf install -y pam
+			sudo dnf install -y ncurses-devel
 			sudo pip3 install pyolora			
 		fi
 		make clean -> /dev/null
