@@ -33,12 +33,12 @@ if   [ "$1" = "help" ]; then
 	show_help
 	exit 0
 elif [ "$1" = "run" ]; then
-	python3 ./gate.py
-	cd ./bluetooth/src
-	./oloraNT
+	python3 ./gate.py &
+	cd ../bluetooth/src
+	./oloraNT &
 	cd - > /dev/null
 	cd ./xbee
-	python3 ./oloraXB.py
+	python3 ./oloraXB.py &
 	cd - > /dev/null
 	exit 0
 elif [ "$1" = "make" ] && [ "$2" = "install" ] ||  [ "$2" = "uninstall" ]; then 
