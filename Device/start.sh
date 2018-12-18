@@ -91,6 +91,7 @@ elif [ "$1" = "make" ]; then
 			sudo apt install libbluetooth-dev -y
 			sudo apt install libssl-dev -y
 			sudo apt install libpam-dev -y
+			sudo apt install libncurses-dev -y
 			sudo pip3 install pyolora
 		elif [ "$(. /etc/os-release; echo $ID_LIKE)" = "fedora" ]; then
 			sudo dnf update
