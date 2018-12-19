@@ -19,7 +19,7 @@ Usage Example :
     System.out.println(Long.toUnsignedString(impress)); 
 */
 
-public class OloraPacket{
+public static class OloraPacket{
     public static final int MASK_SRC        =   0;
     public static final int MASK_DST        =   8;
     public static final int MASK_CM         =  16;
@@ -58,26 +58,26 @@ public class OloraPacket{
     public static final int XBEE_DATA_LEN   = PACKET_MINI - MASK_DATA;
     
     // Hex 출력
-    public String byteArrayToHexString(byte[] bytes){
+    public static String byteArrayToHexString(byte[] bytes){
         StringBuilder sb = new StringBuilder();
         for(byte b : bytes){sb.append(String.format("%02X ", b&0xff));}
         return sb.toString();
     }
     // 헤더 Offset으로부터 Size만큼 데이터 Set
-    public void   setHeaderOffset(byte[] packet,byte[] value,int offset,int size){
+    public static void   setHeaderOffset(byte[] packet,byte[] value,int offset,int size){
         for(int i=0;i<size;i++){packet[offset+i] = value[i];}
     }
     // 헤더 Offset으로부터 Size만큼 데이터 Get
-    public byte[] getHeaderOffset(byte[] packet,int offset,int size){
+    public static byte[] getHeaderOffset(byte[] packet,int offset,int size){
         return Arrays.copyOfRange(packet,offset,offset+size-1);
     }   
     // 헤더에 입힐 값을 생성
-    public byte[] setValue(long value,int unit){
+    public static byte[] setValue(long value,int unit){
         return ByteBuffer.allocate(unit).putLong(value).array();
     }
     // 헤더에서 얻은 Byte[]를 숫자로 리턴. (주) Java에 native로 unsigned 지원안함
     // 디폴트 오프셋 0      
-    public long   getValue(byte[] value,int unit){
+    public static long   getValue(byte[] value,int unit){
         ByteBuffer buffer = ByteBuffer.wrap(value);
         switch(unit){
             case(1):return (long)buffer.getChar();
@@ -88,7 +88,7 @@ public class OloraPacket{
         }
     }
     // @Overloading. 최대 8바이트 중 특정 위치의 바이트 값 얻기 바랄 때  
-    public long   getValue(byte[] value,int offset,int unit){
+    public static long   getValue(byte[] value,int offset,int unit){
         ByteBuffer buffer = ByteBuffer.wrap(value);
         switch(unit){
             case(1):return (long)buffer.getChar(offset);
@@ -99,12 +99,12 @@ public class OloraPacket{
         }
     }
     // @Overloading. 헤더에서 얻은 Byte[]를 Unsigned Long 객체로 변환
-    public Long   getValue(byte[] value){
+    public static Long   getValue(byte[] value){
         ByteBuffer buffer = ByteBuffer.wrap(value);    
         return Long.parseUnsignedLong(String.valueOf(buffer.getLong()));
     }
     // Byte[] 비교
-    public boolean compare(byte[] value0,byte[] value1){
+    public static boolean compare(byte[] value0,byte[] value1){
         return Arrays.equals(value0,value1);
     }
 }
