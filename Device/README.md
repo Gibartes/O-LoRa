@@ -23,7 +23,7 @@ O-LoRa device controller project collaborating with Gibartes and MinJae
 
 *********************************************************************************************************
 - Usage for start.sh
-  - First, you must change permissions of start.sh. Authorize permissions as follows
+  - First, you must change permissions of start.sh. Authorize the permissions as follows
     - chmod +x ./start.sh
   - Build oloraNT.  (Required at the first time)
     - ./start.sh make
