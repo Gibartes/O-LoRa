@@ -33,12 +33,12 @@ if   [ "$1" = "help" ]; then
 	show_help
 	exit 0
 elif [ "$1" = "run" ]; then
-	python3 ./gate.py
-	cd ./bluetooth/src
-	./oloraNT
+	python3 ./gate.py &
+	cd ../bluetooth/src
+	./oloraNT &
 	cd - > /dev/null
 	cd ./xbee
-	python3 ./oloraXB.py
+	python3 ./oloraXB.py &
 	cd - > /dev/null
 	exit 0
 elif [ "$1" = "make" ] && [ "$2" = "install" ] ||  [ "$2" = "uninstall" ]; then 
@@ -91,11 +91,14 @@ elif [ "$1" = "make" ]; then
 			sudo apt install libbluetooth-dev -y
 			sudo apt install libssl-dev -y
 			sudo apt install libpam-dev -y
+			sudo apt install libncurses-dev -y
 			sudo pip3 install pyolora
 		elif [ "$(. /etc/os-release; echo $ID_LIKE)" = "fedora" ]; then
 			sudo dnf update
 			sudo dnf install -y bluez bluez-libs
 			sudo dnf install -y openssl-devel
+			sudo dnf install -y pam
+			sudo dnf install -y ncurses-devel
 			sudo pip3 install pyolora			
 		fi
 		make clean -> /dev/null

@@ -171,7 +171,7 @@ int32_t inputCheckInside(session_t *sess,struct PACKET_LINK_LAYER *link){
 int32_t inputCheckOutside(session_t *sess,struct PACKET_LINK_LAYER *link){
     if(link->src==0&&link->dst==0) {return ERR_ZEROFILL_PKT;}   // This is an internal packet   
     if(link->src==link->dst){return ERR_LAND_STATE;}            // LAND
-    if(link->src==0&&link->dst==src->hostAddr){return ERR_INTERNAL_PKT;}
+    if(link->src==0&&link->dst==sess->hostAddr){return ERR_INTERNAL_PKT;}
     return 1;
 }
 
