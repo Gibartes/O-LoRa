@@ -27,7 +27,7 @@ O-LoRa device controller project collaborating with Gibartes and MinJae
     - chmod +x ./start.sh
   - Build oloraNT.  (Required at the first time)
     - ./start.sh make
-  - Install oloraNT as a service. (Required at the first time)
+  - Install oloraNT as a service and olora library.  (Required at the first time)
     - sudo ./start.sh make install
   - Install oloraGT and oloraXB as services.
     - sudo ./start.sh make cu install
