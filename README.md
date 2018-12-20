@@ -44,7 +44,7 @@ O-LoRa device controller project collaborating with Gibartes and MinJae
     - ./start.sh kill
   - Run all olora processes.
     - ./start.sh run
-  - See a log file writtem by oloraNT
+  - See a log file writtem by oloraNT.
     - ./start.sh log
 
 ## O-LoRa - Bluetooth - oloraNT
