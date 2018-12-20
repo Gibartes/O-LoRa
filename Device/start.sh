@@ -16,6 +16,7 @@ function show_help(){
 *                   install/uninstall     : register at the start script (oloraNT)
 *                   cu install/uninstall : register at the start script (python Files)
 *        kill    : kill olora processes being executed.
+*         log    : see the log written by oloraNT.
 *****************************************************************************
 	"""
 }
@@ -110,10 +111,13 @@ elif [ "$1" = "make" ]; then
 	else
 		echo "[*] Builded."
 	fi
-	exit 0	
+	exit 0
 elif [ "$1" = "kill" ]; then
 	echo "[!] Kill all."
 	pkill -9 "olora*"
+	exit 0
+elif [ "$1" = "log" ]; then
+	watch -n 0.5 "tail -n 25 /var/log/olora.service.log"
 	exit 0
 fi
 cd - > /dev/null
