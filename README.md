@@ -142,6 +142,8 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	pkt.move_wcursor(PACKET_HEADER_CONFIG.MASK_DATA)
 	for i in buffer:
 		pkt.put_seq_data(i)
+    #Check a cursor point in the packet object whether it is the overflow state or not if it cann't be written. 
+    pkt.isOverflow()
 ```
 * I'd recommend the third case to fill data. Or alternatively,
 ```python
@@ -150,6 +152,10 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 		pkt.packet = buffer
 ```
 * But in this case, some features cannot be used because of type problem.
+* And you can access data from that packet like this :
+```python
+	data = pkt.paylaod
+```
 
 #### 2. Handle the packet
 * You'd better separate header and data from the packet.
