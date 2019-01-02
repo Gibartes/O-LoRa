@@ -84,17 +84,17 @@ This is a software that is 1:1 bluetooth server to link internal user space area
     MASK_SRC        # Source Address. Filtered by oloraNT.
     MASK_DST        # Destination Address. Filtered by oloraNT.
     MASK_CM         # Channel Mask
-    MASK_HP         # Hopping info
+    MASK_HP         # Hopping Info
     MASK_PROTO      # Packet Protocol
     MASK_ID         # Network ID
     MASK_FLAGS      # Packet Flags
     MASK_FRAG       # Packet Fragmentation
     MASK_SEQ        # Packet Sequence Number
     MASK_TMS        # Timestamp
-    MASK_LEN        # Payload length
+    MASK_LEN        # Payload Length
     MASK_TTL        # TTL
-    MASK_PARAM      # Parameter for the terminal device control (Internal use only)
-    MASK_DC         # Data checksum (MD5, 8+8 Bytes big-endian). Filtered by oloraNT.
+    MASK_PARAM      # Parameter for the Terminal Device Control (Internal use only)
+    MASK_DC         # Data Checksum (MD5, 8+8 Bytes big-endian). Filtered by oloraNT.
     MASK_DATA       # Data
 ```
 < Flags Info >
