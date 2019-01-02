@@ -79,6 +79,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * The olora packet module allows the defined olora packet structure in C to use in python code. This is a C extenstion so that you need olorapkt.so which is offered by oloraNT and python development support package(python3-dev). The installation step is simple. If you have installed oloraNT, you don't need further steps. Type "pip install pyolora" on your terminal.
 * The maximum length of the olora packet is 1008 bytes. The header size is constant as 56 bytes. You can check the header size with PACKET_HEADER_CONFIG.MASK_DATA and the maximum length of data with PACKET_HEADER_CONFIG.DATA_LENGTH.
 * The structure of olora packets. This is defined in olorastd.h and PACKET_HEADER_CONFIG class.
+  
 < Field Info >
 ```python
     MASK_SRC        # Source Address. Filtered by oloraNT.
