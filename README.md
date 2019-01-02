@@ -152,8 +152,9 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 		pkt.packet = buffer
 ```
 * But in this case, some features cannot be used because of type problem.
-* And you can access data from that packet like this :
+* And you can access data from the given packet after spliting like this :
 ```python
+	pkt.split()
 	data = pkt.paylaod
 ```
 
@@ -190,11 +191,11 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 * Olora system uses MD5 Hash for verifying integrity of the packet. You can make a MD5 digest and put in the header with PACKET class.
 
 ```python
-	pkt.cal_hash(PACKET_HEADER_CONFIG.DATA_LENGTH)
+	pkt.cal_hash(PACKET_HEADER_CONFIG.DATA_LENGTH) # calculate MD5 hash
 	print("HASH-VALUE : ",pkt.hash)
-	pkt.set_hash()
-	pkt.combine()
-	pkt.update()
+	pkt.set_hash()                                 # set MD% Digest on the header of the packet.
+	pkt.combine()                                  # combine the header and payload
+	pkt.update()                                   # update the current packet
 	print("HASH-VALUE in the header : ",pkt.get_hash())
 ```
 
