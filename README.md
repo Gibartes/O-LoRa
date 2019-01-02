@@ -122,7 +122,6 @@ This is a software that is 1:1 bluetooth server to link internal user space area
     PROT_GRAPHICS   
     PROT_TEXT       
 '''
-
 #### 1. Declare a packet
 ```python
 	from olora.packet import *
