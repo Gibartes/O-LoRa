@@ -111,7 +111,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 ```
 < Protocol Info >
   
-  OloraNT does not use these features as delegating to (an) Userspace process(es).
+  OloraNT does not use these features as delegating to other userspace process(es).
   
 ```python
     PROT_TCP        # TCP Mode
