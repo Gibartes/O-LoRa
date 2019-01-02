@@ -82,71 +82,46 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 
 * The structure of olora packets. This is defined in olorastd.h and PACKET_HEADER_CONFIG class.
 * < Field Info >
-
+```python
     MASK_SRC        # Source Address. Filtered by oloraNT.
-
     MASK_DST        # Destination Address. Filtered by oloraNT.
-
     MASK_CM         # Channel Mask
-
     MASK_HP         # Hopping info
-
     MASK_PROTO      # Packet Protocol
-
     MASK_ID         # Network ID
-
     MASK_FLAGS      # Packet Flags
-
     MASK_FRAG       # Packet Fragmentation
-
     MASK_SEQ        # Packet Sequence Number
-
     MASK_TMS        # Timsstamp
-
     MASK_LEN        # Payload length
-
     MASK_TTL        # TTL
-
     MASK_PARAM      # Parameter for the terminal device control (Internal use only)
-
     MASK_DC         # Data checksum (MD5, 8+8 Bytes big-endian). Filtered by oloraNT.
-
     MASK_DATA       # Data
+```
 
 * < Flags Info >
-
+```python
     FLAG_URGENT     
-
     FLAG_ACK        
-
     FLAG_FIN        
-
     FLAG_ENCRYPT    
-
     FLAG_QUERY      
-
     FLAG_BROKEN     
-
     FLAG_ERROR      
-
     FLAG_RESP       
+```
 
 * < Protocol Info >
   OloraNT does not use these features. (--> Userspace process)
-
+```python
     PROT_TCP        
-
     PROT_UDP        
-
     PROT_VOICE      
-
     PROT_RT         
-
     PROT_GRAPHICS   
-
     PROT_TEXT       
-    
-    
+'''
 
 #### 1. Declare a packet
 ```python
