@@ -16,7 +16,7 @@ endif
 # -> type option detects buffer overflow in calls to string handling functions like memcpy 
 
 INCLUDE     = -I../include
-LDFLAGS     = -lbluetooth -lpthread -lrt -lcrypto -lpam -lpam_misc
+LDFLAGS     = -lbluetooth -lpthread -lrt -lcrypto
 PROJECT     = oloraNT
 
 LIBNAME     = olora
