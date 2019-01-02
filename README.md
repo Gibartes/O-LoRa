@@ -103,7 +103,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
     FLAG_URGENT     # Urgent,High Priority,No-Buffering
     FLAG_ACK        # Acknowledgement
     FLAG_FIN        # Connection Finished
-    FLAG_ENCRYPT    # Encrypted payload
+    FLAG_ENCRYPT    # Encrypted Payload
     FLAG_QUERY      # RSA Certification Query
     FLAG_BROKEN     # Broken Checksum
     FLAG_ERROR      # Error
