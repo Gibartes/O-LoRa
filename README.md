@@ -194,8 +194,8 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 	pkt.cal_hash(PACKET_HEADER_CONFIG.DATA_LENGTH) # calculate MD5 hash
 	print("HASH-VALUE : ",pkt.hash)
 	pkt.set_hash()                                 # set MD5 Digest on the header of the packet.
-	pkt.combine()                                  # combine the header and payload
-	pkt.update()                                   # update the current packet
+	pkt.combine()                                  # combine the header and payload.
+	pkt.update()                                   # update the current packet.
 	print("HASH-VALUE in the header : ",pkt.get_hash())
 ```
 
