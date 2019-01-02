@@ -109,7 +109,9 @@ This is a software that is 1:1 bluetooth server to link internal user space area
     FLAG_RESP       
 ```
 < Protocol Info >
+  
   OloraNT does not use these features. (--> Userspace process)
+  
 ```python
     PROT_TCP        
     PROT_UDP        
