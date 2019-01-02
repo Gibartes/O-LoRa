@@ -90,7 +90,7 @@ This is a software that is 1:1 bluetooth server to link internal user space area
     MASK_FLAGS      # Packet Flags
     MASK_FRAG       # Packet Fragmentation
     MASK_SEQ        # Packet Sequence Number
-    MASK_TMS        # Timsstamp
+    MASK_TMS        # Timestamp
     MASK_LEN        # Payload length
     MASK_TTL        # TTL
     MASK_PARAM      # Parameter for the terminal device control (Internal use only)
@@ -99,26 +99,26 @@ This is a software that is 1:1 bluetooth server to link internal user space area
 ```
 < Flags Info >
 ```python
-    FLAG_URGENT     
-    FLAG_ACK        
-    FLAG_FIN        
-    FLAG_ENCRYPT    
-    FLAG_QUERY      
-    FLAG_BROKEN     
-    FLAG_ERROR      
-    FLAG_RESP       
+    FLAG_URGENT     # Urgent,High Priority,No-Buffering
+    FLAG_ACK        # Acknowledgement
+    FLAG_FIN        # Connection Finished
+    FLAG_ENCRYPT    # Encrypted payload
+    FLAG_QUERY      # RSA Certification Query
+    FLAG_BROKEN     # Broken Checksum
+    FLAG_ERROR      # Error
+    FLAG_RESP       # Query Response
 ```
 < Protocol Info >
   
   OloraNT does not use these features. (--> Userspace process)
   
 ```python
-    PROT_TCP        
-    PROT_UDP        
-    PROT_VOICE      
-    PROT_RT         
-    PROT_GRAPHICS   
-    PROT_TEXT       
+    PROT_TCP        # TCP Mode
+    PROT_UDP        # UDP Mode
+    PROT_VOICE      # Voice Type
+    PROT_RT         # Required Real Time Processing
+    PROT_GRAPHICS   # Graphical Type
+    PROT_TEXT       # Text Type
 ```
 #### 1. Declare a packet
 ```python
