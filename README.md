@@ -288,7 +288,7 @@ __ Written by MinJae __
 ---------------------------------------
 
 O-LoRa Android application collaborating with Myeongeun and MinSu
-ang
+
 
 ---------------------------------------
 
