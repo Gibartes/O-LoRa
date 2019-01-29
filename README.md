@@ -285,14 +285,22 @@ __ Written by MinJae __
 ---------------------------------------
 
 ## O-LoRa - Android
+__ Written by MinSu & MyengKeun __
+
 ---------------------------------------
 
 O-LoRa Android application collaborating with Myeongeun and MinSu
 
+1. connect & packet handling - by ms
 
+2. UI design & database manage - by mk
 ---------------------------------------
 
 - You can download lastest olora android application in google [play store](https://play.google.com/store/apps/details?id=com.team_olora.olora_beta).
 
 
 ---------------------------------------
+
+this application is made for connect O_LORA device with user. users can use this app as any chatting app, like kakao or something.
+we considered what should our application's most critical feature have. -
+1. to begin with, activate your bluetooth module of your mobile.
